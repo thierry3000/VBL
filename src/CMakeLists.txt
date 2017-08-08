@@ -4,5 +4,5 @@ add_executable(vbl-v3.2 main.cpp )
 target_link_libraries(vbl-v3.2 "vbl;${myLibs}")
 
 install(DIRECTORY . DESTINATION include/vbl FILES_MATCHING PATTERN "*.h")
-install(TARGETS vbl LIBRARY DESTINATION lib/vbl)
-install(TARGETS vbl-v3.2 DESTINATION bin/vbl)
+install(TARGETS vbl LIBRARY DESTINATION lib)
+install(TARGETS vbl-v3.2 DESTINATION bin)
