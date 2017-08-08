@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(VBL)
-#set up spack stuff
+###############  set up spack stuff  ##############
 
 # enable @rpath in the install name for any shared library being built
 # note: it is planned that a future version of CMake will enable this by default
@@ -33,7 +33,7 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 # If we're not running with Spack, this does nothing...
 include_directories($ENV{SPACK_TRANSITIVE_INCLUDE_PATH})
 
-######################################
+###############  end spack stuff  ##############
 
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
