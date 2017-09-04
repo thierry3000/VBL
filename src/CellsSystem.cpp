@@ -18,15 +18,27 @@
 #include "CellsSystem.h"
 #include "Utilities.h"
 
+#include <chrono>
+
 unsigned int CellsSystem::runMainLoop()
 {
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
+  int nthreads, tid;
   while(active_run)
   {
     #pragma omp parallel sections
     {
       #pragma omp section
       {
+#ifdef DEBUG
+        tid = ::omp_get_thread_num();
+        printf("starting active run on thread = %d\n", tid);
+        if (tid == 0)
+        {
+          nthreads = ::omp_get_num_threads();
+          printf("Number of threads in vbl = %d\n", nthreads);
+        }
+#endif
         // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
         if(Get_ready2start() && Get_sim_type() == Full3D )	
         {
@@ -37,6 +49,15 @@ unsigned int CellsSystem::runMainLoop()
 
       #pragma omp section
       {
+#ifdef DEBUG
+        tid = ::omp_get_thread_num();
+        printf("starting diff on thread = %d\n", tid);
+        if (tid == 0)
+        {
+          nthreads = ::omp_get_num_threads();
+          printf("Number of threads in diff = %d\n", nthreads);
+        }
+#endif
         CPU_timer(Start_intertime);			// start intertempo del CPU timer
         Diff();								// metabolismo e diffusione
         CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
@@ -152,12 +173,25 @@ unsigned int CellsSystem::runMainLoop()
 unsigned int CellsSystem::runMainLoop(double endtime)
 {
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
+  int nthreads, tid;
   while(active_run)
   {
+#ifndef NDEBUG
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+#endif
     #pragma omp parallel sections
     {
       #pragma omp section
       {
+// #ifndef NDEBUG
+//         tid = ::omp_get_thread_num();
+//         printf("starting active run on thread = %d\n", tid);
+//         if (tid == 0)
+//         {
+//           nthreads = ::omp_get_num_threads();
+//           printf("Number of threads in dynamics = %d\n", nthreads);
+//         }
+// #endif
         // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
         if(Get_ready2start() && Get_sim_type() == Full3D )	
         {
@@ -165,18 +199,44 @@ unsigned int CellsSystem::runMainLoop(double endtime)
         // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
         }
       }// end #pragma omp section
+      
+// #ifndef NDEBUG
+//     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+//     std::cout << "ran Dynamics for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+// #endif
 
       #pragma omp section
       {
+#ifndef NDEBUG
+//         tid = ::omp_get_thread_num();
+//         printf("starting diff on thread = %d\n", tid);
+//         if (tid == 0)
+//         {
+//           nthreads = ::omp_get_num_threads();
+//           printf("Number of threads in diff = %d\n", nthreads);
+//         }
+#endif
         CPU_timer(Start_intertime);			// start intertempo del CPU timer
         Diff();								// metabolismo e diffusione
         CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
       }// end #pragma omp section
     }// end #pragma omp parallel sections
-	      
+#ifndef NDEBUG
+    std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+    std::cout << "ran Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+#endif
+#ifndef NDEBUG
+    begin = std::chrono::steady_clock::now();
+#endif
     bool mitosis = CellEvents( );		// Cellular events
-
+#ifndef NDEBUG
+    end= std::chrono::steady_clock::now();
+    std::cout << "ran CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+#endif
     // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
+#ifndef NDEBUG
+    begin = std::chrono::steady_clock::now();
+#endif
     if(Get_ready2start() && Get_sim_type() == Full3D )	
     {
       /**
@@ -190,7 +250,14 @@ unsigned int CellsSystem::runMainLoop(double endtime)
         if(Get_ncells() > 1) 
         {
           CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
-          Geometry( );				// Calculation of cluster geometry
+          #pragma omp parallel sections
+          {
+            #pragma omp section
+            {
+          
+              Geometry( );				// Calculation of cluster geometry
+            }//end #pragma omp section
+          }//end #pragma omp parallel sections
           Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
         }
         else 
@@ -209,7 +276,10 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     {
       NoGeometry( );
     }
-
+#ifndef NDEBUG
+    end= std::chrono::steady_clock::now();
+    std::cout << "ran Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+#endif
 
     StepStat( false );// calcolo delle statistiche passo-passo
 	      

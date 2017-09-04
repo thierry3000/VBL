@@ -119,7 +119,7 @@ unsigned long nstep;			// numero del passo
 unsigned long nstep_start;		// numero del passo alla partenza della simulazione (quando ready2start diventa true)
 unsigned long nmax;				// nmax = floor(tmax/dt) numero max di passi
 int idum;						// variabile globale utilizzata dalle routine di numeri casuali di Numerical Recipes 2
-bool ready2start;				// variabile globale tramite cui si segnala che la simulazione puo' procedere regolarmente 
+bool ready2start;				// Global variable by which the simulation can be performed on a regular basis
 bool faketumAtCurrentTime;
 unsigned long nprint;			// intervallo (in numero di passi) tra i passi di stampa su file
 unsigned long nscreen;			// intervallo (in numero di passi) tra i passi di stampa su schermo
@@ -674,7 +674,7 @@ void PrintASFlag(bool isBinary);
 // this method prints on file the isonBV flag
 void PrintBVFlag(bool isBinary);
 
-// questo metodo  stampa solo i raggi cellulari su file
+// This method prints only the cellular rays on files
 void PrintR(bool isBinary);
 
 // questo metodo stampa il codice della fase cellulare
@@ -775,7 +775,7 @@ unsigned int runMainLoop( );
 	void Init_fz( ) { fz.clear(); };
 	
 	
-	// fine dei setters utili alla parte geometrica
+	// fEnd of useful setters to the geometric part
 
 	void Set_volume_extra( const vector<double>& newvolume_extra ) { volume_extra = newvolume_extra; };
 	void Set_volume_extra( const int k, const double newvolume_extra ) { volume_extra[k] = newvolume_extra; };

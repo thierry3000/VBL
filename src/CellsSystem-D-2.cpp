@@ -27,7 +27,6 @@
 // WARNING: CGAL methods are used only in this section of the program, which has been "isolated" from the rest to avoid
 // interferences with other parts of the code. 
 
-// #include "geom-2.h"
 
 // The main method for calculating the structure of Delaunay
 // This method isolates all calls to CGAL
@@ -46,7 +45,7 @@ void CellsSystem::Geometry()
 	// vector<Point> v( ncells );	
 
 // inserimento del centri delle cellule nel vettore
-// #pragma omp parallel for
+#pragma omp parallel for
 	for(k=0; k<ncells; k++)
 		v[k] = Point( x[k], y[k], z[k] );
 
@@ -64,7 +63,7 @@ void CellsSystem::Geometry()
 
 // si rifa' il loop sui vertici finiti (k e' il nome della cellula attuale)
 	for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
-			{
+  {
 			
 			k = vit->info();
 			
