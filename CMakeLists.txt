@@ -87,7 +87,13 @@ if(CGAL_FOUND)
 endif()
 
 ### GMP
-set(myLibs "${myLibs};gmp")
+### added FindGMP.cmake to this project!
+message("CMAKE_ROOT: ${CMAKE_ROOT}")
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/;")
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+find_package(GMP)#provides variables ${GMP_LIBRARIES} and ${GMPXX_LIBRARIES}
+set(myLibs "${myLibs};${GMP_LIBRARIES};${GMPXX_LIBRARIES}")
 
 ### cmake debug output CMAKE_EXE_LINKER_FLAGS
 message("set content of mylib: ${myLibs}")
