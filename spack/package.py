@@ -45,14 +45,14 @@ from spack import *
 
 
 class Vbl(CMakePackage):
-    """FIXME: Put a proper description of your package here."""
+    """Virtual biololgy lab -- simulation of multicellular tumor spheroids"""
     homepage = "http://http://vbl.ts.infn.it/SiteVBL/index.html"
     url      = "https://github.com/edymil/VBL/archive/master.zip"
 
-    # version('2014-10-08', git='https://github.com/example-project/example.git',commit='9d38cd4e2c94c3cea97d0e2924814acc')
-    version('develop', git='https://github.com/thierry3000/VBL.git',branch='master')
+    version('develop', git='https://github.com/thierry3000/VBL.git',branch='develop')
     depends_on('cgal')
     depends_on('boost')
+    depends_on('gmp')
 
     def cmake_args(self):
         args = ['-DCMAKE_BUILD_TYPE=Release',]
