@@ -223,7 +223,7 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     }// end #pragma omp parallel sections
 #ifndef NDEBUG
     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-    std::cout << "ran Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    std::cout << "run Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
 #ifndef NDEBUG
     begin = std::chrono::steady_clock::now();
@@ -231,7 +231,7 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     bool mitosis = CellEvents( );		// Cellular events
 #ifndef NDEBUG
     end= std::chrono::steady_clock::now();
-    std::cout << "ran CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    std::cout << "run CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
     // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
 #ifndef NDEBUG
@@ -278,7 +278,7 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     }
 #ifndef NDEBUG
     end= std::chrono::steady_clock::now();
-    std::cout << "ran Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    std::cout << "run Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
 
     StepStat( false );// calcolo delle statistiche passo-passo
