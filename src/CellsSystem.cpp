@@ -1684,3 +1684,12 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	
 }
 
+void CellsSystem::Add_BloodVessel_at(uint index, vbl::BloodVessel NewBV)
+{
+  nbv++;
+  //Get_BloodVesselVector()[index] = NewBV;
+  BloodVesselVector.push_back(NewBV);
+  //BloodVesselVector[index] = NewBV; /*cout << "New blood vessel in CellsSystem" << endl;*/
+}
+
+

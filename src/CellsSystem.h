@@ -479,7 +479,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 // *** dati associati ai vasi sanguigni
     
     int nbv;                                // numero di vasi sanguigni
-    vector<vbl::BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
+    std::vector<vbl::BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
     
 // *** fine dei dati associati a vasi sanguigni
 
@@ -757,7 +757,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_n_mitosis(const vector<int>& newn_mitosis ) { n_mitosis = newn_mitosis; };
 	void Set_n_mitosis(const int k, const int newn_mitosis ) { n_mitosis[k] = newn_mitosis; };
 
-	void Add_BloodVessel( const vbl::BloodVessel NewBV ) { nbv++; BloodVesselVector.push_back( NewBV ); /*cout << "New blood vessel in CellsSystem" << endl;*/ };
+	void Add_BloodVessel_at(uint index, vbl::BloodVessel NewBV ); 
     
     // geometria, cinematica e dinamica
 

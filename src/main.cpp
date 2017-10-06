@@ -12,7 +12,6 @@
 
 
 
-
 // **********************************************************************************
 // main program 
 // 
@@ -33,7 +32,7 @@ int main( int argc, char* argv[] )
   string run_name;
   
   CellsSystem CellsSystem;	// Standard allocation of the CellsSystem (in this case, the initial dynamic reserve is 2000000)
-      
+  CellsSystem.Set_BV_reserve(RESERVE_BV);
       
   if( argc < 3 )
   {
