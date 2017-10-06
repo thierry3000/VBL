@@ -7,8 +7,8 @@
 //  Created by Edoardo Milotti on 25/7/2017.
 //
 //
-
-
+#include <ANN/ANN.h>
+namespace vbl{
 class BloodVessel
 {
     // friends
@@ -88,12 +88,13 @@ public:
     double GetBloodVesselLength() { return sqrt( (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])+(a[2]-b[2])*(a[2]-b[2]) ); };
     double GetBloodVesselVolume() { return M_PI * R * R * sqrt( (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])+(a[2]-b[2])*(a[2]-b[2]) ); };
     double DistanceFromVessel( const vector<double> y, double* x0 );
-    
+    double DistanceFromVessel( const ANNpoint &y );
     // read and write binario
         
     
 };
 
+}// end namespace vbl
 #endif //#ifndef BLOODVESSEL_H
 
 

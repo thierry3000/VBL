@@ -11,7 +11,7 @@
 
 // costruttori
 // costruttore di default (nessun attributo specificato)
-BloodVessel::BloodVessel()
+vbl::BloodVessel::BloodVessel()
 {
     a.assign(3,0.);
     b.assign(3,0.);
@@ -30,7 +30,7 @@ BloodVessel::BloodVessel()
 }
 
 // costruttore con valori specificati
-BloodVessel::BloodVessel( const vector<double> ca, const vector<double> cb, const vector<double> cva, const vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
+vbl::BloodVessel::BloodVessel( const vector<double> ca, const vector<double> cb, const vector<double> cva, const vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
 {
     a = ca;
     b = cb;
@@ -49,7 +49,7 @@ BloodVessel::BloodVessel( const vector<double> ca, const vector<double> cb, cons
 }
 
 // costruttore copia
-BloodVessel::BloodVessel(const BloodVessel& bv)
+vbl::BloodVessel::BloodVessel(const BloodVessel& bv)
 {
     a = bv.a;
     b = bv.b;
@@ -67,7 +67,7 @@ BloodVessel::BloodVessel(const BloodVessel& bv)
 }
 
 // funzione distanza e posizione punto piu' vicino
-double BloodVessel::DistanceFromVessel( const vector<double> x1, double* x0 )
+double vbl::BloodVessel::DistanceFromVessel( const vector<double> x1, double* x0 )
 {
     
     double tp = 0;
@@ -98,6 +98,49 @@ double BloodVessel::DistanceFromVessel( const vector<double> x1, double* x0 )
             bvd += ( x1[k]-a[k])*( x1[k]-a[k]);
         }
     else if(tp>1)   // calcolo della distanza dalla calotta sferica alla fine
+        for(int k=0; k<3; k++)
+        {
+            x0[k] = b[k];
+            bvd += ( x1[k]-b[k] )*( x1[k]-b[k] );
+        }
+    
+    bvd = sqrt(bvd);
+    
+    return(bvd);
+    
+}
+double vbl::BloodVessel::DistanceFromVessel( const ANNpoint &x1)
+{
+    
+    double tp = 0;
+    double nrm = 0;
+    double bvd = 0;
+    std::array<double,3> x0 = {0.0,0.0,0.0};
+    
+    for(int i=0; i<3; i++) // calcolo di t0
+    {
+        tp += (x1[i]-a[i])*(b[i]-a[i]);
+        nrm += (b[i]-a[i])*(b[i]-a[i]);
+    }
+    tp /= nrm;
+    
+    // cout << "nrm: " << nrm << endl;
+    // cout << "tp: " << tp << endl;
+    
+    
+    if(tp >= 0 && tp <= 1) // Calculating the distance from the cylindrical part
+        for(int k=0; k<3; k++)
+        {
+            x0[k] = tp*(b[k]-a[k]) + a[k];
+            bvd += (x1[k] - x0[k])*(x1[k] - x0[k]);
+        }
+    else if(tp<0)   // Calculating the distance from the spherical shell at the beginning
+        for(int k=0; k<3; k++)
+        {
+            x0[k] = a[k];
+            bvd += ( x1[k]-a[k])*( x1[k]-a[k]);
+        }
+    else if(tp>1)   // Calculating the distance from the spherical shell to the end
         for(int k=0; k<3; k++)
         {
             x0[k] = b[k];

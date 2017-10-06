@@ -19,164 +19,171 @@
 #include "Utilities.h"
 
 #include <chrono>
+#include <boost/format.hpp>
 
-unsigned int CellsSystem::runMainLoop()
+// unsigned int CellsSystem::runMainLoop()
+// {
+//   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
+//   int nthreads, tid;
+//   while(active_run)
+//   {
+//     #pragma omp parallel sections
+//     {
+//       #pragma omp section
+//       {
+// #ifdef DEBUG
+//         tid = ::omp_get_thread_num();
+//         cout << boost::format("starting active run on thread = %d\n" % tid);
+//         if (tid == 0)
+//         {
+//           nthreads = ::omp_get_num_threads();
+//           printf("Number of threads in vbl = %d\n", nthreads);
+//         }
+// #endif
+//         // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
+//         if(Get_ready2start() && Get_sim_type() == Full3D )	
+//         {
+//           Dynamics( );						// Calculation of mechanical interactions
+//         // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
+//         }
+//       }// end #pragma omp section
+// 
+//       #pragma omp section
+//       {
+// #ifdef DEBUG
+//         tid = ::omp_get_thread_num();
+//         printf("starting diff on thread = %d\n", tid);
+//         if (tid == 0)
+//         {
+//           nthreads = ::omp_get_num_threads();
+//           printf("Number of threads in diff = %d\n", nthreads);
+//         }
+// #endif
+//         CPU_timer(Start_intertime);			// start intertempo del CPU timer
+//         Diff();								// metabolismo e diffusione
+//         CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
+//       }// end #pragma omp section
+//     }// end #pragma omp parallel sections
+// 	      
+//     bool mitosis = CellEvents( );		// Cellular events
+// 
+//     // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
+//     if(Get_ready2start() && Get_sim_type() == Full3D )	
+//     {
+//       /**
+//        * The calculation of the triangulation is done if there has been at least one mitosis or if the system has moved significantly
+//        * (maximum cell displacement is 0.5 micron) or, however, if at least 250 seconds have elapsed
+//        * since the last call to CGAL
+//        * The triangulation calculation is done every time if the timestep is bigger than 10 s
+//        */
+//       if( mitosis || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
+//       {
+//         if(Get_ncells() > 1) 
+//         {
+//           CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
+//           Geometry( );				// Calculation of cluster geometry
+//           Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
+//         }
+//         else 
+//         {
+//           NoGeometry( );
+//         }
+//       // CellsSystem.Print2logfile("Cellule dopo una chiamata a Geometry");
+//       }// end mitosis
+// 
+//       //CellsSystem.Dynamics( );						// calcolo delle interazioni meccaniche
+//       // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
+//     }
+//     // if the cells are not yet ready or the case of disrupted cells is being considered
+//     // only a limited number of geometric properties are calculated
+//     else 
+//     {
+//       NoGeometry( );
+//     }
+// 
+// 
+//     StepStat( false );// calcolo delle statistiche passo-passo
+// 	      
+//     // if( CellsSystem.Get_ready2start() ) CellsSystem.PrintLog(0);
+// 
+// 
+//     //
+//     // *** Printing summary statistics every nscreen step, or at each step in the case of slowmotion ***
+//     //
+// 
+//     if(Get_nstep()%Get_nscreen() == 0 || Get_slow_motion() )		
+//     // if(CellsSystem.Get_nstep()%CellsSystem.Get_nscreen() == 0 || mitosis)		
+//     {
+//       CPU_timer(Restart_timer);		// Updating the CPU timer
+//       Timing(false);					// Updating the real time timer
+//       
+//       Printout( );
+//       Print2logfile("Cell status during the loop");		// Comment on normal operation
+//       //if( CellsSystem.Get_ready2start() )
+//       //	CellsSystem.PrintAll2logfile("Stato delle cellule durante il loop");	// COMMENTARE PER IL FUNZIONAMENTO NORMALE
+// 																			      // PRODUCE UN OUTPUT ENORME ... !!!
+//       CPU_timer(Clear_intertime);		// Interrupt timer reset
+// 
+//       if( Get_ready2start() ) Print2file();
+// 														      
+//       StepStat( true );				// Reinitializing statistics (also resets the convergence_fail vector)
+//     }
+// 
+// 
+// 
+//     //
+//     // *** Printing the configurations every apoint steps, or at each step in the case of slowmotion ***
+//     //
+//     if(Get_nstep()%Get_nprint() == 0 || Get_slow_motion() )		
+//     {
+//       if(Get_ready2start() && Get_sim_type() == Full3D )
+//       {
+//         #pragma omp parallel sections
+//         {
+//           #pragma omp section
+//           {
+//             PrintConfiguration(true);		// Printed on a binary file
+//             //CellsSystem.PrintConfiguration(false);	// printout su file ascii
+//           }// end #pragma omp section
+// 
+//           #pragma omp section
+//           {
+//             if(Get_ncells()>2)
+//               /* calculation of flow only makes sense for more than one cell!!!*/
+//               PrintFlows();					// printout dei flussi extracellulari su file binario
+//           }//end #pragma omp section
+//         }// end #pragma omp parallel sections
+//         
+//         Step_nconfiguration();	// print extracellular streams on a binary file
+//       }// end CellsSystem.Get_ready2start()
+//     }// end CellsSystem.Get_nstep()
+// 		      
+// 	      
+//     active_run = TimersAdvance( );		// advancing timers (including the last call timer to CGAL)
+// 
+//     if(Get_alive() == 0) 
+//     {
+//       cout << "\nRun break, there are no more live cells" << endl;
+//       break;
+//     }
+// 
+//   }// end while
+//   return 0;
+// }
+
+unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 {
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;
+#ifdef W_timing
+  ofstream timing_file;
+  boost::format template_name("./runs/run_%d-%s/timing_of_runMainLoop_in_run.txt");
+  std::string fn = boost::str(template_name % run % machine);
+  timing_file.open(fn);
+#endif
   while(active_run)
   {
-    #pragma omp parallel sections
-    {
-      #pragma omp section
-      {
-#ifdef DEBUG
-        tid = ::omp_get_thread_num();
-        printf("starting active run on thread = %d\n", tid);
-        if (tid == 0)
-        {
-          nthreads = ::omp_get_num_threads();
-          printf("Number of threads in vbl = %d\n", nthreads);
-        }
-#endif
-        // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
-        if(Get_ready2start() && Get_sim_type() == Full3D )	
-        {
-          Dynamics( );						// Calculation of mechanical interactions
-        // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
-        }
-      }// end #pragma omp section
-
-      #pragma omp section
-      {
-#ifdef DEBUG
-        tid = ::omp_get_thread_num();
-        printf("starting diff on thread = %d\n", tid);
-        if (tid == 0)
-        {
-          nthreads = ::omp_get_num_threads();
-          printf("Number of threads in diff = %d\n", nthreads);
-        }
-#endif
-        CPU_timer(Start_intertime);			// start intertempo del CPU timer
-        Diff();								// metabolismo e diffusione
-        CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
-      }// end #pragma omp section
-    }// end #pragma omp parallel sections
-	      
-    bool mitosis = CellEvents( );		// Cellular events
-
-    // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
-    if(Get_ready2start() && Get_sim_type() == Full3D )	
-    {
-      /**
-       * The calculation of the triangulation is done if there has been at least one mitosis or if the system has moved significantly
-       * (maximum cell displacement is 0.5 micron) or, however, if at least 250 seconds have elapsed
-       * since the last call to CGAL
-       * The triangulation calculation is done every time if the timestep is bigger than 10 s
-       */
-      if( mitosis || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
-      {
-        if(Get_ncells() > 1) 
-        {
-          CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
-          Geometry( );				// Calculation of cluster geometry
-          Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
-        }
-        else 
-        {
-          NoGeometry( );
-        }
-      // CellsSystem.Print2logfile("Cellule dopo una chiamata a Geometry");
-      }// end mitosis
-
-      //CellsSystem.Dynamics( );						// calcolo delle interazioni meccaniche
-      // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
-    }
-    // if the cells are not yet ready or the case of disrupted cells is being considered
-    // only a limited number of geometric properties are calculated
-    else 
-    {
-      NoGeometry( );
-    }
-
-
-    StepStat( false );// calcolo delle statistiche passo-passo
-	      
-    // if( CellsSystem.Get_ready2start() ) CellsSystem.PrintLog(0);
-
-
-    //
-    // *** Printing summary statistics every nscreen step, or at each step in the case of slowmotion ***
-    //
-
-    if(Get_nstep()%Get_nscreen() == 0 || Get_slow_motion() )		
-    // if(CellsSystem.Get_nstep()%CellsSystem.Get_nscreen() == 0 || mitosis)		
-    {
-      CPU_timer(Restart_timer);		// Updating the CPU timer
-      Timing(false);					// Updating the real time timer
-      
-      Printout( );
-      Print2logfile("Cell status during the loop");		// Comment on normal operation
-      //if( CellsSystem.Get_ready2start() )
-      //	CellsSystem.PrintAll2logfile("Stato delle cellule durante il loop");	// COMMENTARE PER IL FUNZIONAMENTO NORMALE
-																			      // PRODUCE UN OUTPUT ENORME ... !!!
-      CPU_timer(Clear_intertime);		// Interrupt timer reset
-
-      if( Get_ready2start() ) Print2file();
-														      
-      StepStat( true );				// Reinitializing statistics (also resets the convergence_fail vector)
-    }
-
-
-
-    //
-    // *** Printing the configurations every apoint steps, or at each step in the case of slowmotion ***
-    //
-    if(Get_nstep()%Get_nprint() == 0 || Get_slow_motion() )		
-    {
-      if(Get_ready2start() && Get_sim_type() == Full3D )
-      {
-        #pragma omp parallel sections
-        {
-          #pragma omp section
-          {
-            PrintConfiguration(true);		// Printed on a binary file
-            //CellsSystem.PrintConfiguration(false);	// printout su file ascii
-          }// end #pragma omp section
-
-          #pragma omp section
-          {
-            if(Get_ncells()>2)
-              /* calculation of flow only makes sense for more than one cell!!!*/
-              PrintFlows();					// printout dei flussi extracellulari su file binario
-          }//end #pragma omp section
-        }// end #pragma omp parallel sections
-        
-        Step_nconfiguration();	// print extracellular streams on a binary file
-      }// end CellsSystem.Get_ready2start()
-    }// end CellsSystem.Get_nstep()
-		      
-	      
-    active_run = TimersAdvance( );		// advancing timers (including the last call timer to CGAL)
-
-    if(Get_alive() == 0) 
-    {
-      cout << "\nRun break, there are no more live cells" << endl;
-      break;
-    }
-
-  }// end while
-  return 0;
-}
-
-unsigned int CellsSystem::runMainLoop(double endtime)
-{
-  bool active_run = true;	// Boolean variable that becomes false when a condition stops running
-  int nthreads, tid;
-  while(active_run)
-  {
-#ifndef NDEBUG
+#ifdef W_timing
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #endif
     #pragma omp parallel sections
@@ -221,20 +228,20 @@ unsigned int CellsSystem::runMainLoop(double endtime)
         CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
       }// end #pragma omp section
     }// end #pragma omp parallel sections
-#ifndef NDEBUG
+#ifdef W_timing
     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-    std::cout << "run Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    timing_file << "run Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
-#ifndef NDEBUG
+#ifdef W_timing
     begin = std::chrono::steady_clock::now();
 #endif
     bool mitosis = CellEvents( );		// Cellular events
-#ifndef NDEBUG
+#ifdef W_timing
     end= std::chrono::steady_clock::now();
-    std::cout << "run CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    timing_file << "run CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
     // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
-#ifndef NDEBUG
+#ifdef W_timing
     begin = std::chrono::steady_clock::now();
 #endif
     if(Get_ready2start() && Get_sim_type() == Full3D )	
@@ -276,9 +283,9 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     {
       NoGeometry( );
     }
-#ifndef NDEBUG
+#ifdef W_timing
     end= std::chrono::steady_clock::now();
-    std::cout << "run Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    timing_file << "run Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
 #endif
 
     StepStat( false );// calcolo delle statistiche passo-passo
@@ -347,6 +354,9 @@ unsigned int CellsSystem::runMainLoop(double endtime)
     }
 
   }// end while
+#ifdef W_timing
+  timing_file.close();
+#endif
   return 0;
 }
 

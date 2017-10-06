@@ -34,89 +34,89 @@
 void CellsSystem::Geometry()
 {
 
-	unsigned long k;
+  unsigned long k;
 
-// Creation of Delaunay's triangulation structure
-	Dt DelTri;
-	
-	// cout << "Triangolazione OK" << endl;
-	
-// vettore dei punti
-	// vector<Point> v( ncells );	
+  // Creation of Delaunay's triangulation structure
+  Dt DelTri;
 
-// inserimento del centri delle cellule nel vettore
+  // cout << "Triangolazione OK" << endl;
+
+  // vettore dei punti
+  // vector<Point> v( ncells );	
+
+  // inserimento del centri delle cellule nel vettore
 #pragma omp parallel for
-	for(k=0; k<ncells; k++)
-		v[k] = Point( x[k], y[k], z[k] );
-
-	// cout << "Setup punti OK" << endl;
-	// cout << "Primo punto: {" << v[0] << "} = " << x[0] << ", " << y[0] << ", " << z[0] << endl;
-
-
-// inserimento modificato dei punti nella triangolazione (equivalente all'inserimento sequenziale)
-	build_triangulation_with_indices(v.begin(),v.end(),DelTri);
-
-
-// nel seguito si trova la lista dei collegamenti e si stimano le aree delle superfici di contatto
-
-	vector<Vertex_handle> vn;									// vettore delle vertex_handle dei vicini
-
-// si rifa' il loop sui vertici finiti (k e' il nome della cellula attuale)
-	for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
+  for(k=0; k<ncells; k++)
   {
-			
-			k = vit->info();
-			
-			DelTri.incident_vertices(vit, back_inserter(vn));		// qui si ottiene la lista dei vicini
-			neigh[k] = vn.size();								// numero dei vicini (finiti E infiniti)
-			
-			vneigh[k].resize(neigh[k]);							// inizializzazione del vettore dei nomi dei vicini
-			vcsurf[k].resize(neigh[k]);							// inizializzazione del vettore delle aree delle superfici di contatto
-			
-			vdist[k].resize(neigh[k]);							// allocazione del vettore delle distanze
-			gnk[k].resize(neigh[k]);							// allocazione del vettore dei fattori geometrici
-			isonCH[k]=false;									// variabile che dice se la cellula e' sul convex hull
-			env_surf[k] = 0.;									// superficie di contatto con l'ambiente
-			g_env[k] = 0.;										// fattore geometrico relativo al contatto con l'ambiente
-			
-			// raggio pesato della cellula considerata
-			double rk = (type[k]->Get_extension_coeff())*r[k];
-			
-			contact_surf[k] = 0.;								// inizializzazione calcolo superficie di contatto totale
-			
-			int nFV = 0;										// inizializzazione del numero dei vertici finiti adiacenti	
-			for(int kk=0; kk < neigh[k] ; kk++)					// in questo loop si prepara la lista dei vicini e si calcolano le sup. di contatto
-				{
-				
-				if(!DelTri.is_infinite(vn[kk]))	// se si c'e' un vertice finito adiacente
-					{
-					
-					int neighbor = vn[kk]->info();				// nome del vicino
-					vneigh[k][nFV] = neighbor;					// memorizzazione del nome del vicino
-					
-					//***
+    v[k] = Point( x[k], y[k], z[k] );
+  }
+  // cout << "Setup punti OK" << endl;
+  // cout << "Primo punto: {" << v[0] << "} = " << x[0] << ", " << y[0] << ", " << z[0] << endl;
 
-					// raggio pesato della cellula adiacente
-					double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
-					double dd = Distance( k,neighbor );			// distanza tra le due cellule
+
+  // inserimento modificato dei punti nella triangolazione (equivalente all'inserimento sequenziale)
+  build_triangulation_with_indices(v.begin(),v.end(),DelTri);
+
+
+  // nel seguito si trova la lista dei collegamenti e si stimano le aree delle superfici di contatto
+
+  vector<Vertex_handle> vn;// vettore delle vertex_handle dei vicini
+
+  // si rifa' il loop sui vertici finiti (k e' il nome della cellula attuale)
+  for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
+  {
+    k = vit->info();
+    DelTri.incident_vertices(vit, back_inserter(vn));		// qui si ottiene la lista dei vicini
+    neigh[k] = vn.size();								// numero dei vicini (finiti E infiniti)
+			
+    vneigh[k].resize(neigh[k]);							// inizializzazione del vettore dei nomi dei vicini
+    vcsurf[k].resize(neigh[k]);							// inizializzazione del vettore delle aree delle superfici di contatto
+			
+    vdist[k].resize(neigh[k]);							// allocazione del vettore delle distanze
+    gnk[k].resize(neigh[k]);							// allocazione del vettore dei fattori geometrici
+    isonCH[k]=false;									// variabile che dice se la cellula e' sul convex hull
+    env_surf[k] = 0.;									// superficie di contatto con l'ambiente
+    g_env[k] = 0.;										// fattore geometrico relativo al contatto con l'ambiente
+			
+    // raggio pesato della cellula considerata
+    double rk = (type[k]->Get_extension_coeff())*r[k];
+			
+    contact_surf[k] = 0.;								// inizializzazione calcolo superficie di contatto totale
+			
+    int nFV = 0;										// inizializzazione del numero dei vertici finiti adiacenti	
+    for(int kk=0; kk < neigh[k] ; kk++)					// in questo loop si prepara la lista dei vicini e si calcolano le sup. di contatto
+    {
+      if(!DelTri.is_infinite(vn[kk]))	// se si c'e' un vertice finito adiacente
+      {
+	int neighbor = vn[kk]->info();				// nome del vicino
+	vneigh[k][nFV] = neighbor;					// memorizzazione del nome del vicino
+
+	// raggio pesato della cellula adiacente
+	double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
+	double dd = Distance( k,neighbor );			// distanza tra le due cellule
 					
-					// *********** controllo per debugging
-					if(dd != dd || dd <= 0)
-						{
-						cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << endl;
-						}
-					// *********** fine controllo per debugging
-					
-					vdist[k][nFV] = dd;
-					
-					if( dd < (rk+rkk) ) 						// calcolo della superficie di contatto
-						{
-						vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
-						if( vcsurf[k][nFV] < 0 ) vcsurf[k][nFV] = 0;
-						contact_surf[k] += vcsurf[k][nFV];
-						}
-					else
-						vcsurf[k][nFV] = 0.;
+	// *********** controllo per debugging
+	if(dd != dd || dd <= 0)
+	{
+	  cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << endl;
+	}
+	// *********** fine controllo per debugging
+
+	vdist[k][nFV] = dd;
+
+	if( dd < (rk+rkk) ) 						// calcolo della superficie di contatto
+	{
+	  vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
+	  if( vcsurf[k][nFV] < 0 )
+	  {
+	    vcsurf[k][nFV] = 0;
+	  }
+	  contact_surf[k] += vcsurf[k][nFV];
+	}
+	else
+	{
+	  vcsurf[k][nFV] = 0.;
+	}
 
 					if(vcsurf[k][nFV] > 0)						// fattore geometrico
 						gnk[k][nFV] = vcsurf[k][nFV]/dd;
@@ -208,36 +208,42 @@ void CellsSystem::Geometry()
 		
 	// the following loop identifies those cells that are in contact with blood vessels 
 	for(k=0; k<ncells; k++)
-		{
-				
-		vector<double> cellpos(3); // store the cell coordinates in a 3-vector
-        cellpos[0]=x[k];
-        cellpos[1]=y[k];
-        cellpos[2]=z[k];
+	{
+	  vector<double> cellpos(3); // store the cell coordinates in a 3-vector
+	  cellpos[0]=x[k];
+	  cellpos[1]=y[k];
+	  cellpos[2]=z[k];
         
-		isonBV[k] = 0; // by default, cells are not close to blood vessels 
-		g_bv[k] = 0; // by default, there is no contact term with blood vessels
+	  isonBV[k] = 0; // by default, cells are not close to blood vessels 
+	  g_bv[k] = 0; // by default, there is no contact term with blood vessels
 		
-		for( int nvessel=0; nvessel<nbv; nvessel++ ) // loop over all blood vessels
-			{
-			double x0[3]; // position on blood vessel axis closest to cell
-			double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
-			if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k] ) // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
-				{
-				isonBV[k] = nvessel+1;		// note the shift, which is done to use the value 0 as false and otherwise use the true value to store the blood vessel position in the blood vessel vector
-				bv_surf[k] = surface[k];
-				g_bv[k] = bv_surf[k]/r[k]; // this are bold statements; here we assume that the cell behaves like a disk (not a sphere), and that half of the surface area faces the blood vessel
-				// the last approximation should probably be mitigated with the inclusion of a surface-modulating parameter or even better by an improved geometrical modelling
-				break;	// blood vessel found, we jump out of the blood vessel loop	
-				}
-			}
-		
-		// g_bv[k] = 0; // **** TEMPORARY, used only to eliminate blood vessels from calculations !!! 
-		
-			
-		}
-	
-
+	  for( int nvessel=0; nvessel<nbv; nvessel++ ) // loop over all blood vessels
+	  {
+	    double x0[3]; // position on blood vessel axis closest to cell
+	    double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
+	    // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
+	    if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k] ) 
+	    {
+	      /** note the shift, which is done to use the value 0
+	       * as false and otherwise use the true value 
+	       * to store the blood vessel position in the blood vessel vector
+	       */
+	      isonBV[k] = nvessel+1;
+	      bv_surf[k] = surface[k];
+	      /** this are bold statements; 
+	       * here we assume that the cell behaves like a disk (not a sphere), 
+	       * and that half of the surface area faces the blood vessel
+	       */
+	      g_bv[k] = bv_surf[k]/r[k];
+	      /** the last approximation should probably be mitigated with the inclusion 
+	       * of a surface-modulating parameter 
+	       * or even better by an improved geometrical modelling
+	       */
+	      break;	// blood vessel found, we jump out of the blood vessel loop	
+	    }
+	  }
+	  // g_bv[k] = 0; // **** TEMPORARY, used only to eliminate blood vessels from calculations !!! 
+	}
 }
 
 // Minimum calculations in case of dispersed cells

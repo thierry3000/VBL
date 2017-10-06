@@ -1360,7 +1360,43 @@ void CellsSystem::ReadCellsSystem( )
 
 // funzione per l'avanzamento dei contatori del run 
 // 
-bool CellsSystem::TimersAdvance( )
+// bool CellsSystem::TimersAdvance( )
+// {
+// 
+//     double timestep; 
+//     
+//     // selezione del timestep
+//     if( treal < tsm_start || treal >= tsm_stop)      // in questo intervallo ... slow motion
+//         {
+//         timestep = dt;
+//         slow_motion = false;
+//         }
+//     else
+//         {
+//         timestep = dt_sm;
+//         slow_motion = true;
+//         }  
+//     
+// 	t += timestep;							// update del tempo di simulazione
+// 	time_from_CGAL += timestep;				// update del tempo di simulazione dall'ultima chiamata a CGAL
+// 	if(ready2start) treal += timestep;		// update del tempo che e' passato dalla partenza vera e propria della simulazione
+// 	
+// 	nstep++;
+// 	
+// 	if(!ready2start && t > t_ini)			// condizione di fine dell'inizializzazione dello stato cellulare
+// 		{
+// 		cout << "\nFine dell'inizializzazione\n" << endl;
+// 		ready2start = true;
+// 		nstep_start = nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
+// 		}	
+// 
+// 	if(treal < tmax && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
+// 		return true;
+// 	else 
+// 		return false;
+// }
+
+bool CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 {
 
     double timestep; 
@@ -1389,47 +1425,20 @@ bool CellsSystem::TimersAdvance( )
 		ready2start = true;
 		nstep_start = nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
 		}	
-
-	if(treal < tmax && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
+	if( endtime )
+	{
+	  if(treal < endtime && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
+		  return true;
+	  else 
+		  return false;
+	}
+	else
+	{
+	  if(treal < tmax && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
 		return true;
-	else 
+	  else 
 		return false;
-}
-
-bool CellsSystem::TimersAdvanceUntil( double endtime)
-{
-
-    double timestep; 
-    
-    // selezione del timestep
-    if( treal < tsm_start || treal >= tsm_stop)      // in questo intervallo ... slow motion
-        {
-        timestep = dt;
-        slow_motion = false;
-        }
-    else
-        {
-        timestep = dt_sm;
-        slow_motion = true;
-        }  
-    
-	t += timestep;							// update del tempo di simulazione
-	time_from_CGAL += timestep;				// update del tempo di simulazione dall'ultima chiamata a CGAL
-	if(ready2start) treal += timestep;		// update del tempo che e' passato dalla partenza vera e propria della simulazione
-	
-	nstep++;
-	
-	if(!ready2start && t > t_ini)			// condizione di fine dell'inizializzazione dello stato cellulare
-		{
-		cout << "\nFine dell'inizializzazione\n" << endl;
-		ready2start = true;
-		nstep_start = nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
-		}	
-
-	if(treal < endtime && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
-		return true;
-	else 
-		return false;
+	}
 }
 
 //  ******************** CPU_timer ********************

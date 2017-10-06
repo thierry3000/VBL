@@ -13,7 +13,17 @@
 #define CELLSSYSTEM_H // header guard
 
 #include "BloodVessel.h"
+// to use new and old version of TimersAdvance and TimersAdvanceUntil simultaniously
+#include <boost/optional.hpp>
 
+//for timing output
+#include <iostream>
+#include <fstream>
+#define W_timing
+// #ifndef NDEBUG
+//   // means debugging
+//   #define W_timing
+// #endif
 struct ReadInParameters
 {
   /* imulation with dispersed cells (0) or full 3D (1) */
@@ -469,7 +479,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 // *** dati associati ai vasi sanguigni
     
     int nbv;                                // numero di vasi sanguigni
-    vector<BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
+    vector<vbl::BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
     
 // *** fine dei dati associati a vasi sanguigni
 
@@ -643,9 +653,9 @@ void ReadCellsSystem( );
 
 
 // avanzamento dei timers
-bool TimersAdvance( );
-
-bool TimersAdvanceUntil( double endtime );
+//bool TimersAdvance( );
+// if no endtime is present, the behaviour of old TimersAdvance is restored
+bool TimersAdvanceUntil( boost::optional<double> endtime );
 
 // CPU timing
 void CPU_timer( timer_button button );
@@ -708,8 +718,8 @@ void StepStat( bool reset_stat );
 
 //****************************************************************************************************
 
-unsigned int runMainLoop( double dt);
-unsigned int runMainLoop( );
+unsigned int runMainLoop( boost::optional<double> endtime);
+//unsigned int runMainLoop( );
 
 // *** metodi per la gestione della parte biofisica *** 
 
@@ -747,7 +757,7 @@ unsigned int runMainLoop( );
 	void Set_n_mitosis(const vector<int>& newn_mitosis ) { n_mitosis = newn_mitosis; };
 	void Set_n_mitosis(const int k, const int newn_mitosis ) { n_mitosis[k] = newn_mitosis; };
 
-    void Add_BloodVessel( const BloodVessel NewBV ) { nbv++; BloodVesselVector.push_back( NewBV ); /*cout << "New blood vessel in CellsSystem" << endl;*/ };
+	void Add_BloodVessel( const vbl::BloodVessel NewBV ) { nbv++; BloodVesselVector.push_back( NewBV ); /*cout << "New blood vessel in CellsSystem" << endl;*/ };
     
     // geometria, cinematica e dinamica
 
@@ -998,8 +1008,8 @@ unsigned int runMainLoop( );
 	vector<int> Get_n_mitosis() { return n_mitosis; };
 	int Get_n_mitosis( const unsigned long int k ) { return n_mitosis[k]; };
 
-    vector<BloodVessel> Get_BloodVesselVector() { return BloodVesselVector; };
-    int Get_nbv() { return nbv; };
+	vector<vbl::BloodVessel> Get_BloodVesselVector() { return BloodVesselVector; };
+	int Get_nbv() { return nbv; };
 
 	vector<double> Get_x() { return x; };
 	double Get_x( const unsigned long int k ) { return x[k]; };

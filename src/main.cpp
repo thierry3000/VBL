@@ -168,7 +168,7 @@ int main( int argc, char* argv[] )
       
   // ********************** main simulation loop **************************
 
-  unsigned int returnValue = CellsSystem.runMainLoop();
+  unsigned int returnValue = CellsSystem.runMainLoop(boost::none);
 
   // **************************** fine loop principale ******************************
 

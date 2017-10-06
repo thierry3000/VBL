@@ -386,7 +386,7 @@ void CellsSystem::Diff()
 
 		if(isonBV[n])
 			{
-			BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
+			vbl::BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
 		
 			rhoG_bv = BV.GetBloodVesselG();			// glucose concentration in BV	
 			rhoO2_bv = 0.5*(BV.GetBloodVesselO2start()+BV.GetBloodVesselO2end());			
