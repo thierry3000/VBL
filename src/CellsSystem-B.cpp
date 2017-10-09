@@ -8,21 +8,9 @@
  */
 
 
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
-#include "CellsSystem.h"
-#include "Utilities.h"
-
-
 // se questo parametro e' true allora vengono stampati anche messaggi d'errore aggiuntivi
 #define	EXTENDED_ERRORLOG	false
-
+#include "CellsSystem.h"
 // scommentare il seguente statement per includere anche i messaggi d'errore per il metodo della secante
 // #define SECANT_IN_ERRORLOG
 
@@ -33,7 +21,7 @@
 // i nuovi valori vengono calcolati per mezzo di equazioni nonlineari che provengono da una soluzione generale con il metodo BDF 
 // (in pratica Eulero implicito); le equazioni non lineari vengono a loro volta risolte per mezzo di una versione del metodo di Newton
 // 
-void CellsSystem::Diff()
+void vbl::CellsSystem::Diff()
 {
 
 	
@@ -387,7 +375,8 @@ void CellsSystem::Diff()
 		if(isonBV[n])
 			{
 			vbl::BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
-		
+			//vbl::BloodVessel BV = bloodVesselMap[isonBV[n]-1];
+			  
 			rhoG_bv = BV.GetBloodVesselG();			// glucose concentration in BV	
 			rhoO2_bv = 0.5*(BV.GetBloodVesselO2start()+BV.GetBloodVesselO2end());			
 													// oxygen concentration in BV

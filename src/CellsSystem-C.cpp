@@ -10,16 +10,7 @@
  *
  */
 
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
 
 extern double EventTime;
 extern bool eventON;
@@ -30,7 +21,7 @@ extern double pAlt;
 //
 // The method returns the number of mitoses that occurred during the step
 // 
-bool CellsSystem::CellEvents( )
+bool vbl::CellsSystem::CellEvents( )
 {
 
 	bool mitosis_flag = false;				// flag logica che dice se e' avvenuta almeno una mitosi
@@ -437,7 +428,7 @@ bool CellsSystem::CellEvents( )
 //
 // metodo che elimina le cellule morte troppo piccole
 // 
-void CellsSystem::CleanCellsSystem( )
+void vbl::CellsSystem::CleanCellsSystem( )
 {
 	//bool cleaned = false;
 	

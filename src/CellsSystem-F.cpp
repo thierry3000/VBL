@@ -9,16 +9,7 @@
  */
 
 
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
 
 //  ******************** PrintFlows ********************
 
@@ -26,7 +17,7 @@
 // Calculation and printing of extracellular flows (binary only)
 // ***************************************************************
 //
-void CellsSystem::PrintFlows()
+void vbl::CellsSystem::PrintFlows()
 {
 
 	// apertura del file di output

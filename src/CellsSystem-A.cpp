@@ -9,17 +9,7 @@
  *
  */
 
-
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
 
 #include <sys/utsname.h>	// header per i metodi di identificazione della macchina
 
@@ -35,7 +25,7 @@ extern double pAlt;
 // NB: this method is NOT called in case of continuation of run ...
 // ***************************************************************
 //
-void CellsSystem::InitializeCellsSystem( bool terminal )
+void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 {
 
 	unsigned long n;
@@ -749,7 +739,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 
 // questo metodo definisce i nomi dei files 
 // 
-void CellsSystem::RunDefinition(  ) 
+void vbl::CellsSystem::RunDefinition(  ) 
 {
 
 	
@@ -923,7 +913,7 @@ void CellsSystem::RunDefinition(  )
 // 
 // versione overloaded che definisce i nomi dei files nel caso di continuazione di un run
 // 
-void CellsSystem::RunDefinition( string run_name ) 
+void vbl::CellsSystem::RunDefinition( string run_name ) 
 {
 
 /*
@@ -998,7 +988,7 @@ void CellsSystem::RunDefinition( string run_name )
 
 // questo metodo scrive il CellsSystem per poterlo ricaricare e riutilizzare
 // 
-void CellsSystem::WriteCellsSystem( )
+void vbl::CellsSystem::WriteCellsSystem( )
 {
 
 	ofstream stream;
@@ -1164,7 +1154,7 @@ void CellsSystem::WriteCellsSystem( )
 
 // questo metodo legge il CellsSystem per poterlo ricaricare e riutilizzare
 // 
-void CellsSystem::ReadCellsSystem( )
+void vbl::CellsSystem::ReadCellsSystem( )
 { 
 
 	ifstream stream;
@@ -1222,11 +1212,11 @@ void CellsSystem::ReadCellsSystem( )
 // parametri ambientali
 	// ambiente iniziale Env_0
 	Env_0.ReadEnvironment( stream );
-	cout << "volume ambiente iniziale (microlitri) " << 1e-9*Env_0.volume << endl;
+	cout << "volume ambiente iniziale (microlitri) " << 1e-9*Env_0.GetEnvironmentvolume() << endl;
 	
 	// ambiente attuale Env
 	Env.ReadEnvironment( stream );
-	cout << "volume ambiente attuale (microlitri) " << 1e-9*Env.volume << endl;
+	cout << "volume ambiente attuale (microlitri) " << 1e-9*Env.GetEnvironmentvolume() << endl;
 
 	// flussi
 	stream.read( (char*)(&flowON), sizeof(bool) );
@@ -1396,7 +1386,7 @@ void CellsSystem::ReadCellsSystem( )
 // 		return false;
 // }
 
-bool CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
+bool vbl::CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 {
 
     double timestep; 
@@ -1446,7 +1436,7 @@ bool CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 // funzione che restituisce il tempo di CPU in secondi
 //
 // 
-void CellsSystem::CPU_timer( timer_button button )
+void vbl::CellsSystem::CPU_timer( timer_button button )
 {
 #pragma omp critical
 	{
@@ -1524,29 +1514,29 @@ void CellsSystem::CPU_timer( timer_button button )
 
 
 
-//  ******************** Timing ********************
-//
-// funzione che restituisce il tempo trascorso in secondi
-//
+// //  ******************** Timing ********************
+// //
+// // funzione che restituisce il tempo trascorso in secondi
+// //
+// // 
+// double vbl::CellsSystem::Timing( bool reset )
+// {
 // 
-double CellsSystem::Timing( bool reset )
-{
-
-	if(reset) 
-		{
-		time(&time_old);
-		timing = 0.;
-		}
-	else
-		{
-		time(&time_now);
-		timing = difftime(time_now, time_old);
-		time_old = time_now;
-		}
-		
-	return timing;
-
-}
+// 	if(reset) 
+// 		{
+// 		time(&time_old);
+// 		timing = 0.;
+// 		}
+// 	else
+// 		{
+// 		time(&time_now);
+// 		timing = difftime(time_now, time_old);
+// 		time_old = time_now;
+// 		}
+// 		
+// 	return timing;
+// 
+// }
 
 //  ******************** Printout ********************
 //
@@ -1554,7 +1544,7 @@ double CellsSystem::Timing( bool reset )
 //
 // ***************************************************************
 //
-void CellsSystem::Printout()
+void vbl::CellsSystem::Printout()
 {
 
 	static bool first_print=true;
@@ -1745,7 +1735,7 @@ void CellsSystem::Printout()
 //
 // ***************************************************************
 //
-void CellsSystem::Print2file()
+void vbl::CellsSystem::Print2file()
 {
 
 	unsigned long n;
@@ -2018,7 +2008,7 @@ void CellsSystem::Print2file()
 //
 // ***************************************************************
 //
-void CellsSystem::Print2logfile(string str)
+void vbl::CellsSystem::Print2logfile(string str)
 {
 	log_file << "\n" << str << "\n" << endl;
 	log_file << "\n\n***** Step " << nstep << " *****\n\n" << endl;
@@ -2052,7 +2042,7 @@ void CellsSystem::Print2logfile(string str)
 //
 // ***************************************************************
 //
-void CellsSystem::PrintAll2logfile(string str)
+void vbl::CellsSystem::PrintAll2logfile(string str)
 {
 	log_file << "\n" << str << "\n" << endl;
 	log_file << "\n\n***** Step " << nstep << " *****\n\n" << endl;
@@ -2078,7 +2068,7 @@ void CellsSystem::PrintAll2logfile(string str)
 //
 // ***************************************************************
 //
-void CellsSystem::PrintConfiguration(bool isBinary)
+void vbl::CellsSystem::PrintConfiguration(bool isBinary)
 {
 
 	char str[100];
@@ -2130,7 +2120,7 @@ void CellsSystem::PrintConfiguration(bool isBinary)
 
 // printout dell'header di una singola configurazione
 //
-void CellsSystem::PrintHeader(bool isBinary)
+void vbl::CellsSystem::PrintHeader(bool isBinary)
 {
 	if( isBinary )
 		{
@@ -2149,7 +2139,7 @@ void CellsSystem::PrintHeader(bool isBinary)
 // printout dei punti su file 
 // i cast espliciti servono ad evitare warnings del compilatore (e comunque rendono chiara la scelta fatta)
 //
-void CellsSystem::PrintPoints(bool isBinary)
+void vbl::CellsSystem::PrintPoints(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2181,7 +2171,7 @@ void CellsSystem::PrintPoints(bool isBinary)
 //  ******************** PrintLinks ********************
 
 // questo metodo stampa solo i links su file
-void CellsSystem::PrintLinks(bool isBinary)
+void vbl::CellsSystem::PrintLinks(bool isBinary)
 {
 		
 	for(unsigned long k=0; k<ncells; k++)
@@ -2209,7 +2199,7 @@ void CellsSystem::PrintLinks(bool isBinary)
 //  ******************** PrintCHFlag ********************
 
 // questo metodo stampa solo la flag di appartenenza al CH su file
-void CellsSystem::PrintCHFlag(bool isBinary)
+void vbl::CellsSystem::PrintCHFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2229,7 +2219,7 @@ void CellsSystem::PrintCHFlag(bool isBinary)
 //  ******************** PrintASFlag ********************
 
 // questo metodo stampa solo la flag di appartenenza all'AS su file
-void CellsSystem::PrintASFlag(bool isBinary)
+void vbl::CellsSystem::PrintASFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2249,7 +2239,7 @@ void CellsSystem::PrintASFlag(bool isBinary)
 //  ******************** PrintBVFlag ********************
 
 // this method prints on file the isonBV flag
-void CellsSystem::PrintBVFlag(bool isBinary)
+void vbl::CellsSystem::PrintBVFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2269,7 +2259,7 @@ void CellsSystem::PrintBVFlag(bool isBinary)
 //  ******************** PrintR ********************
 
 // questo metodo stampa solo i raggi cellulari su file
-void CellsSystem::PrintR(bool isBinary)
+void vbl::CellsSystem::PrintR(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2287,7 +2277,7 @@ void CellsSystem::PrintR(bool isBinary)
 //  ******************** PrintPhase ********************
 
 // questo metodo stampa il codice della fase cellulare
-void CellsSystem::PrintPhase(bool isBinary)
+void vbl::CellsSystem::PrintPhase(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2303,7 +2293,7 @@ void CellsSystem::PrintPhase(bool isBinary)
 //  ******************** PrintType ********************
 
 // questo metodo stampa il nome del CellType
-void CellsSystem::PrintType(bool isBinary)
+void vbl::CellsSystem::PrintType(bool isBinary)
 {
     for(unsigned long k=0; k<ncells; k++)
     {
@@ -2322,7 +2312,7 @@ void CellsSystem::PrintType(bool isBinary)
 //  ******************** PrintVar ********************
 
 // questo metodo stampa variabili importanti dentro le cellule
-void CellsSystem::PrintVar(bool isBinary)
+void vbl::CellsSystem::PrintVar(bool isBinary)
 {
 	// G
 	for(unsigned long k=0; k<ncells; k++)
@@ -2605,7 +2595,7 @@ void CellsSystem::PrintVar(bool isBinary)
 //  ******************** PrintEnv ********************
 
 // questo metodo stampa i dati ambientali essenziali
-void CellsSystem::PrintEnv(bool isBinary)
+void vbl::CellsSystem::PrintEnv(bool isBinary)
 {
 	double EnvVol = (double)Env.GetEnvironmentvolume(); 
 	double concG = (double)(Env.GetEnvironmentG()/Env.GetEnvironmentvolume());
@@ -2633,7 +2623,7 @@ void CellsSystem::PrintEnv(bool isBinary)
 // funzione che calcola le statistiche ad ogni passo
 //
 // 
-void CellsSystem::StepStat( bool reset_stat )
+void vbl::CellsSystem::StepStat( bool reset_stat )
 {
 	
 	if(reset_stat)

@@ -9,16 +9,7 @@
  *
  */
 
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
 
 
 // ***************************************************************
@@ -32,7 +23,7 @@
 // 
 // Note that in the current version, Dynamics is not an interface for the GetForces and NewPositionsAndVelocities methods
 //
-void CellsSystem::Dynamics( )
+void vbl::CellsSystem::Dynamics( )
 {
 
 
@@ -49,7 +40,7 @@ void CellsSystem::Dynamics( )
 }
 
 // Calculating force between cells in the current configuration
-void CellsSystem::GetForces()
+void vbl::CellsSystem::GetForces()
 {
 
 	// ridimensionamento dei vettori
@@ -139,7 +130,7 @@ void CellsSystem::GetForces()
 
 
 // Calculating the position and velocity of each cell (it is calculated only if there are at least two cells)
-void CellsSystem::NewPositionsAndVelocities( )
+void vbl::CellsSystem::NewPositionsAndVelocities( )
 {
 	
 	// inizializzazione dei vettori
@@ -328,7 +319,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 
 
 // dinamica dummy
-void CellsSystem::DummyDynamics( )
+void vbl::CellsSystem::DummyDynamics( )
 {
 	maxdr = 0;	// spostamento massimo
 }

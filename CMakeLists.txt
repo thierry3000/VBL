@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
 project(VBL)
+#### chose Release a default
+if( NOT CMAKE_BUILD_TYPE )
+  set( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo
+MinSizeRel."
+       FORCE )
+endif()
+
 ###############  set up spack stuff  ##############
 
 # enable @rpath in the install name for any shared library being built
@@ -100,5 +108,5 @@ message("set content of mylib: ${myLibs}")
 message("set comiler flags: ${CMAKE_CXX_FLAGS}")
 message("CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 
-
+include_directories(/daten/tc_install/include)
 add_subdirectory(src)

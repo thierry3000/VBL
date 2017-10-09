@@ -152,3 +152,8 @@ double vbl::BloodVessel::DistanceFromVessel( const ANNpoint &x1)
     return(bvd);
     
 }
+vbl::BloodVessel& vbl::BloodVessel::operator=(const vbl::BloodVessel& bv)
+{
+  cout<< "here error" <<endl;
+}
+

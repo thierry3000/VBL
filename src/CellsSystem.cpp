@@ -171,7 +171,7 @@
 //   return 0;
 // }
 
-unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
+unsigned int vbl::CellsSystem::runMainLoop(boost::optional<double> endtime)
 {
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;
@@ -362,7 +362,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 
 
 // Allocation / redeployment of the dynamic reserve
-void CellsSystem::Set_reserve(const int reserve)
+void vbl::CellsSystem::Set_reserve(const int reserve)
 {
 
 	name.reserve(reserve);
@@ -535,7 +535,7 @@ void CellsSystem::Set_reserve(const int reserve)
 
 
 // assignment/reassignment of dynamic reserve to blood vessel vector
-void CellsSystem::Set_BV_reserve(const int reserve_bv)
+void vbl::CellsSystem::Set_BV_reserve(const int reserve_bv)
 {
 	BloodVesselVector.reserve(reserve_bv);
 }
@@ -544,7 +544,7 @@ void CellsSystem::Set_BV_reserve(const int reserve_bv)
 // aggiunta di nuove cellule non inizializzate
 //  1. incrementa ncells 
 //  2. ridimensiona i vettori
-void CellsSystem::AddCells( const int newcells )
+void vbl::CellsSystem::AddCells( const int newcells )
 {
 
 	ncells += newcells;				// aggiornamento del numero di cellule
@@ -721,7 +721,7 @@ void CellsSystem::AddCells( const int newcells )
 
 
 // aggiunta di una nuova cellula inizializzata
-void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cEnv)
+void vbl::CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cEnv)
 {
 
 	// qui si incrementa il numero di cellule nel sistema (incrementa anche il contatore ncells)
@@ -769,7 +769,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	
 	G[k] = 0.;														// glucosio
 	G6P[k] = 0.4 * G[k] * volume[k];								// G6P
-	O2[k] = (cEnv->O2/cEnv->volume0) * volume[k];					// ossigeno
+	O2[k] = (cEnv->GetEnvironmentO2()/cEnv->GetEnvironmentvolume0()) * volume[k];					// ossigeno
 	store[k] = STOCK_MAX * (M[k]*0.01);								// contenuto della riserva proporzionale al numero di mitocondri
 	A[k] = A_CELL;													// quantità iniziale degli altri nutrienti
 	AcL[k] = 0.;													// acido lattico
@@ -809,9 +809,9 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	// spazio extracellulare
 	volume_extra[k] = surface[k]*(type[k]->extvolume_thickness)*(type[k]->extvolume_fraction);		// si inizializza il vol. extracell.
 	
-	G_extra[k] = (cEnv->G/cEnv->volume0) * volume_extra[k];			// si inizializzano le quantita' a un valore corrispondente a quello ambientale
-	A_extra[k] = (cEnv->A/cEnv->volume0) * volume_extra[k];
-	AcL_extra[k] = (cEnv->AcL/cEnv->volume0) * volume_extra[k];
+	G_extra[k] = (cEnv->GetEnvironmentG()/cEnv->GetEnvironmentvolume0()) * volume_extra[k];			// si inizializzano le quantita' a un valore corrispondente a quello ambientale
+	A_extra[k] = (cEnv->GetEnvironmentA()/cEnv->GetEnvironmentvolume0()) * volume_extra[k];
+	AcL_extra[k] = (cEnv->GetEnvironmentAcL()/cEnv->GetEnvironmentvolume0()) * volume_extra[k];
 	// CO2_extra = (cEnv->CO2/cEnv->volume0) * volume_extra;
 	
 	pH[k] =  7.5443-(AcL_extra[k]/volume_extra[k])/BufCapEnv;
@@ -851,7 +851,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 }
 
 // metodo di copia: copia tutto meno le caratteristiche geometriche-topologiche e le variabili temporanee (che restano non-inizializzate)
-int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int kstart, const unsigned long int kstop)
+int vbl::CellsSystem::CopyCell( const unsigned long int k, const unsigned long int kstart, const unsigned long int kstop)
 {
 
 	// controllo di consistenza dell'indice k
@@ -981,7 +981,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
 }
 
 // Copy method: copy all the geometric-topological features and temporary variables (which remain non-initialized), also modifies the cell type
-int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int kstart, const unsigned long int kstop, CellType* newtype)
+int vbl::CellsSystem::CopyCell( const unsigned long int k, const unsigned long int kstart, const unsigned long int kstop, CellType* newtype)
 {
     
     // controllo di consistenza dell'indice k
@@ -1112,7 +1112,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
 
 
 // metodo di copia: replica la cellula k-esima inserendone una copia alla fine (tutto tranne le caratteristiche geometriche-topologiche)
-int CellsSystem::ReplicateCell( const unsigned long int k )
+int vbl::CellsSystem::ReplicateCell( const unsigned long int k )
 {
 	
 	// controllo di consistenza dell'indice k
@@ -1132,7 +1132,7 @@ int CellsSystem::ReplicateCell( const unsigned long int k )
 }
 
 // metodo di copia: replica la cellula k-esima inserendone una copia alla fine (tutto tranne le caratteristiche geometriche-topologiche), inoltre questa versione cambia il tipo cellulare
-int CellsSystem::ReplicateCell( const unsigned long int k, CellType* newtype )
+int vbl::CellsSystem::ReplicateCell( const unsigned long int k, CellType* newtype )
 {
     
     // controllo di consistenza dell'indice k
@@ -1153,7 +1153,7 @@ int CellsSystem::ReplicateCell( const unsigned long int k, CellType* newtype )
 
 
 // metodo di copia: replica la cellula k-esima inserendo n copie alla fine (tutto tranne le caratteristiche geometriche-topologiche)
-int CellsSystem::ReplicateCell( const unsigned long int k, const unsigned long int n )
+int vbl::CellsSystem::ReplicateCell( const unsigned long int k, const unsigned long int n )
 {
 
 	//if( k < 0 || k > ncells-1 )
@@ -1177,7 +1177,7 @@ int CellsSystem::ReplicateCell( const unsigned long int k, const unsigned long i
 
 // stampa su file di una singola cellula
 
-void CellsSystem::PrintCell( ostream& stream, const unsigned long int k )
+void vbl::CellsSystem::PrintCell( ostream& stream, const unsigned long int k )
 {
 	stream << setprecision(10);
 	stream << "name: " << name[k] << endl;
@@ -1302,7 +1302,7 @@ void CellsSystem::PrintCell( ostream& stream, const unsigned long int k )
 
 // stampa dei dati sotto forma di un'unica stringa leggibile da un programma spreadsheet
 //
-void CellsSystem::PrintCellData( const unsigned long int k, ofstream& stream, long int nrec )
+void vbl::CellsSystem::PrintCellData( const unsigned long int k, ofstream& stream, long int nrec )
 {
 
 	static bool first_print=true;
@@ -1510,7 +1510,7 @@ righe temporanemente eliminate
 //  1. ridimensiona i vettori utilizzando il metodo erase (questo non e' il metodo piu' efficiente, ma la sua funzionalita' e' chiara, 
 //     e per il momento uso questo)
 //  2. decrementa ncells 
-void CellsSystem::RemoveCell( const unsigned long int n )
+void vbl::CellsSystem::RemoveCell( const unsigned long int n )
 {
 
 	name.erase(name.begin()+n);
@@ -1684,12 +1684,37 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	
 }
 
-void CellsSystem::Add_BloodVessel_at(uint index, vbl::BloodVessel NewBV)
+// void CellsSystem::Add_BloodVessel_at(uint index, vbl::BloodVessel *NewBV)
+// {
+//   nbv++;
+//   //Vector()[index] = NewBV;
+//   //BloodVesselVector.push_back(NewBV);
+//   BloodVesselVector[index] = vbl::BloodVessel(*NewBV); /*cout << "New blood vessel in CellsSystem" << endl;*/
+//   //bloodVesselMap[index] = NewBV;
+// }
+
+//  ******************** Timing ********************
+//
+// funzione che restituisce il tempo trascorso in secondi
+//
+// 
+double vbl::CellsSystem::Timing( bool reset )
 {
-  nbv++;
-  //Get_BloodVesselVector()[index] = NewBV;
-  BloodVesselVector.push_back(NewBV);
-  //BloodVesselVector[index] = NewBV; /*cout << "New blood vessel in CellsSystem" << endl;*/
+
+	if(reset) 
+		{
+		time(&time_old);
+		timing = 0.;
+		}
+	else
+		{
+		time(&time_now);
+		timing = difftime(time_now, time_old);
+		time_old = time_now;
+		}
+		
+	return timing;
+
 }
 
 

@@ -8,18 +8,7 @@
  *  This file takes care of the geometry via CGAL
  *
  */
-
-
-#include "sim.h"
-
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
 
 
 // ************ Part of the CGAL interface ************ //
@@ -31,7 +20,7 @@
 // The main method for calculating the structure of Delaunay
 // This method isolates all calls to CGAL
 //
-void CellsSystem::Geometry()
+void vbl::CellsSystem::Geometry()
 {
 
   unsigned long k;
@@ -221,8 +210,10 @@ void CellsSystem::Geometry()
 	  {
 	    double x0[3]; // position on blood vessel axis closest to cell
 	    double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
+	    //double dbv = bloodVesselMap[nvessel].DistanceFromVessel( cellpos, x0 );
 	    // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
-	    if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k] ) 
+	    if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k] )
+	    //if( dbv < bloodVesselMap[nvessel].GetBloodVesselR() + r[k] )
 	    {
 	      /** note the shift, which is done to use the value 0
 	       * as false and otherwise use the true value 
@@ -247,7 +238,7 @@ void CellsSystem::Geometry()
 }
 
 // Minimum calculations in case of dispersed cells
-void CellsSystem::NoGeometry()
+void vbl::CellsSystem::NoGeometry()
 {
 
 	for(unsigned long k=0; k<ncells; k++)

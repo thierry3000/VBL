@@ -11,7 +11,15 @@
 // and methods for operations on all cells
 #ifndef CELLSSYSTEM_H
 #define CELLSSYSTEM_H // header guard
+#include "sim.h"
 
+#include "InputFromFile.h"
+#include "CellType.h"
+#include "Environment.h"
+#include "EnvironmentalSignals.h"
+#include "geom-2.h"
+#include "BloodVessel.h"
+#include "Utilities.h"
 #include "BloodVessel.h"
 // to use new and old version of TimersAdvance and TimersAdvanceUntil simultaniously
 #include <boost/optional.hpp>
@@ -19,6 +27,7 @@
 //for timing output
 #include <iostream>
 #include <fstream>
+#include <boost/unordered_map.hpp>
 #define W_timing
 // #ifndef NDEBUG
 //   // means debugging
@@ -29,6 +38,7 @@ struct ReadInParameters
   /* imulation with dispersed cells (0) or full 3D (1) */
   int sim_type;
 };
+namespace vbl{
 class CellsSystem
 {
 
@@ -479,7 +489,9 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 // *** dati associati ai vasi sanguigni
     
     int nbv;                                // numero di vasi sanguigni
+    // the vector structure messes with the memory
     std::vector<vbl::BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
+    //boost::unordered_map<uint, vbl::BloodVessel> bloodVesselMap;
     
 // *** fine dei dati associati a vasi sanguigni
 
@@ -499,10 +511,11 @@ void Set_BV_reserve(const int reserve); // blood vessel vector
 
 // builder that builds a cell array of no length, but assigns a dynamic reserve to carriers
 // Note that the creation of the CellsSystem also resets cell counts, types, blood vessels
-CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); Set_BV_reserve(reserve_bv); };
+//CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); Set_BV_reserve(reserve_bv); };
+CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); };
 // default builder, builds a set of cells of zero length and assigns the standard dynamic reserve to the carriers
 CellsSystem() { ncells = 0; ntypes = 0; nbv=0; Set_reserve(RESERVE); Set_BV_reserve(RESERVE_BV); };
-
+//CellsSystem() { ncells = 0; ntypes = 0; nbv=0; Set_reserve(RESERVE); };
 // aggiunta di cellule non inizializzate al sistema
 void AddCells( const int newcells );
 // Adding a single standardized standardized cell
@@ -757,7 +770,15 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_n_mitosis(const vector<int>& newn_mitosis ) { n_mitosis = newn_mitosis; };
 	void Set_n_mitosis(const int k, const int newn_mitosis ) { n_mitosis[k] = newn_mitosis; };
 
-	void Add_BloodVessel_at(uint index, vbl::BloodVessel NewBV ); 
+	void Add_BloodVessel_at(uint index, vbl::BloodVessel *NewBV );
+// 	{
+// 	  nbv++;
+//   //Vector()[index] = NewBV;
+//   //BloodVesselVector.push_back(NewBV);
+//   BloodVesselVector[index] = vbl::BloodVessel(*NewBV); /*cout << "New blood vessel in CellsSystem" << endl;*/
+//   //bloodVesselMap[index] = NewBV;
+// 	}
+// 	; 
     
     // geometria, cinematica e dinamica
 
@@ -1009,6 +1030,9 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	int Get_n_mitosis( const unsigned long int k ) { return n_mitosis[k]; };
 
 	vector<vbl::BloodVessel> Get_BloodVesselVector() { return BloodVesselVector; };
+	vbl::BloodVessel Get_BloodVessel(const int k) { return BloodVesselVector[k];}
+	//boost::unordered_map<uint, vbl::BloodVessel> Get_BloodVesselMap() { return bloodVesselMap; };
+	//vbl::BloodVessel* Get_BloodVessel(int k) { return &bloodVesselMap[k];}
 	int Get_nbv() { return nbv; };
 
 	vector<double> Get_x() { return x; };
@@ -1416,6 +1440,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 
 // *** fine dei metodi per la gestione della parte biofisica *** 
 
+
 };
 
 
@@ -1425,6 +1450,6 @@ inline double CellsSystem::Distance(const int j, const int k)
 {
 	return sqrt( SQR(x[j]-x[k]) + SQR(y[j]-y[k]) + SQR(z[j]-z[k]) );
 }
-
+}//end namespace vbl
 #endif //#ifndef CELLSSYSTEM_H
 
