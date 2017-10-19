@@ -770,7 +770,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_n_mitosis(const vector<int>& newn_mitosis ) { n_mitosis = newn_mitosis; };
 	void Set_n_mitosis(const int k, const int newn_mitosis ) { n_mitosis[k] = newn_mitosis; };
 
-	void Add_BloodVessel_at(uint index, vbl::BloodVessel *NewBV );
+	void Add_BloodVessel_at(uint index, vbl::BloodVessel &NewBV );
 // 	{
 // 	  nbv++;
 //   //Vector()[index] = NewBV;

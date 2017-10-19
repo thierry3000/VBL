@@ -15,13 +15,12 @@
 
 // for old compilers we need some tricks
 #include<features.h> // gives various information on the build system
-#if __GNUC_PREREQ(4,9)
+#if __GNUC_PREREQ(5,0)
     // means gnu compiler is higher than 4.5 and fully c++11 compatible
     // we don't need to hacking
   #include <random> // std random number generator
 #else
   //old fashioned
-  #define OLD_RANDOM
   #include<cstdlib>
   #include<time.h>
 #endif

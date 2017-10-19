@@ -115,7 +115,8 @@ double vbl::BloodVessel::DistanceFromVessel( const ANNpoint &x1)
     double tp = 0;
     double nrm = 0;
     double bvd = 0;
-    std::array<double,3> x0 = {0.0,0.0,0.0};
+    //std::array<double,3> x0 = {0.0,0.0,0.0};
+    double x0 [3] = {0.0,0.0,0.0};
     
     for(int i=0; i<3; i++) // calcolo di t0
     {

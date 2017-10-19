@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
+# c++ 11 for newer cmake
+set(CMAKE_CXX_STANDARD 11)
+message("compiler identified: ${CMAKE_CXX_COMPILER_VERSION}")
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-4.9.2 -std=c++0x")
+endif()
 project(VBL)
 #### chose Release a default
 if( NOT CMAKE_BUILD_TYPE )
@@ -10,6 +16,7 @@ endif()
 
 ###############  set up spack stuff  ##############
 
+if(FALSE)
 # enable @rpath in the install name for any shared library being built
 # note: it is planned that a future version of CMake will enable this by default
 set(CMAKE_MACOSX_RPATH 1)
@@ -41,12 +48,13 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 # If we're not running with Spack, this does nothing...
 include_directories($ENV{SPACK_TRANSITIVE_INCLUDE_PATH})
 
+endif()
 ###############  end spack stuff  ##############
 
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
 #always use new c++11 the old way
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 ### it is NOT elegant, but we do not know how to handle gmp on mac, 
 ### we set the compiler flags manually there
