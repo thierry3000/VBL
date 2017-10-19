@@ -377,6 +377,7 @@ void EnvironmentChange(Environment& env, Environment& env_delta)
 
 
 // overloading dell'operatore di output su file
+namespace vbl{
 std::ostream& operator<<(std::ostream& stream, Environment& cEnvironment)
 {
 
@@ -399,8 +400,8 @@ std::ostream& operator<<(std::ostream& stream, Environment& cEnvironment)
 	stream << "Radiazione di fondo: " <<  cEnvironment.DoseRate << " Gy/s" << std::endl;										// rate di radiazione nell'ambiente (Gy/s)
 #endif
 	return stream;
-
 }
+}//namespace vbl{
 
 void Environment::PrintEnvironmentData(std::ofstream& stream, long int nrec)
 {

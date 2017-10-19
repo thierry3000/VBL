@@ -465,115 +465,117 @@ void PrintCellType(CellType &cCellType)
 	
 }
 
-// // funzione di stampa semplice (overloaded <<) 
-// std::ostream& operator<<(std::ostream& stream, CellType& cCellType)
-// {
-// 	int k;
-// 	
-// 	stream << " cell type: " << cCellType.name << "\n" << std::endl;
-// 	stream << " instances: " << cCellType.n_instances << "\n" << std::endl;	
-// 
-// 	stream << " VMAX_1: " << cCellType.VMAX_1 << " \tpg*s^-1*micron^-2" << std::endl;
-// 	stream << " VMAX_2: " << cCellType.VMAX_2 << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_22: " << cCellType.VMAX_22 << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_A: " << cCellType.VMAX_A << " \tpg*s^-1*micron^-2" << std::endl;
-// 	stream << " VMAX_P: " << cCellType.VMAX_P << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_P_A: " << cCellType.VMAX_P_A << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_P_ATP: " << cCellType.VMAX_P_ATP << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_DNA: " << cCellType.VMAX_DNA << " \tmol*s^-1" << std::endl;
-// 	stream << " VMAX_DNA_A: " << cCellType.VMAX_DNA_A << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_DNA_ATP: " << cCellType.VMAX_DNA_ATP << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_M: " << cCellType.VMAX_M << " \tmitocondri*s^-1" << std::endl;
-// 	stream << " VMAX_M_A: " << cCellType.VMAX_M_A << " \tpg*s^-1" << std::endl;
-// 	stream << " VMAX_M_ATP: " << cCellType.VMAX_M_ATP << " \tpg*s^-1" << std::endl;
-// 	stream << " Km1: " << cCellType.Km1 << " \tpg*micron^-3" << std::endl;
-// 	stream << " Km2: " << cCellType.Km2 << " \tpg*micron^-3" << std::endl;
-// 	stream << " Km22: " << cCellType.Km22 << " \tpg*micron^-3" << std::endl;
-// 	stream << " KmA: " << cCellType.KmA << " \tpg*micron^-3" << std::endl;
-// 	stream << " Ka: " << cCellType.Ka << " \tpg*micron^-3" << std::endl;
-// 	stream << " Kmc: " << cCellType.Kmc << " \tpg*micron^-3" << std::endl;
-// 	stream << " Kmd: " << cCellType.Kmd << " \tpg*micron^-3" << std::endl;
-// 	stream << " KmO2: " << cCellType.KmO2 << " \tpg*micron^-3" << std::endl;
-// 	stream << " Kmp: " << cCellType.Kmp << " \t(pg*micron^-3)^2" << std::endl;
-// 	stream << " KmDNA: " << cCellType.KmDNA << " \t(pg*micron^-3)^2" << std::endl;
-// 	stream << " KmM: " << cCellType.KmM << " \t(pg*micron^-3)^2" << std::endl;
-// 	stream << " coeffg1: " << cCellType.coeffg1 << " \ts^-1" << std::endl;
-// 	stream << " coeffg2: " << cCellType.coeffg2 << " \ts^-1" << std::endl;
-// 	stream << " coeffg3: " << cCellType.coeffg3 << " \ts^-1" << std::endl;
-// 	stream << " coeffr1: " << cCellType.coeffr1 << " \ts^-1" << std::endl;
-// 	stream << " ATPSt: " << cCellType.ATPSt << " \tpg*s-1 ATP standard" << std::endl;
-// 	stream << " Vmin: " << cCellType.Vmin << " \tmicron^3" << std::endl;
-// 	stream << " DVap: " << cCellType.DVap << " \ts^-1 DVap coefficiente di variazione di volume (shrinkage) per cellule apoptotiche" << std::endl;
-// 	stream << " fATPmin: " << cCellType.fATPmin << " \t frazione del volume cellulare e mitocondriale accessibile all'ATP" << std::endl;
-// 	stream << " pHimin: " << cCellType.pHimin << " \tpH intracellulare minimo tollerabile" << std::endl;
-// 	stream << " VmaxAL0: " << cCellType.VmaxAL0 << " \tpg*s^-1*micron^-2" << std::endl;
-// 	stream << " KmAL: " << cCellType.KmAL << " \tpg*micron^-3" << std::endl;
-// 	stream << " M_T_MEAN: " << cCellType.M_T_MEAN << " \ts durata media della fase M" << std::endl;
-// 	stream << " DNA_MAX_SPREAD: " << cCellType.DNA_MAX_SPREAD << " \tfluttuazione massima di DNA_FRACTION nella singola cellula" << std::endl;
-// 	stream << " v_WORK: " << cCellType.v_WORK << " \tpg/s/micron^3 consumo di ATP per sostenere il funzionamento generale della cellula" << std::endl;
-// 	stream << " PHASE_SPREAD: " << cCellType.PHASE_SPREAD << " \ts fluttuazione della durata di G2 e M dovuta ad effetti meccanici" << std::endl;
-// 	stream << " k_pRb: " << cCellType.k_pRb << " \tk soglia pRB" << std::endl;
-// 	stream << " N_pRb: " << cCellType.N_pRb << " \tN siti pRb" << std::endl;
-// 	stream << " pRb_ONOFFratio: " << cCellType.pRb_ONOFFratio << " \tk_ON/k_OFF in unita' di concentrazione molare per la fosforilazione della pRb" << std::endl;
-// 	stream << " pRb_fraction: " << cCellType.pRb_fraction << " \tfrazione delle proteine che e' pRb" << std::endl;
-// 	stream << " cyclinD_fraction: " << cCellType.cyclinD_fraction << " \tfrazione delle proteine che e' ciclina D" << std::endl;
-// 	stream << " cyclinE_fraction: " << cCellType.cyclinE_fraction << " \tfrazione delle proteine che e' ciclina E" << std::endl;
-// 	stream << " cyclinX_fraction: " << cCellType.cyclinX_fraction << " \tfrazione delle proteine che e' ciclina A + B" << std::endl;
-// 	stream << " ConcS_0: " << cCellType.ConcS_0 << " \tconcentrazione MOLARE iniziale della sostanza S" << std::endl;
-// 	stream << " Thresh_S_start: " << cCellType.Thresh_S_start << " \tfrazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1m-G1p" << std::endl;
-// 	stream << " Thresh_S_stop: " << cCellType.Thresh_S_stop << " \tfrazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1p-S" << std::endl;
-// 	stream << " k3MM: " << cCellType.k3MM << " \ts^-1 rate per la reazione MM downstream" << std::endl;
-// 	stream << " KmMM: " << cCellType.KmMM << " \tconcentrazione MOLARE della Km per la MM downstream" << std::endl;
-// 	stream << " NUCLEAR_OBJ: " << cCellType.NUCLEAR_OBJ << " \tnumero di pseudooggetti legati alla matrice nucleare che tengono legata la pRb e che si separano a meta' circa al momento della mitosi (NB. la fluttuazione relativa e' uguale a 1/sqrt(NUCLEAR_OBJ) )" << std::endl;
-// 	stream << " ClusteringFactor: " << cCellType.ClusteringFactor << " \tnumero di compartimenti in cui si aggregano i mitocondri (costruzione fatta per adattare la stocasticita' a quella osservata)" << std::endl;
-// 	stream << " CycXThr: " << cCellType.CycXThr << " \tpg quantita' di ciclina A+B che definisce la soglia del checkpoint G2-M" << std::endl;
-// 	stream << " Vrif: " << cCellType.Vrif << " \tV potenziale di Nernst in condizioni normali (interno a pH 7.2, esterno a pH 7.54)" << std::endl;
-// 	stream << " HPumpEff: " << cCellType.HPumpEff << " \tinverso dell'efficienza del meccanismo di espulsione degli H+ (10 = efficienza 0.1)" << std::endl;
-// 	stream << " DiffH: " << cCellType.DiffH << " \tmicron^2/s Coefficiente di diffusione per gli H+" << std::endl;
-// 	stream << " C1: " << cCellType.C1 << "  \tparametri che collegano i mitocondri al volume" << std::endl;
-// 	stream << " C2: " << cCellType.C2 << "  \tparametri che collegano i mitocondri al volume" << std::endl;
-// 	stream << " a_R: " << cCellType.a_R << " \t(pg/micron^3)^-1 coefficiente che collega la concentrazione dell'AcL al danno endogeno" << std::endl;
-// 	stream << " alpha_R: ";
-// 		for(k=0; k<= Nphase-2; k++)
-// 			stream << cCellType.alpha_R[k] << ", ";
-// 		stream << cCellType.alpha_R[Nphase-1] << " \tGy^-1" << std::endl;
-// 	stream << " beta_R: ";
-// 		for(k=0; k<= Nphase-2; k++)
-// 			stream << cCellType.beta_R[k] << ", ";
-// 		stream << cCellType.beta_R[Nphase-1] << " \tGy^-2" << std::endl;
-// 	stream << " YoungModulus: " << cCellType.YoungMod << " \tpg/(micron·s^2) modulo di Young cellulare" << std::endl;		
-// 	stream << " PoissonRatio: " << cCellType.PoissonRatio << " \trapporto di Poisson cellulare" << std::endl;		
-// 	stream << " density: " << cCellType.density << " \tpg/micron^3 densita' cellulare" << std::endl;
-// 	stream << " viscosity: " << cCellType.viscosity << " \tpg/(micron·s) viscosita' citoplasmatica" << std::endl;
-// 	stream << " Mphase_correction: " << cCellType.Mphase_correction << " \tcorrezione al range della funzione di viscosita' durante la fase M e G1m" << std::endl;	
-// 	stream << " adhesion_range: " << cCellType.adhesion_range << " \tmicron range della forza di adesione" << std::endl;
-// 	stream << " adhesion_decay: " << cCellType.adhesion_decay << " \t rate di decadimento della forza di adesione" << std::endl;
-// 	stream << " packing_factor: " << cCellType.packing_factor << " \tfattore di impacchettamento" << std::endl;
-// 	stream << " extension_coeff: " << cCellType.extension_coeff << " \tcoefficiente di estensione" << std::endl;
-// 	stream << " extvolume_thickness: " << cCellType.extvolume_thickness << " \tmicron semispessore della matrice extracellulare" << std::endl;
-// 	stream << " extvolume_compression: " << cCellType.extvolume_compression << " \tmicron^-1 fattore di compressibilita' della matrice extracellulare" << std::endl;
-// 	stream << " extvolume_fraction: " << cCellType.extvolume_fraction << " \tfrazione di volume della matrice extracellulare utilizzabile per la diffusione" << std::endl;
-// 
-// 	stream << " tph_slope: " << cCellType.tph_slope << " \t tuning dei rates in funzione del pH interno" << std::endl;
-// 	stream << " tph_thr: " << cCellType.tph_thr << " \t" << std::endl;
-// 	stream << " tp11_slope: " << cCellType.tp11_slope << " \t tuning di p11 in funzione del pH interno" << std::endl;
-// 	stream << " tp11_thr: " << cCellType.tp11_thr << " \t" << std::endl;
-// 	stream << " a2c_slope: " << cCellType.a2c_slope << " \t correzione al trasporto di glucosio da esterno a interno" << std::endl;
-// 	stream << " a2c_thr: " << cCellType.a2c_thr << " \t" << std::endl;
-// 	stream << " c2a_slope: " << cCellType.c2a_slope << " \t correzione al trasporto di glucosio da interno ad esterno" << std::endl;
-// 	stream << " c2a_thr: " << cCellType.c2a_thr << " \t" << std::endl;
-// 	stream << " a2cA_slope: " << cCellType.a2cA_slope << " \t correzione al trasporto di glutammina da esterno a interno" << std::endl;
-// 	stream << " a2cA_thr: " << cCellType.a2cA_thr << " \t" << std::endl;
-// 	stream << " c2aA_slope: " << cCellType.c2aA_slope << " \t correzione al trasporto di glutammina da interno ad esterno" << std::endl;
-// 	stream << " c2aA_thr: " << cCellType.c2aA_thr << " \t" << std::endl;
-// 	stream << " a2cAcL_slope: " << cCellType.a2cAcL_slope << " \t correzione al trasporto di AcL da esterno a interno" << std::endl;
-// 	stream << " a2cAcL_thr: " << cCellType.a2cAcL_thr << " \t" << std::endl;
-// 	stream << " c2aAcL_slope: " << cCellType.c2aAcL_slope << " \t correzione al trasporto di AcL da interno a esterno" << std::endl;
-// 	stream << " c2aAcL_thr: " << cCellType.c2aAcL_thr << " \t" << std::endl;
-// 
-// 	return stream;
-// 
-// }
+// // funzione di stampa semplice (overloaded <<)
+namespace vbl{ // see https://stackoverflow.com/questions/10712380/undefined-reference-to-operator
+std::ostream& operator<<(std::ostream& stream, CellType const & cCellType)
+{
+	int k;
+	
+	stream << " cell type: " << cCellType.name << "\n" << std::endl;
+	stream << " instances: " << cCellType.n_instances << "\n" << std::endl;	
+
+	stream << " VMAX_1: " << cCellType.VMAX_1 << " \tpg*s^-1*micron^-2" << std::endl;
+	stream << " VMAX_2: " << cCellType.VMAX_2 << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_22: " << cCellType.VMAX_22 << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_A: " << cCellType.VMAX_A << " \tpg*s^-1*micron^-2" << std::endl;
+	stream << " VMAX_P: " << cCellType.VMAX_P << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_P_A: " << cCellType.VMAX_P_A << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_P_ATP: " << cCellType.VMAX_P_ATP << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_DNA: " << cCellType.VMAX_DNA << " \tmol*s^-1" << std::endl;
+	stream << " VMAX_DNA_A: " << cCellType.VMAX_DNA_A << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_DNA_ATP: " << cCellType.VMAX_DNA_ATP << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_M: " << cCellType.VMAX_M << " \tmitocondri*s^-1" << std::endl;
+	stream << " VMAX_M_A: " << cCellType.VMAX_M_A << " \tpg*s^-1" << std::endl;
+	stream << " VMAX_M_ATP: " << cCellType.VMAX_M_ATP << " \tpg*s^-1" << std::endl;
+	stream << " Km1: " << cCellType.Km1 << " \tpg*micron^-3" << std::endl;
+	stream << " Km2: " << cCellType.Km2 << " \tpg*micron^-3" << std::endl;
+	stream << " Km22: " << cCellType.Km22 << " \tpg*micron^-3" << std::endl;
+	stream << " KmA: " << cCellType.KmA << " \tpg*micron^-3" << std::endl;
+	stream << " Ka: " << cCellType.Ka << " \tpg*micron^-3" << std::endl;
+	stream << " Kmc: " << cCellType.Kmc << " \tpg*micron^-3" << std::endl;
+	stream << " Kmd: " << cCellType.Kmd << " \tpg*micron^-3" << std::endl;
+	stream << " KmO2: " << cCellType.KmO2 << " \tpg*micron^-3" << std::endl;
+	stream << " Kmp: " << cCellType.Kmp << " \t(pg*micron^-3)^2" << std::endl;
+	stream << " KmDNA: " << cCellType.KmDNA << " \t(pg*micron^-3)^2" << std::endl;
+	stream << " KmM: " << cCellType.KmM << " \t(pg*micron^-3)^2" << std::endl;
+	stream << " coeffg1: " << cCellType.coeffg1 << " \ts^-1" << std::endl;
+	stream << " coeffg2: " << cCellType.coeffg2 << " \ts^-1" << std::endl;
+	stream << " coeffg3: " << cCellType.coeffg3 << " \ts^-1" << std::endl;
+	stream << " coeffr1: " << cCellType.coeffr1 << " \ts^-1" << std::endl;
+	stream << " ATPSt: " << cCellType.ATPSt << " \tpg*s-1 ATP standard" << std::endl;
+	stream << " Vmin: " << cCellType.Vmin << " \tmicron^3" << std::endl;
+	stream << " DVap: " << cCellType.DVap << " \ts^-1 DVap coefficiente di variazione di volume (shrinkage) per cellule apoptotiche" << std::endl;
+	stream << " fATPmin: " << cCellType.fATPmin << " \t frazione del volume cellulare e mitocondriale accessibile all'ATP" << std::endl;
+	stream << " pHimin: " << cCellType.pHimin << " \tpH intracellulare minimo tollerabile" << std::endl;
+	stream << " VmaxAL0: " << cCellType.VmaxAL0 << " \tpg*s^-1*micron^-2" << std::endl;
+	stream << " KmAL: " << cCellType.KmAL << " \tpg*micron^-3" << std::endl;
+	stream << " M_T_MEAN: " << cCellType.M_T_MEAN << " \ts durata media della fase M" << std::endl;
+	stream << " DNA_MAX_SPREAD: " << cCellType.DNA_MAX_SPREAD << " \tfluttuazione massima di DNA_FRACTION nella singola cellula" << std::endl;
+	stream << " v_WORK: " << cCellType.v_WORK << " \tpg/s/micron^3 consumo di ATP per sostenere il funzionamento generale della cellula" << std::endl;
+	stream << " PHASE_SPREAD: " << cCellType.PHASE_SPREAD << " \ts fluttuazione della durata di G2 e M dovuta ad effetti meccanici" << std::endl;
+	stream << " k_pRb: " << cCellType.k_pRb << " \tk soglia pRB" << std::endl;
+	stream << " N_pRb: " << cCellType.N_pRb << " \tN siti pRb" << std::endl;
+	stream << " pRb_ONOFFratio: " << cCellType.pRb_ONOFFratio << " \tk_ON/k_OFF in unita' di concentrazione molare per la fosforilazione della pRb" << std::endl;
+	stream << " pRb_fraction: " << cCellType.pRb_fraction << " \tfrazione delle proteine che e' pRb" << std::endl;
+	stream << " cyclinD_fraction: " << cCellType.cyclinD_fraction << " \tfrazione delle proteine che e' ciclina D" << std::endl;
+	stream << " cyclinE_fraction: " << cCellType.cyclinE_fraction << " \tfrazione delle proteine che e' ciclina E" << std::endl;
+	stream << " cyclinX_fraction: " << cCellType.cyclinX_fraction << " \tfrazione delle proteine che e' ciclina A + B" << std::endl;
+	stream << " ConcS_0: " << cCellType.ConcS_0 << " \tconcentrazione MOLARE iniziale della sostanza S" << std::endl;
+	stream << " Thresh_S_start: " << cCellType.Thresh_S_start << " \tfrazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1m-G1p" << std::endl;
+	stream << " Thresh_S_stop: " << cCellType.Thresh_S_stop << " \tfrazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1p-S" << std::endl;
+	stream << " k3MM: " << cCellType.k3MM << " \ts^-1 rate per la reazione MM downstream" << std::endl;
+	stream << " KmMM: " << cCellType.KmMM << " \tconcentrazione MOLARE della Km per la MM downstream" << std::endl;
+	stream << " NUCLEAR_OBJ: " << cCellType.NUCLEAR_OBJ << " \tnumero di pseudooggetti legati alla matrice nucleare che tengono legata la pRb e che si separano a meta' circa al momento della mitosi (NB. la fluttuazione relativa e' uguale a 1/sqrt(NUCLEAR_OBJ) )" << std::endl;
+	stream << " ClusteringFactor: " << cCellType.ClusteringFactor << " \tnumero di compartimenti in cui si aggregano i mitocondri (costruzione fatta per adattare la stocasticita' a quella osservata)" << std::endl;
+	stream << " CycXThr: " << cCellType.CycXThr << " \tpg quantita' di ciclina A+B che definisce la soglia del checkpoint G2-M" << std::endl;
+	stream << " Vrif: " << cCellType.Vrif << " \tV potenziale di Nernst in condizioni normali (interno a pH 7.2, esterno a pH 7.54)" << std::endl;
+	stream << " HPumpEff: " << cCellType.HPumpEff << " \tinverso dell'efficienza del meccanismo di espulsione degli H+ (10 = efficienza 0.1)" << std::endl;
+	stream << " DiffH: " << cCellType.DiffH << " \tmicron^2/s Coefficiente di diffusione per gli H+" << std::endl;
+	stream << " C1: " << cCellType.C1 << "  \tparametri che collegano i mitocondri al volume" << std::endl;
+	stream << " C2: " << cCellType.C2 << "  \tparametri che collegano i mitocondri al volume" << std::endl;
+	stream << " a_R: " << cCellType.a_R << " \t(pg/micron^3)^-1 coefficiente che collega la concentrazione dell'AcL al danno endogeno" << std::endl;
+	stream << " alpha_R: ";
+		for(k=0; k<= Nphase-2; k++)
+			stream << cCellType.alpha_R[k] << ", ";
+		stream << cCellType.alpha_R[Nphase-1] << " \tGy^-1" << std::endl;
+	stream << " beta_R: ";
+		for(k=0; k<= Nphase-2; k++)
+			stream << cCellType.beta_R[k] << ", ";
+		stream << cCellType.beta_R[Nphase-1] << " \tGy^-2" << std::endl;
+	stream << " YoungModulus: " << cCellType.YoungMod << " \tpg/(micron·s^2) modulo di Young cellulare" << std::endl;		
+	stream << " PoissonRatio: " << cCellType.PoissonRatio << " \trapporto di Poisson cellulare" << std::endl;		
+	stream << " density: " << cCellType.density << " \tpg/micron^3 densita' cellulare" << std::endl;
+	stream << " viscosity: " << cCellType.viscosity << " \tpg/(micron·s) viscosita' citoplasmatica" << std::endl;
+	stream << " Mphase_correction: " << cCellType.Mphase_correction << " \tcorrezione al range della funzione di viscosita' durante la fase M e G1m" << std::endl;	
+	stream << " adhesion_range: " << cCellType.adhesion_range << " \tmicron range della forza di adesione" << std::endl;
+	stream << " adhesion_decay: " << cCellType.adhesion_decay << " \t rate di decadimento della forza di adesione" << std::endl;
+	stream << " packing_factor: " << cCellType.packing_factor << " \tfattore di impacchettamento" << std::endl;
+	stream << " extension_coeff: " << cCellType.extension_coeff << " \tcoefficiente di estensione" << std::endl;
+	stream << " extvolume_thickness: " << cCellType.extvolume_thickness << " \tmicron semispessore della matrice extracellulare" << std::endl;
+	stream << " extvolume_compression: " << cCellType.extvolume_compression << " \tmicron^-1 fattore di compressibilita' della matrice extracellulare" << std::endl;
+	stream << " extvolume_fraction: " << cCellType.extvolume_fraction << " \tfrazione di volume della matrice extracellulare utilizzabile per la diffusione" << std::endl;
+
+	stream << " tph_slope: " << cCellType.tph_slope << " \t tuning dei rates in funzione del pH interno" << std::endl;
+	stream << " tph_thr: " << cCellType.tph_thr << " \t" << std::endl;
+	stream << " tp11_slope: " << cCellType.tp11_slope << " \t tuning di p11 in funzione del pH interno" << std::endl;
+	stream << " tp11_thr: " << cCellType.tp11_thr << " \t" << std::endl;
+	stream << " a2c_slope: " << cCellType.a2c_slope << " \t correzione al trasporto di glucosio da esterno a interno" << std::endl;
+	stream << " a2c_thr: " << cCellType.a2c_thr << " \t" << std::endl;
+	stream << " c2a_slope: " << cCellType.c2a_slope << " \t correzione al trasporto di glucosio da interno ad esterno" << std::endl;
+	stream << " c2a_thr: " << cCellType.c2a_thr << " \t" << std::endl;
+	stream << " a2cA_slope: " << cCellType.a2cA_slope << " \t correzione al trasporto di glutammina da esterno a interno" << std::endl;
+	stream << " a2cA_thr: " << cCellType.a2cA_thr << " \t" << std::endl;
+	stream << " c2aA_slope: " << cCellType.c2aA_slope << " \t correzione al trasporto di glutammina da interno ad esterno" << std::endl;
+	stream << " c2aA_thr: " << cCellType.c2aA_thr << " \t" << std::endl;
+	stream << " a2cAcL_slope: " << cCellType.a2cAcL_slope << " \t correzione al trasporto di AcL da esterno a interno" << std::endl;
+	stream << " a2cAcL_thr: " << cCellType.a2cAcL_thr << " \t" << std::endl;
+	stream << " c2aAcL_slope: " << cCellType.c2aAcL_slope << " \t correzione al trasporto di AcL da interno a esterno" << std::endl;
+	stream << " c2aAcL_thr: " << cCellType.c2aAcL_thr << " \t" << std::endl;
+
+	return stream;
+
+}
+}//namespace vbl{
 
 // write binario su file del cell type
 void CellType::WriteCellType( std::ofstream& stream )

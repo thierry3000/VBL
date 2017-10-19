@@ -156,7 +156,7 @@ int main( int argc, char* argv[] )
     CellsSystem.Print2logfile("Cell status at restart of simulation");
   
 
-  CellsSystem.CPU_timer(Start_timer);		// start del CPU timer (e reset del timer degli intertempi)
+  CellsSystem.CPU_timer(timer_button::Start_timer);		// start del CPU timer (e reset del timer degli intertempi)
   CellsSystem.Timing( true );				// reset del timer
   CellsSystem.StepStat( true );			// reset delle statistiche (azzera anche il vettore convergence_fail)
 

@@ -220,6 +220,7 @@ EnvironmentalSignal& EnvironmentalSignal::operator=(const EnvironmentalSignal& e
 }
 
 // overloading dell'operatore di output su file
+namespace vbl{
 std::ostream& operator<<(std::ostream& stream, EnvironmentalSignal& cSignal)
 {
 
@@ -271,6 +272,7 @@ std::ostream& operator<<(std::ostream& stream, EnvironmentalSignal& cSignal)
 	return stream;
 
 }
+}//namespace vbl{
 
 void EnvironmentalSignal::WriteEnvironmentalSignal( std::ofstream& stream)
 {

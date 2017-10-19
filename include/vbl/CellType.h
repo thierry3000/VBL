@@ -17,7 +17,7 @@ class CellType
 
 		// funzione di stampa di tutti i dati della classe
 	friend void PrintCellType( CellType &cCellType);		
-	friend std::ostream& operator<<(std::ostream& s, CellType& cCellType);
+	friend std::ostream& operator<<(std::ostream& s, CellType const & cCellType);
   void PrintCellType( CellType &cCellType);		
 // 	std::ostream& operator<<(std::ostream& s, CellType& cCellType);
 		
@@ -352,6 +352,7 @@ class CellType
 	void ReadCellType( std::ifstream& stream );
 
 };
-
+//std::ostream& operator<<(std::ostream& s, CellType const & cCellType);
 }//namespace vbl{
+//std::ostream& vbl::operator<<(std::ostream& s, CellType const & cCellType);
 #endif //#ifndef CELLTYPE_H
