@@ -6,21 +6,22 @@
 // **********************************************************************************
 #ifndef CELLTYPE_H
 #define CELLTYPE_H  // header guard
-
+#include <iostream>
+#include <string>
 class CellType 
 {
 // friends
 
 		// funzione di stampa di tutti i dati della classe
 		friend void PrintCellType( CellType &cCellType);		
-		friend ostream& operator<<(ostream& s, CellType& cCellType);
+		friend std::ostream& operator<<(std::ostream& s, CellType& cCellType);
 		
 	private: 
 	
 	public:
 		// costruttori
 		CellType();
-		CellType(const string filename);
+		CellType(const std::string filename);
 		// copia
 		CellType(const CellType& cCellType);
 		// nessun distruttore, utilizzo il default del compilatore
@@ -341,8 +342,8 @@ class CellType
 	void Set_c2aAcL_thr( const double newc2aAcL_thr ) { c2aAcL_thr = newc2aAcL_thr; };
 	
 // read and write binario
-	void WriteCellType( ofstream& stream );
-	void ReadCellType( ifstream& stream );
+	void WriteCellType( std::ofstream& stream );
+	void ReadCellType( std::ifstream& stream );
 
 };
 

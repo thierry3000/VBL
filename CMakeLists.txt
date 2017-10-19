@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
+#project(VBL LANGUAGES CXX VERSION 0.0.2 DESCRIPTION "virtual biology lab")
+project(VBL LANGUAGES CXX VERSION 0.0.2)
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
 message("compiler identified: ${CMAKE_CXX_COMPILER_VERSION}")
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-4.9.2 -std=c++0x")
 endif()
-project(VBL)
+
 #### chose Release a default
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING
@@ -53,6 +55,12 @@ endif()
 
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
+
+set (ADDITIONAL_INCLUDE_DIRS CACHE PATH "Additional dirs to search for included files")
+set (ADDITIONAL_LIBRARY_DIRS CACHE PATH "Additional dirs to search for linked libraries")
+include_directories(${ADDITIONAL_INCLUDE_DIRS})
+link_directories(${ADDITIONAL_LIBRARY_DIRS})
+
 #always use new c++11 the old way
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
@@ -116,5 +124,7 @@ message("set content of mylib: ${myLibs}")
 message("set comiler flags: ${CMAKE_CXX_FLAGS}")
 message("CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 
-include_directories(/daten/tc_install/include)
+include_directories(include/vbl)
+include_directories(include)
 add_subdirectory(src)
+install(DIRECTORY include DESTINATION . FILES_MATCHING PATTERN "*.h")

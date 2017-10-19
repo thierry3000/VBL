@@ -56,7 +56,7 @@ double factln(const int n)
 	static double a[101];
 
 	if (n < 0) 
-		cout << "Negative factorial in routine factln";
+		std::cout << "Negative factorial in routine factln";
 	if (n <= 1) 
 		return 0.0;
 	if (n <= 100)

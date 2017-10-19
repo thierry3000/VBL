@@ -20,7 +20,7 @@
 // The main method for calculating the structure of Delaunay
 // This method isolates all calls to CGAL
 //
-void vbl::CellsSystem::Geometry()
+void CellsSystem::Geometry()
 {
 
   unsigned long k;
@@ -49,7 +49,7 @@ void vbl::CellsSystem::Geometry()
 
   // nel seguito si trova la lista dei collegamenti e si stimano le aree delle superfici di contatto
 
-  vector<Vertex_handle> vn;// vettore delle vertex_handle dei vicini
+  std::vector<Vertex_handle> vn;// vettore delle vertex_handle dei vicini
 
   // si rifa' il loop sui vertici finiti (k e' il nome della cellula attuale)
   for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
@@ -87,7 +87,7 @@ void vbl::CellsSystem::Geometry()
 	// *********** controllo per debugging
 	if(dd != dd || dd <= 0)
 	{
-	  cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << endl;
+	  std::cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << std::endl;
 	}
 	// *********** fine controllo per debugging
 
@@ -175,7 +175,7 @@ void vbl::CellsSystem::Geometry()
 		// std::cout << "Smallest alpha value to get a solid through data points is " << scientific << alpha_solid << std::endl;
 
 		
-		vector<Vertex_handle> vertices_on_alpha_shape;
+		std::vector<Vertex_handle> vertices_on_alpha_shape;
 		as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::REGULAR,ALPHAVALUE);
 		as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::SINGULAR,ALPHAVALUE);
 		
@@ -198,7 +198,7 @@ void vbl::CellsSystem::Geometry()
 	// the following loop identifies those cells that are in contact with blood vessels 
 	for(k=0; k<ncells; k++)
 	{
-	  vector<double> cellpos(3); // store the cell coordinates in a 3-vector
+	  std::vector<double> cellpos(3); // store the cell coordinates in a 3-vector
 	  cellpos[0]=x[k];
 	  cellpos[1]=y[k];
 	  cellpos[2]=z[k];
@@ -238,7 +238,7 @@ void vbl::CellsSystem::Geometry()
 }
 
 // Minimum calculations in case of dispersed cells
-void vbl::CellsSystem::NoGeometry()
+void CellsSystem::NoGeometry()
 {
 
 	for(unsigned long k=0; k<ncells; k++)

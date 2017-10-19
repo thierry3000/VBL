@@ -21,7 +21,7 @@
 // i nuovi valori vengono calcolati per mezzo di equazioni nonlineari che provengono da una soluzione generale con il metodo BDF 
 // (in pratica Eulero implicito); le equazioni non lineari vengono a loro volta risolte per mezzo di una versione del metodo di Newton
 // 
-void vbl::CellsSystem::Diff()
+void CellsSystem::Diff()
 {
 
 	
@@ -38,7 +38,7 @@ void vbl::CellsSystem::Diff()
 		if( phase[n] != dead ) 
 			{
 			int code = CheckMVA(n);
-			if(code < 0) errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << endl;
+			if(code < 0) errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
 			}
 		}
 
@@ -374,7 +374,7 @@ void vbl::CellsSystem::Diff()
 
 		if(isonBV[n])
 			{
-			vbl::BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
+			BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
 			//vbl::BloodVessel BV = bloodVesselMap[isonBV[n]-1];
 			  
 			rhoG_bv = BV.GetBloodVesselG();			// glucose concentration in BV	
@@ -454,13 +454,13 @@ void vbl::CellsSystem::Diff()
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
 			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mGinOld["<< n << "] = " << mGinOld[n] << "; mGinNew["<< n << "] = " << mGinNew[n] << "\n" <<endl;
+			errorlog_file << scientific << "mGinOld["<< n << "] = " << mGinOld[n] << "; mGinNew["<< n << "] = " << mGinNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mGinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mGinNew["<< n << "] = " << scientific << mGinNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mGinNew[n] = mGinOld[n] = " << mGinOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mGinNew["<< n << "] = " << std::scientific << mGinNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mGinNew[n] = mGinOld[n] = " << mGinOld[n] << "\n" << std::endl;
 			mGinNew[n] = mGinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 
@@ -480,13 +480,13 @@ void vbl::CellsSystem::Diff()
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
 			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mGextOld["<< n << "] = " << mGextOld[n] << "; mGextNew["<< n << "] = " << mGextNew[n] << "\n" <<endl;
+			errorlog_file << scientific << "mGextOld["<< n << "] = " << mGextOld[n] << "; mGextNew["<< n << "] = " << mGextNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mGextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mGextNew["<< n << "] = " << scientific << mGextNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mGextNew[n] = mGextOld[n] = " << mGextOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mGextNew["<< n << "] = " << std::scientific << mGextNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mGextNew[n] = mGextOld[n] = " << mGextOld[n] << "\n" << std::endl;
 			mGextNew[n] = mGextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 		
@@ -549,13 +549,13 @@ void vbl::CellsSystem::Diff()
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
 			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mO2Old["<< n << "] = " << mO2Old[n] << "; mO2New["<< n << "] = " << mO2New[n] << "\n" <<endl;
+			errorlog_file << scientific << "mO2Old["<< n << "] = " << mO2Old[n] << "; mO2New["<< n << "] = " << mO2New[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mO2New[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mO2New["<< n << "] = " << scientific << mO2New[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mO2New[n] = mO2Old[n] = " << mO2Old[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mO2New["<< n << "] = " << std::scientific << mO2New[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mO2New[n] = mO2Old[n] = " << mO2Old[n] << "\n" << std::endl;
 			mO2New[n] = mO2Old[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 		
@@ -600,14 +600,14 @@ void vbl::CellsSystem::Diff()
 			mAinNew[n] = xsol;
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
-			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mAinOld["<< n << "] = " << mAinOld[n] << "; mAinNew["<< n << "] = " << mAinNew[n] << "\n" <<endl;
+			errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
+			errorlog_file << scientific << "mAinOld["<< n << "] = " << mAinOld[n] << "; mAinNew["<< n << "] = " << mAinNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mAinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAinNew["<< n << "] = " << scientific << mAinNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mAinNew[n] = mAinOld[n] = " << mAinOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAinNew["<< n << "] = " << std::scientific << mAinNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mAinNew[n] = mAinOld[n] = " << mAinOld[n] << "\n" << std::endl;
 			mAinNew[n] = mAinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 		
@@ -626,14 +626,14 @@ void vbl::CellsSystem::Diff()
 			mAextNew[n] = xsol;
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
-			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mAextOld["<< n << "] = " << mAextOld[n] << "; mAextNew["<< n << "] = " << mAextNew[n] << "\n" <<endl;
+			errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
+			errorlog_file << scientific << "mAextOld["<< n << "] = " << mAextOld[n] << "; mAextNew["<< n << "] = " << mAextNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mAextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAextNew["<< n << "] = " << scientific << mAextNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mAextNew[n] = mAextOld[n] = " << mAextOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAextNew["<< n << "] = " << std::scientific << mAextNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mAextNew[n] = mAextOld[n] = " << mAextOld[n] << "\n" << std::endl;
 			mAextNew[n] = mAextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 
@@ -707,14 +707,14 @@ void vbl::CellsSystem::Diff()
 			mAcLinNew[n] = xsol;
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
-			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mAcLinOld["<< n << "] = " << mAcLinOld[n] << "; mAcLinNew["<< n << "] = " << mAcLinNew[n] << "\n" <<endl;
+			errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
+			errorlog_file << std::scientific << "mAcLinOld["<< n << "] = " << mAcLinOld[n] << "; mAcLinNew["<< n << "] = " << mAcLinNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mAcLinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLinNew["<< n << "] = " << scientific << mAcLinNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mAcLinNew[n] = mAcLinOld[n] = " << mAcLinOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLinNew["<< n << "] = " << std::scientific << mAcLinNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mAcLinNew[n] = mAcLinOld[n] = " << mAcLinOld[n] << "\n" << std::endl;
 			mAcLinNew[n] = mAcLinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 		
@@ -731,14 +731,14 @@ void vbl::CellsSystem::Diff()
 			mAcLextNew[n] = xsol;
 #ifdef SECANT_IN_ERRORLOG
 			errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
-			errorlog_file << " e' necessario passare al metodo della secante" << endl;
-			errorlog_file << scientific << "mAcLextOld["<< n << "] = " << mAcLextOld[n] << "; mAcLextNew["<< n << "] = " << mAcLextNew[n] << "\n" <<endl;
+			errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
+			errorlog_file << std::scientific << "mAcLextOld["<< n << "] = " << mAcLextOld[n] << "; mAcLextNew["<< n << "] = " << mAcLextNew[n] << "\n" <<std::endl;
 #endif
 			}
 		if( mAcLextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 			{
-			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLextNew["<< n << "] = " << scientific << mAcLextNew[n] << " < 0" << endl;
-			errorlog_file << "in questa iterazione si mantiene mAcLextNew[n] = mAcLextOld[n] = " << mAcLextOld[n] << "\n" << endl;
+			errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLextNew["<< n << "] = " << std::scientific << mAcLextNew[n] << " < 0" << std::endl;
+			errorlog_file << "in questa iterazione si mantiene mAcLextNew[n] = mAcLextOld[n] = " << mAcLextOld[n] << "\n" << std::endl;
 			mAcLextNew[n] = mAcLextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 			}
 
@@ -783,31 +783,31 @@ void vbl::CellsSystem::Diff()
 #ifdef SECANT_IN_ERRORLOG
 				errorlog_file << "ATTENZIONE: al passo " << nstep << ", iterazione " << nrepeats << ", cellula " << n;
 				errorlog_file << " e' necessario passare al metodo della secante" << endl;
-				errorlog_file << scientific << "ATPpOld["<< n << "] = " << ATPpOld[n] << "; ATPpNew["<< n << "] = " << ATPpNew[n] << "\n" <<endl;
+				errorlog_file << std::scientific << "ATPpOld["<< n << "] = " << ATPpOld[n] << "; ATPpNew["<< n << "] = " << ATPpNew[n] << "\n" <<std::endl;
 #endif
 				}
 			if( ATPpNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 				{
-				errorlog_file << "ATTENZIONE: al passo " << nstep << " ATPpNew["<< n << "] = " << scientific << ATPpNew[n] << " < 0" << endl;
-				errorlog_file << "in questa iterazione si mantiene ATPpNew[n] = ATPpOld[n] = " << ATPpOld[n] << "\n" << endl;
-				errorlog_file << "Altre informazioni sullo stato cellulare attuale: " << endl;
-				errorlog_file << "eta' cellulare " << age[n] << endl;
-				errorlog_file << "eta' di fase cellulare " << phase_age[n] << endl;
-				errorlog_file << "ATP_St " << ATP_St[n] << endl;
-				errorlog_file << "ATP_Ox " << ATP_Ox[n] << endl;
-				errorlog_file << "ATP_NOx " << ATP_NOx[n] << endl;
-				errorlog_file << "ATP2 " << ATP2[n] << endl;
-				errorlog_file << "ATP3 " << ATP3[n] << endl;
-				errorlog_file << "ConsATP " << ConsATP[n] << endl;
-				errorlog_file << "ConsATP_1 " << ConsATP_1[n] << endl;
-				errorlog_file << "ConsATP_2 " << ConsATP_2[n] << endl;
-				errorlog_file << "ConsATP_3 " << ConsATP_3[n] << endl;
-				errorlog_file << "ConsATP_4 " << ConsATP_4[n] << endl;
-				errorlog_file << "ConsATP_5 " << ConsATP_5[n] << endl;
-				errorlog_file << "ATPtot " << ATPtot[n] << endl;
-				errorlog_file << "ATPp " << ATPp[n] << endl;
-				errorlog_file << "ATPmin " << ATPmin[n] << endl;
-				errorlog_file << endl;
+				errorlog_file << "ATTENZIONE: al passo " << nstep << " ATPpNew["<< n << "] = " << std::scientific << ATPpNew[n] << " < 0" << std::endl;
+				errorlog_file << "in questa iterazione si mantiene ATPpNew[n] = ATPpOld[n] = " << ATPpOld[n] << "\n" << std::endl;
+				errorlog_file << "Altre informazioni sullo stato cellulare attuale: " << std::endl;
+				errorlog_file << "eta' cellulare " << age[n] << std::endl;
+				errorlog_file << "eta' di fase cellulare " << phase_age[n] << std::endl;
+				errorlog_file << "ATP_St " << ATP_St[n] << std::endl;
+				errorlog_file << "ATP_Ox " << ATP_Ox[n] << std::endl;
+				errorlog_file << "ATP_NOx " << ATP_NOx[n] << std::endl;
+				errorlog_file << "ATP2 " << ATP2[n] << std::endl;
+				errorlog_file << "ATP3 " << ATP3[n] << std::endl;
+				errorlog_file << "ConsATP " << ConsATP[n] << std::endl;
+				errorlog_file << "ConsATP_1 " << ConsATP_1[n] << std::endl;
+				errorlog_file << "ConsATP_2 " << ConsATP_2[n] << std::endl;
+				errorlog_file << "ConsATP_3 " << ConsATP_3[n] << std::endl;
+				errorlog_file << "ConsATP_4 " << ConsATP_4[n] << std::endl;
+				errorlog_file << "ConsATP_5 " << ConsATP_5[n] << std::endl;
+				errorlog_file << "ATPtot " << ATPtot[n] << std::endl;
+				errorlog_file << "ATPp " << ATPp[n] << std::endl;
+				errorlog_file << "ATPmin " << ATPmin[n] << std::endl;
+				errorlog_file << std::endl;
 				ATPpNew[n] = ATPpOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
 				}
 			
@@ -958,11 +958,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mGinOld[n] - mGinNew[n]) > 0.5*(fabs(mGinOld[n])+fabs(mGinNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mGin: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mGinNew[n]-mGinOld[n])/mGinOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mGextOld[n] - mGextNew[n]) > eps*0.5*(fabs(mGextOld[n])+fabs(mGextNew[n]))+TOL )
@@ -974,11 +974,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mGextOld[n] - mGextNew[n]) > 0.5*(fabs(mGextOld[n])+fabs(mGextNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mGext: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mGextNew[n]-mGextOld[n])/mGextOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mO2Old[n] - mO2New[n]) > eps*0.5*(fabs(mO2Old[n])+fabs(mO2New[n]))+TOL )
@@ -990,11 +990,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mO2Old[n] - mO2New[n]) > 0.5*(fabs(mO2Old[n])+fabs(mO2New[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mO2: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mO2New[n]-mO2Old[n])/mO2Old[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mAinOld[n] - mAinNew[n]) > eps*0.5*(fabs(mAinOld[n])+fabs(mAinNew[n]))+TOL )
@@ -1006,11 +1006,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mAinOld[n] - mAinNew[n]) > 0.5*(fabs(mAinOld[n])+fabs(mAinNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mAin: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mAinNew[n]-mAinOld[n])/mAinOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mAextOld[n] - mAextNew[n]) > eps*0.5*(fabs(mAextOld[n])+fabs(mAextNew[n]))+TOL )
@@ -1022,11 +1022,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mAextOld[n] - mAextNew[n]) > 0.5*(fabs(mAextOld[n])+fabs(mAextNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mAext: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mAextNew[n]-mAextOld[n])/mAextOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mAcLinOld[n] - mAcLinNew[n]) > eps*0.5*(fabs(mAcLinOld[n])+fabs(mAcLinNew[n]))+TOL )
@@ -1038,11 +1038,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mAcLinOld[n] - mAcLinNew[n]) > 0.5*fabs(fabs(mAcLinOld[n])+fabs(mAcLinNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mAcLin: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mAcLinNew[n]-mAcLinOld[n])/mAcLinOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(mAcLextOld[n] - mAcLextNew[n]) > eps*0.5*(fabs(mAcLextOld[n])+fabs(mAcLextNew[n]))+TOL )
@@ -1054,11 +1054,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(mAcLextOld[n] - mAcLextNew[n]) > 0.5*fabs(fabs(mAcLextOld[n])+fabs(mAcLextNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "mAcLext: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(mAcLextNew[n]-mAcLextOld[n])/mAcLextOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		if( fabs(ATPpOld[n] - ATPpNew[n]) > eps*0.5*(fabs(ATPpOld[n])+fabs(ATPpNew[n]))+TOL )
@@ -1070,11 +1070,11 @@ void vbl::CellsSystem::Diff()
 			prec = newprec > prec ? newprec : prec;
 			if ( fabs(ATPpOld[n] - ATPpNew[n]) > 0.5*(fabs(ATPpOld[n])+fabs(ATPpNew[n])) && EXTENDED_ERRORLOG ) 
 				{
-				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << endl;
+				errorlog_file << "CellsSystem::Diff() - passo " << Get_nstep() << ", iterazione " << nrepeats << std::endl;
 				errorlog_file << "ATPp: Differenza maggiore del 50% nel calcolo iterativo per la cellula " << n <<"-esima\n";
 				errorlog_file << "\tdifferenza : " << 100.*(ATPpNew[n]-ATPpOld[n])/ATPpOld[n] << "%\n";
-				errorlog_file << "\tfase : " << phase[n] << endl;
-				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << endl;
+				errorlog_file << "\tfase : " << phase[n] << std::endl;
+				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
 				}
 			}
 		
@@ -1103,8 +1103,8 @@ void vbl::CellsSystem::Diff()
 	nrepeats++;
 	if( nrepeats >= MAXREPEATS )
 		{
-		errorlog_file << "\n*** ATTENZIONE: al passo " << nstep << " potenziale problema di convergenza dell'algoritmo in CellsSystem::Diff ***" << endl;
-		errorlog_file << "precisione limitata a " << scientific << prec << " per " << ncell_fails << " cellule" << "\n" << endl;
+		errorlog_file << "\n*** ATTENZIONE: al passo " << nstep << " potenziale problema di convergenza dell'algoritmo in CellsSystem::Diff ***" << std::endl;
+		errorlog_file << "precisione limitata a " << std::scientific << prec << " per " << ncell_fails << " cellule" << "\n" << std::endl;
 		}
 	
 	} while( !isOK && nrepeats < MAXREPEATS );
@@ -1249,7 +1249,7 @@ void vbl::CellsSystem::Diff()
 		if( phase[n] != dead ) 
 			{
 			int code = CheckMVA(n);
-			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << endl;
+			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
 			}
 			
 		

@@ -13,7 +13,7 @@ EnvironmentalSignal::EnvironmentalSignal( const EnvironmentalSignalType ctype, c
 {
 	type = ctype;
 	
-	if( cAmpMin > cAmpMax) cout << "\nWrong amplitude assignement in EnvironmentalSignal::EnvironmentalSignal\n" << endl;
+	if( cAmpMin > cAmpMax) std::cout << "\nWrong amplitude assignement in EnvironmentalSignal::EnvironmentalSignal\n" << std::endl;
 	
 	switch(type)
 		{
@@ -29,11 +29,11 @@ EnvironmentalSignal::EnvironmentalSignal( const EnvironmentalSignalType ctype, c
 		break;
 				
 		case SquareSignal:
-		cout << "EnviromentalSignal: wrong constructor\n";
+		std::cout << "EnviromentalSignal: wrong constructor\n";
 		break;
 		
 		case Pulse:
-		if( tstop < tstart) cout << "\nWrong timing assignement in EnvironmentalSignal::EnvironmentalSignal\n" << endl;
+		if( tstop < tstart) std::cout << "\nWrong timing assignement in EnvironmentalSignal::EnvironmentalSignal\n" << std::endl;
 		ampMin = cAmpMin;
 		ampMax = cAmpMax;
 		tstart = ctA;
@@ -71,7 +71,7 @@ EnvironmentalSignal::EnvironmentalSignal( const EnvironmentalSignalType ctype, c
 		break;
 		
 		default:
-		cout << "EnviromentalSignal: wrong constructor\n";
+		std::cout << "EnviromentalSignal: wrong constructor\n";
 		break;
 		
 		}
@@ -220,44 +220,44 @@ EnvironmentalSignal& EnvironmentalSignal::operator=(const EnvironmentalSignal& e
 }
 
 // overloading dell'operatore di output su file
-ostream& operator<<(ostream& stream, EnvironmentalSignal& cSignal)
+std::ostream& operator<<(std::ostream& stream, EnvironmentalSignal& cSignal)
 {
 
 	EnvironmentalSignalType iType; 
 	
-	const string SType[] = {"segnale nullo", "segnale costante", "sinusoide", "onda quadra", "singolo impulso rettangolare"};
+	const std::string SType[] = {"segnale nullo", "segnale costante", "sinusoide", "onda quadra", "singolo impulso rettangolare"};
 	
 	iType = cSignal.Get_type();
 	
-	stream << "Tipo del segnale (codice): " << (int)iType << endl;
-	stream << "Tipo del segnale: " <<  SType[ (int)iType + 1 ]  << endl;
+	stream << "Tipo del segnale (codice): " << (int)iType << std::endl;
+	stream << "Tipo del segnale: " <<  SType[ (int)iType + 1 ]  << std::endl;
 
 	switch(iType)
 		{
 		case ConstantSignal:
-		stream << "Ampiezza: " << cSignal.Get_ampMin() << endl;
+		stream << "Ampiezza: " << cSignal.Get_ampMin() << std::endl;
 		break;
 		
 		case SineSignal:
-		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << endl;
-		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << endl;
-		stream << "Periodo (s): " << cSignal.Get_period() << endl;
-		stream << "tstart (s): " << cSignal.Get_tstart() << endl;
+		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << std::endl;
+		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << std::endl;
+		stream << "Periodo (s): " << cSignal.Get_period() << std::endl;
+		stream << "tstart (s): " << cSignal.Get_tstart() << std::endl;
 		break;
 		
 		case SquareSignal:
-		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << endl;
-		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << endl;
-		stream << "tstart (s): " << cSignal.Get_tstart() << endl;
-		stream << "tON (s): " << cSignal.Get_tON() << endl;
-		stream << "tOFF (s): " << cSignal.Get_tOFF() << endl;
+		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << std::endl;
+		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << std::endl;
+		stream << "tstart (s): " << cSignal.Get_tstart() << std::endl;
+		stream << "tON (s): " << cSignal.Get_tON() << std::endl;
+		stream << "tOFF (s): " << cSignal.Get_tOFF() << std::endl;
 		break;
 		
 		case Pulse:
-		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << endl;
-		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << endl;
-		stream << "tstart (s): " << cSignal.Get_tstart() << endl;
-		stream << "tstop (s): " << cSignal.Get_tstop() << endl;
+		stream << "Ampiezza minima: " << cSignal.Get_ampMin() << std::endl;
+		stream << "Ampiezza massima: " << cSignal.Get_ampMax() << std::endl;
+		stream << "tstart (s): " << cSignal.Get_tstart() << std::endl;
+		stream << "tstop (s): " << cSignal.Get_tstop() << std::endl;
 		break;
 		
 		case UserDefined:
@@ -272,7 +272,7 @@ ostream& operator<<(ostream& stream, EnvironmentalSignal& cSignal)
 
 }
 
-void EnvironmentalSignal::WriteEnvironmentalSignal( ofstream& stream)
+void EnvironmentalSignal::WriteEnvironmentalSignal( std::ofstream& stream)
 {
 	stream.write( (char*)(&ampMin), sizeof(double) );
 	stream.write( (char*)(&ampMax), sizeof(double) );
@@ -284,7 +284,7 @@ void EnvironmentalSignal::WriteEnvironmentalSignal( ofstream& stream)
 
 }
 
-void EnvironmentalSignal::ReadEnvironmentalSignal( ifstream& stream)
+void EnvironmentalSignal::ReadEnvironmentalSignal( std::ifstream& stream)
 {
 	stream.read( (char*)(&ampMin), sizeof(double) );
 	stream.read( (char*)(&ampMax), sizeof(double) );

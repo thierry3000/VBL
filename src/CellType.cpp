@@ -123,13 +123,13 @@ CellType::CellType()
 
 // costruttore che prende i valori da un file
 
-CellType::CellType(const string filename)
+CellType::CellType(const std::string filename)
 {
 
-	ifstream ParameterFile( filename.c_str() );
+	std::ifstream ParameterFile( filename.c_str() );
 	if( !ParameterFile ) 
 		{
-		cout << "CellType::CellType: errore nell'apertura del file dei parametri " << filename << endl;
+		std::cout << "CellType::CellType: errore nell'apertura del file dei parametri " << filename << std::endl;
 		exit(-1);
 		}
 
@@ -466,7 +466,7 @@ void PrintCellType(CellType &cCellType)
 }
 
 // funzione di stampa semplice (overloaded <<) 
-ostream& operator<<(ostream& stream, CellType& cCellType)
+std::ostream& operator<<(std::ostream& stream, CellType& cCellType)
 {
 	int k;
 	
@@ -576,7 +576,7 @@ ostream& operator<<(ostream& stream, CellType& cCellType)
 }
 
 // write binario su file del cell type
-void CellType::WriteCellType( ofstream& stream )
+void CellType::WriteCellType( std::ofstream& stream )
 {
 
 	stream.write( (char*)(&name), sizeof(int) );
@@ -680,7 +680,7 @@ void CellType::WriteCellType( ofstream& stream )
 }
 
 // read binario da file del cell type
-void CellType::ReadCellType( ifstream& stream )
+void CellType::ReadCellType( std::ifstream& stream )
 {
 	stream.read( (char*)(&name), sizeof(int) );
 	stream.read( (char*)(&n_instances), sizeof(unsigned long) );	

@@ -11,7 +11,7 @@
 
 // costruttori
 // costruttore di default (nessun attributo specificato)
-vbl::BloodVessel::BloodVessel()
+BloodVessel::BloodVessel()
 {
     a.assign(3,0.);
     b.assign(3,0.);
@@ -30,7 +30,7 @@ vbl::BloodVessel::BloodVessel()
 }
 
 // costruttore con valori specificati
-vbl::BloodVessel::BloodVessel( const vector<double> ca, const vector<double> cb, const vector<double> cva, const vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
+BloodVessel::BloodVessel( const std::vector<double> ca, const std::vector<double> cb, const std::vector<double> cva, const std::vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
 {
     a = ca;
     b = cb;
@@ -49,7 +49,7 @@ vbl::BloodVessel::BloodVessel( const vector<double> ca, const vector<double> cb,
 }
 
 // costruttore copia
-vbl::BloodVessel::BloodVessel(const BloodVessel& bv)
+BloodVessel::BloodVessel(const BloodVessel& bv)
 {
     a = bv.a;
     b = bv.b;
@@ -67,7 +67,7 @@ vbl::BloodVessel::BloodVessel(const BloodVessel& bv)
 }
 
 // funzione distanza e posizione punto piu' vicino
-double vbl::BloodVessel::DistanceFromVessel( const vector<double> x1, double* x0 )
+double BloodVessel::DistanceFromVessel( const std::vector<double> x1, double* x0 )
 {
     
     double tp = 0;
@@ -109,7 +109,7 @@ double vbl::BloodVessel::DistanceFromVessel( const vector<double> x1, double* x0
     return(bvd);
     
 }
-double vbl::BloodVessel::DistanceFromVessel( const ANNpoint &x1)
+double BloodVessel::DistanceFromVessel( const ANNpoint &x1)
 {
     
     double tp = 0;
@@ -153,8 +153,8 @@ double vbl::BloodVessel::DistanceFromVessel( const ANNpoint &x1)
     return(bvd);
     
 }
-vbl::BloodVessel& vbl::BloodVessel::operator=(const vbl::BloodVessel& bv)
+BloodVessel& BloodVessel::operator=(const BloodVessel& bv)
 {
-  cout<< "here error" <<endl;
+  std::cout<< "here error" <<std::endl;
 }
 

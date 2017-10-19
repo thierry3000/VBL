@@ -8,11 +8,14 @@
 #ifndef ENVIRONMENTSIGNAL_H
 #define ENVIRONMENTSIGNAL_H  // header guard
 
+#include <iostream>
+#include <fstream>
+#include <cmath>
 class EnvironmentalSignal
 {
 
 // overloaded << 
-friend ostream& operator<<(ostream& stream, EnvironmentalSignal& cSignal);
+friend std::ostream& operator<<(std::ostream& stream, EnvironmentalSignal& cSignal);
 
 private:
 	EnvironmentalSignalType type;
@@ -61,8 +64,8 @@ public:
 	EnvironmentalSignal& operator=(const EnvironmentalSignal& es);
 	
 // read and write binario
-	void WriteEnvironmentalSignal( ofstream& stream);
-	void ReadEnvironmentalSignal( ifstream& stream);
+	void WriteEnvironmentalSignal( std::ofstream& stream);
+	void ReadEnvironmentalSignal( std::ifstream& stream);
 
 	
 	

@@ -23,7 +23,7 @@
 // 
 // Note that in the current version, Dynamics is not an interface for the GetForces and NewPositionsAndVelocities methods
 //
-void vbl::CellsSystem::Dynamics( )
+void CellsSystem::Dynamics( )
 {
 
 
@@ -40,7 +40,7 @@ void vbl::CellsSystem::Dynamics( )
 }
 
 // Calculating force between cells in the current configuration
-void vbl::CellsSystem::GetForces()
+void CellsSystem::GetForces()
 {
 
 	// ridimensionamento dei vettori
@@ -130,7 +130,7 @@ void vbl::CellsSystem::GetForces()
 
 
 // Calculating the position and velocity of each cell (it is calculated only if there are at least two cells)
-void vbl::CellsSystem::NewPositionsAndVelocities( )
+void CellsSystem::NewPositionsAndVelocities( )
 {
 	
 	// inizializzazione dei vettori
@@ -293,18 +293,18 @@ void vbl::CellsSystem::NewPositionsAndVelocities( )
 			
 		if( dr > rn )		// gestione di possibili errori nel calcolo della posizione
 			{
-			cout << "Errore in Cells::NewPositionsAndVelocities: " << endl;
-			cout << "Al passo " << nstep;
-			cout << " si e' verificato un problema nel calcolo della posizione della cellula " << n << "-esima" << endl;
-			cout << "dx = " << scientific << dx << endl;
-			cout << "dy = " << scientific << dy << endl;
-			cout << "dz = " << scientific << dz << endl;
-			cout << "stepsize: " << scientific << dr << endl;
-			cout << "cell radius: " << scientific << r[n] << endl;
-			cout << "packing factor: " << (type[n]->Get_packing_factor()) << endl;
-			cout << "cellForcex = " << scientific << fx[n] << endl;
-			cout << "cellForcey = " << scientific << fy[n] << endl;
-			cout << "cellForcez = " << scientific << fz[n] << endl;
+			std::cout << "Errore in Cells::NewPositionsAndVelocities: " << std::endl;
+			std::cout << "Al passo " << nstep;
+			std::cout << " si e' verificato un problema nel calcolo della posizione della cellula " << n << "-esima" << std::endl;
+			std::cout << "dx = " << std::scientific << dx << std::endl;
+			std::cout << "dy = " << std::scientific << dy << std::endl;
+			std::cout << "dz = " << std::scientific << dz << std::endl;
+			std::cout << "stepsize: " << std::scientific << dr << std::endl;
+			std::cout << "cell radius: " << std::scientific << r[n] << std::endl;
+			std::cout << "packing factor: " << (type[n]->Get_packing_factor()) << std::endl;
+			std::cout << "cellForcex = " << std::scientific << fx[n] << std::endl;
+			std::cout << "cellForcey = " << std::scientific << fy[n] << std::endl;
+			std::cout << "cellForcez = " << std::scientific << fz[n] << std::endl;
 			exit(0);
 			}
 			
@@ -319,7 +319,7 @@ void vbl::CellsSystem::NewPositionsAndVelocities( )
 
 
 // dinamica dummy
-void vbl::CellsSystem::DummyDynamics( )
+void CellsSystem::DummyDynamics( )
 {
 	maxdr = 0;	// spostamento massimo
 }

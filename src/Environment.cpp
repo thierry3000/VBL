@@ -90,81 +90,81 @@ Environment::Environment(EnvironmentTypeSelector environmentType)
 			break;
 			
 		case TerminalInput:
-			cout << "Input dei parametri ambientali (dando in input un numero negativo si sceglie il valore di default)\n" << endl;
+			std::cout << "Input dei parametri ambientali (dando in input un numero negativo si sceglie il valore di default)\n" << std::endl;
 			
-			cout << "Temperatura dell'ambiente (deg C): ";
-			cin >> T;
+			std::cout << "Temperatura dell'ambiente (deg C): ";
+			std::cin >> T;
 			if(T < 0)
 				T = T_ENV;
-			cout << "Temperatura dell'ambiente: " << T << " C"<< endl;
+			std::cout << "Temperatura dell'ambiente: " << T << " C"<< std::endl;
 				
-			cout << "Concentrazione del glucosio (pg/micron^3): ";
-			cin >> Gc;
+			std::cout << "Concentrazione del glucosio (pg/micron^3): ";
+			std::cin >> Gc;
 			if(Gc < 0) 
 				Gc = G_ENV;
-			cout << "La concentrazione del glucosio e' " << Gc << " pg/micron^3" << endl;
+			std::cout << "La concentrazione del glucosio e' " << Gc << " pg/micron^3" << std::endl;
 			
-			cout << "Concentrazione dell' ossigeno (O2) (pg/micron^3): ";
-			cin >> O2c;
+			std::cout << "Concentrazione dell' ossigeno (O2) (pg/micron^3): ";
+			std::cin >> O2c;
 			if(O2c < 0) 
 				O2c = O_ENV;
-			cout << "La concentrazione dell' ossigeno (O2) e' " << O2c << " pg/micron^3" <<  endl;
+			std::cout << "La concentrazione dell' ossigeno (O2) e' " << O2c << " pg/micron^3" <<  std::endl;
 			
-			cout << "Concentrazione dell' anidride carbonica (CO2) (pg/micron^3): ";
-			cin >> CO2c;
+			std::cout << "Concentrazione dell' anidride carbonica (CO2) (pg/micron^3): ";
+			std::cin >> CO2c;
 			if(CO2c < 0) 
 				CO2c = CO2_ENV;
-			cout << "La concentrazione dell'anidride carbonica (CO2) e' " << CO2c << " pg/micron^3" <<  endl;
+			std::cout << "La concentrazione dell'anidride carbonica (CO2) e' " << CO2c << " pg/micron^3" <<  std::endl;
 
-			cout << "Concentrazione degli altri nutrienti (pg/micron^3): ";
-			cin >> Ac;
+			std::cout << "Concentrazione degli altri nutrienti (pg/micron^3): ";
+			std::cin >> Ac;
 			if(Ac < 0) 
 				Ac = A_ENV;
-			cout << "La concentrazione degli altri nutrienti e' " << Ac << " pg/micron^3" <<  endl;
+			std::cout << "La concentrazione degli altri nutrienti e' " << Ac << " pg/micron^3" <<  std::endl;
 			
-			cout << "Concentrazione iniziale dell'acido lattico (pg/micron^3): ";
-			cin >> AcLc;
+			std::cout << "Concentrazione iniziale dell'acido lattico (pg/micron^3): ";
+			std::cin >> AcLc;
 			if(AcLc < 0) 
 				AcLc = AcL_ENV;
-			cout << "La concentrazione iniziale dell'acido lattico e' " << AcLc << " pg/micron^3" <<  endl;
+			std::cout << "La concentrazione iniziale dell'acido lattico e' " << AcLc << " pg/micron^3" <<  std::endl;
 			
 			
-			cout << "Posizioni degli spigoli del parallelepipedo che definisce il volume (in mm): " << endl;
+			std::cout << "Posizioni degli spigoli del parallelepipedo che definisce il volume (in mm): " << std::endl;
 			
-			cout << "xmin: ";	// X
-			cin >> xmin;
+			std::cout << "xmin: ";	// X
+			std::cin >> xmin;
 			xmin *= 1e-3;	// conversione da mm a m
 			
-			cout << "xmax: ";
-			cin >> xmax;
+			std::cout << "xmax: ";
+			std::cin >> xmax;
 			xmax *= 1e-3;	// conversione da mm a m
 			
-			cout << "ymin: ";	// Y
-			cin >> ymin;
+			std::cout << "ymin: ";	// Y
+			std::cin >> ymin;
 			ymin *= 1e-3;	// conversione da mm a m
 			
-			cout << "ymax: ";
-			cin >> ymax;
+			std::cout << "ymax: ";
+			std::cin >> ymax;
 			ymax *= 1e-3;	// conversione da mm a m
 			
-			cout << "zmin: ";	// Z
-			cin >> zmin;
+			std::cout << "zmin: ";	// Z
+			std::cin >> zmin;
 			zmin *= 1e-3;	// conversione da mm a m
 			
-			cout << "zmax: ";
-			cin >> zmax;
+			std::cout << "zmax: ";
+			std::cin >> zmax;
 			zmax *= 1e-3;	// conversione da mm a m
 			
 			v0 = (xmax-xmin)*(ymax-ymin)*(zmax-zmin);
 			
-			cout << "Il volume dell'ambiente e' " << v0*(1e9) << " microlitri" << endl;
+			std::cout << "Il volume dell'ambiente e' " << v0*(1e9) << " microlitri" << std::endl;
 			
 			
-			cout << "Dose ambientale di radiazione per unita' di tempo (Gy/s): ";
-			cin >> dose;
+			std::cout << "Dose ambientale di radiazione per unita' di tempo (Gy/s): ";
+			std::cin >> dose;
 			if(dose < 0) 
 				dose = DOSERATE_ENV;
-			cout << "La dose di radiazione nell'ambiente corrisponde a " << dose << "Gy/s" << endl;
+			std::cout << "La dose di radiazione nell'ambiente corrisponde a " << dose << "Gy/s" << std::endl;
 			
 			G = Gc * v0;
 			O2 = O2c * v0;
@@ -172,7 +172,7 @@ Environment::Environment(EnvironmentTypeSelector environmentType)
 			A = Ac * v0;
 			AcL = AcLc * v0;
 			pH =  7.5443-AcLc/BufCapEnv;
-			cout << "Il pH ambientale e' " << pH << endl;
+			std::cout << "Il pH ambientale e' " << pH << std::endl;
 			volume0 = v0;
 			volume = v0;
 			DoseRate = dose;
@@ -202,13 +202,13 @@ Environment::Environment(EnvironmentTypeSelector environmentType)
 }
 
 // costruttore che prende i dati da un file (alla fine non da' output su terminale)
-Environment::Environment(const string filename)
+Environment::Environment(const std::string filename)
 {
 
-	ifstream EnvironmentFile( filename.c_str() );
+	std::ifstream EnvironmentFile( filename.c_str() );
 	if( !EnvironmentFile ) 
 		{
-		cout << "Error opening environment file " << filename << endl;
+		std::cout << "Error opening environment file " << filename << std::endl;
 		exit(-1);
 		}
 	
@@ -299,56 +299,56 @@ void EnvironmentChange(Environment& env, Environment& env_delta)
 	if(env.T < 0) 
 		{
 		env.T = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di temperatura troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di temperatura troppo grande e negativa\n" << std::endl;
 		}
 	env.G += env_delta.G;
 	if(env.G < 0) 
 		{
 		env.G = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di glucosio troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di glucosio troppo grande e negativa\n" << std::endl;
 		}
 	env.O2 += env_delta.O2;
 	if(env.O2 < 0) 
 		{
 		env.O2 = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di ossigeno troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di ossigeno troppo grande e negativa\n" << std::endl;
 		}
 	env.CO2 += env_delta.CO2;
 	if(env.CO2 < 0) 
 		{
 		env.CO2 = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di anidride carbonica troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di anidride carbonica troppo grande e negativa\n" << std::endl;
 		}
 	env.A += env_delta.A;
 	if(env.A < 0) 
 		{
 		env.A = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di glutamina troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di glutamina troppo grande e negativa\n" << std::endl;
 		}
 	env.AcL += env_delta.AcL;
 	if(env.AcL < 0) 
 		{
 		env.AcL = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di AcL troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di AcL troppo grande e negativa\n" << std::endl;
 		}
 
 	env.volume0 += env_delta.volume0;
 	if(env.volume0 < 0) 
 		{
 		env.volume0 = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di volume0 troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di volume0 troppo grande e negativa\n" << std::endl;
 		}
 	env.volume += env_delta.volume;
 	if(env.volume < 0) 
 		{
 		env.volume = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di volume troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di volume troppo grande e negativa\n" << std::endl;
 		}
 	env.DoseRate += env_delta.DoseRate;
 	if(env.DoseRate < 0) 
 		{
 		env.DoseRate = 0;
-		cout << "Errore in Environment::EnvironmentChange: variazione di dose-rate troppo grande e negativa\n" << endl;
+		std::cout << "Errore in Environment::EnvironmentChange: variazione di dose-rate troppo grande e negativa\n" << std::endl;
 		}
 
 	env.pH =  7.5443-(env.AcL/env.volume)/BufCapEnv;
@@ -357,7 +357,7 @@ void EnvironmentChange(Environment& env, Environment& env_delta)
 
 
 // overloading dell'operatore di output su file
-ostream& operator<<(ostream& stream, Environment& cEnvironment)
+std::ostream& operator<<(std::ostream& stream, Environment& cEnvironment)
 {
 
 	stream << "T: " <<  cEnvironment.T << " deg C" << std::endl;																// temperatura
@@ -381,7 +381,7 @@ ostream& operator<<(ostream& stream, Environment& cEnvironment)
 
 }
 
-void Environment::PrintEnvironmentData(ofstream& stream, long int nrec)
+void Environment::PrintEnvironmentData(std::ofstream& stream, long int nrec)
 {
 
 	static bool first_print=true;
@@ -407,10 +407,10 @@ void Environment::PrintEnvironmentData(ofstream& stream, long int nrec)
 			<< "zmax \t" \
 			<< "volume0 \t" \
 			<< "volume \t" \
-			<< "DoseRate "<< endl;
+			<< "DoseRate "<< std::endl;
 		}
 
-	stream << setprecision(8) << scientific \
+	stream << std::setprecision(8) << std::scientific \
 			<< nrec << "\t" \
 			<< T << "\t" \
 			<< G << "\t" \
@@ -427,13 +427,13 @@ void Environment::PrintEnvironmentData(ofstream& stream, long int nrec)
 			<< zmax << "\t" \
 			<< volume0 << "\t" \
 			<< volume << "\t" \
-			<< DoseRate << endl;
+			<< DoseRate << std::endl;
 
 
 }
 
 
-void Environment::WriteEnvironment( ofstream& stream )
+void Environment::WriteEnvironment( std::ofstream& stream )
 {
 	stream.write( (char*)(&T), sizeof(double) );
 	stream.write( (char*)(&G), sizeof(double) );
@@ -454,7 +454,7 @@ void Environment::WriteEnvironment( ofstream& stream )
 
 }
 
-void Environment::ReadEnvironment( ifstream& stream )
+void Environment::ReadEnvironment( std::ifstream& stream )
 {
 	stream.read( (char*)(&T), sizeof(double) );
 	stream.read( (char*)(&G), sizeof(double) );

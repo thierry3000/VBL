@@ -21,7 +21,7 @@ extern double pAlt;
 //
 // The method returns the number of mitoses that occurred during the step
 // 
-bool vbl::CellsSystem::CellEvents( )
+bool CellsSystem::CellEvents( )
 {
 
 	bool mitosis_flag = false;				// flag logica che dice se e' avvenuta almeno una mitosi
@@ -409,7 +409,7 @@ bool vbl::CellsSystem::CellEvents( )
 		if(phase[n] != dead) 
 			{
 			int code = CheckMVA( n );
-			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << endl;
+			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
 			}
 
 	
@@ -428,7 +428,7 @@ bool vbl::CellsSystem::CellEvents( )
 //
 // metodo che elimina le cellule morte troppo piccole
 // 
-void vbl::CellsSystem::CleanCellsSystem( )
+void CellsSystem::CleanCellsSystem( )
 {
 	//bool cleaned = false;
 	

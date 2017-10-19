@@ -6,6 +6,10 @@
 // **********************************************************************************
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H  // header guard
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>      // std::setprecision  std::scientific
 class Environment 
 {
 // friends
@@ -16,7 +20,7 @@ class Environment
 	friend void EnvironmentChange(Environment& env, Environment& env_delta);
 	
 // funzione di stampa di tutti i dati della classe
-	friend ostream& operator<<(ostream& s, Environment& cEnvironment);
+	friend std::ostream& operator<<(std::ostream& s, Environment& cEnvironment);
 	
 private:
 
@@ -45,12 +49,12 @@ public:
 // costruttore con un ambiente predefinito
 	Environment(EnvironmentTypeSelector environmentType);
 // costruttore che prende i dati da un file
-	Environment(const string filename);
+	Environment(const std::string filename);
 // costruttore copia
 	Environment(const Environment& e);
 	
 // stampa dell'ambiente in formato spreadsheet
-	void PrintEnvironmentData(ofstream& stream, long int nrec);
+	void PrintEnvironmentData(std::ofstream& stream, long int nrec);
 	
 // nessun distruttore, utilizzo il default del compilatore
 	
@@ -94,8 +98,8 @@ public:
 	double GetEnvironmentDoseRate() { return DoseRate; }; 
 
 // read and write binario
-	void WriteEnvironment( ofstream& stream );
-	void ReadEnvironment( ifstream& stream );
+	void WriteEnvironment( std::ofstream& stream );
+	void ReadEnvironment( std::ifstream& stream );
 
 
 };

@@ -17,14 +17,14 @@
 // Calculation and printing of extracellular flows (binary only)
 // ***************************************************************
 //
-void vbl::CellsSystem::PrintFlows()
+void CellsSystem::PrintFlows()
 {
 
 	// apertura del file di output
 	char str[100];	
 	sprintf(str,"%lu.bin",nconfiguration);
-	string flow_record = flow_b_filename+str;
-	flow_b_file.open( flow_record.c_str(), ios::binary );
+	std::string flow_record = flow_b_filename+str;
+	flow_b_file.open( flow_record.c_str(), std::ios::binary );
 	
 
 	// concentrazioni ambientali (comuni a tutte le cellule)

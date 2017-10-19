@@ -2,13 +2,8 @@
 // includes: attenzione l'ordine degli includes e' importante ... 
 // 
 
-#include "sim.h"
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "CellsSystem.h"
+
+#include <../include/vbl.h>
 
 
 
@@ -19,6 +14,7 @@
 // 
 // **********************************************************************************
 //
+
 int main( int argc, char* argv[] )
 {
   int run_type = 0;	// tipo di run 
@@ -31,7 +27,7 @@ int main( int argc, char* argv[] )
   
   string run_name;
   
-  vbl::CellsSystem CellsSystem;	// Standard allocation of the CellsSystem (in this case, the initial dynamic reserve is 2000000)
+  CellsSystem CellsSystem;	// Standard allocation of the CellsSystem (in this case, the initial dynamic reserve is 2000000)
   //CellsSystem.Set_BV_reserve(RESERVE_BV);
       
   if( argc < 3 )

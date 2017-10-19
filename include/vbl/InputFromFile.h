@@ -10,10 +10,12 @@
 #ifndef INPUT_FROM_FILE_H
 #define INPUT_FROM_FILE_H  // header guard
 
-inline int InputIntPar(ifstream& ParameterFile)
+#include <fstream>
+
+inline int InputIntPar(std::ifstream& ParameterFile)
 {
 	int ivalue;
-	string name, description;
+	std::string name, description;
 
 	getline(ParameterFile,name,'\t');
 	ParameterFile >> ivalue;
@@ -22,10 +24,10 @@ inline int InputIntPar(ifstream& ParameterFile)
 	return ivalue;
 }
 
-inline double InputRealPar(ifstream& ParameterFile)
+inline double InputRealPar(std::ifstream& ParameterFile)
 {
 	double value;
-	string name, description;
+	std::string name, description;
 
 	getline(ParameterFile,name,'\t');
 	ParameterFile >> value;

@@ -25,13 +25,13 @@ extern double pAlt;
 // NB: this method is NOT called in case of continuation of run ...
 // ***************************************************************
 //
-void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
+void CellsSystem::InitializeCellsSystem( bool terminal )
 {
 
 	unsigned long n;
 	int ft;
 	
-	ifstream commands;
+	std::ifstream commands;
 
 // se la lettura viene fatta da file si apre il file di comandi
 	if( !terminal )
@@ -39,7 +39,7 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 		
 // inizializzazione del seme del generatore di numeri casuali 
 
-	cout << "The seed of the generator and' " << idum << endl;
+	std::cout << "The seed of the generator and' " << idum << std::endl;
 
 	
 // queste dichiarazioni servono alla definizione di flusso e dose di radiazione: si tratta di una struttura un po' ridondante che 
@@ -71,11 +71,11 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 // setup della simulazione
 	if( terminal )
 		{
-		cout << endl;
+		std::cout << std::endl;
 
 		// cout << "Simulazione con cellule disperse (0), full 3D (1), oppure con configurazione fissa (2) ? ";
-		cout << "Simulation with dispersed cells (0) or full 3D (1) ? ";
-		cin >> sim_type;
+		std::cout << "Simulation with dispersed cells (0) or full 3D (1) ? ";
+		std::cin >> sim_type;
 		
 		}
 	else 
@@ -86,11 +86,11 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 	switch(sim_type)
 		{
 		case Disperse:
-		cout << "E' stata selezionata la simulazione con cellule disperse\n" << endl;
+		std::cout << "E' stata selezionata la simulazione con cellule disperse\n" << std::endl;
 		break;
 		
 		case Full3D:
-		cout << "E' stata selezionata la simulazione full 3D\n" << endl;
+		std::cout << "E' stata selezionata la simulazione full 3D\n" << std::endl;
 		maxdr = 0.;
 		break;
 		
@@ -106,13 +106,13 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 		{
 		if( terminal )
 			{
-			cout << "Numero di cellule iniziali: ";
-			cin >> nstart;
+			std::cout << "Numero di cellule iniziali: ";
+			std::cin >> nstart;
 			}
 		else 
 			{
 			commands >> nstart;
-			cout << "Numero di cellule iniziali: " << nstart << endl;
+			std::cout << "Numero di cellule iniziali: " << nstart << std::endl;
 			}
 		}
 
@@ -137,18 +137,18 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			{
 			if( terminal )
 				{
-				cout << "Tipo di distribuzione delle cellule (2 = distribuzione 2D, 3 = distribuzione 3D): ";
-				cin >> initial_cell_dist;
+				std::cout << "Tipo di distribuzione delle cellule (2 = distribuzione 2D, 3 = distribuzione 3D): ";
+				std::cin >> initial_cell_dist;
 				}
 			else 
 				{
 				commands >> initial_cell_dist;
 				if(initial_cell_dist == 2) 
-					cout << "E' stata selezionata la distribuzione di cellule 2D" << endl;
+					std::cout << "E' stata selezionata la distribuzione di cellule 2D" << std::endl;
 				else if (initial_cell_dist == 3)
-					cout << "E' stata selezionata la distribuzione di cellule 3D" << endl;
+					std::cout << "E' stata selezionata la distribuzione di cellule 3D" << std::endl;
 				else 
-					cout << "ATTENZIONE: distribuzione di cellule indefinita!" << endl;
+					std::cout << "ATTENZIONE: distribuzione di cellule indefinita!" << std::endl;
 					}
 			}
 		}
@@ -156,29 +156,29 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 
 	if( terminal )
 		{
-		cout << "Stepsize (s): ";
-		cin >> dt;
-		cout << "Precisione per il metodo di diffusione trasporto e metabolismo (-1 = default = 1e-5): ";
-		cin >> eps;
+		std::cout << "Stepsize (s): ";
+		std::cin >> dt;
+		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo (-1 = default = 1e-5): ";
+		std::cin >> eps;
 		if (eps < 0) eps = 1e-5; // precisione relativa
-		cout << "Precisione nella determinazione della velocita' (micron/s) (-1 = default = 1e-5 micron/s): ";
-		cin >> delta_vmax;
+		std::cout << "Precisione nella determinazione della velocita' (micron/s) (-1 = default = 1e-5 micron/s): ";
+		std::cin >> delta_vmax;
 		if( delta_vmax < 0 ) delta_vmax = 1.e-5; // micron/s
-		cout << "Durata dell'inizializzazione (s) (-1 = default = 1e6 s): ";
-		cin >> t_ini;
+		std::cout << "Durata dell'inizializzazione (s) (-1 = default = 1e6 s): ";
+		std::cin >> t_ini;
 		if(t_ini < 0) t_ini = 1000000.; // s
-		cout << "Durata della simulazione (s): ";
-		cin >> tmax;
-		cout << "Maximum CPU time for a fraction of run (s) (Select if you break the run in multiple parts, if <= 0 = idle): ";
-		cin >> t_CPU_max;
-        cout << "Stepsize per slow motion (s): (0 = no slow motion) ";
-        cin >> dt_sm;
+		std::cout << "Durata della simulazione (s): ";
+		std::cin >> tmax;
+		std::cout << "Maximum CPU time for a fraction of run (s) (Select if you break the run in multiple parts, if <= 0 = idle): ";
+		std::cin >> t_CPU_max;
+    std::cout << "Stepsize per slow motion (s): (0 = no slow motion) ";
+    std::cin >> dt_sm;
         if(dt_sm > 0)
             {
-            cout << "Slow motion start time (s): ";
-            cin >> tsm_start;
-            cout << "Slow motion stop time (s): ";
-            cin >> tsm_stop;
+            std::cout << "Slow motion start time (s): ";
+            std::cin >> tsm_start;
+            std::cout << "Slow motion stop time (s): ";
+            std::cin >> tsm_stop;
             }
         else
             {
@@ -189,34 +189,34 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 	else 
 		{
 		commands >> dt;
-		cout << "Stepsize (s): " << dt << endl;
+		std::cout << "Stepsize (s): " << dt << std::endl;
 		commands >> eps;
 		if (eps < 0) eps = 1e-2; // precisione relativa
-		cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << eps << endl;
+		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << eps << std::endl;
 		commands >> delta_vmax;
 		if( delta_vmax < 0 ) delta_vmax = 1.e-4; // micron/s
-		cout << "Precisione nella determinazione della velocita' (micron/s): " << delta_vmax << endl;
+		std::cout << "Precisione nella determinazione della velocita' (micron/s): " << delta_vmax << std::endl;
 		commands >> t_ini;
 		if(t_ini < 0) t_ini = 1000000.; // s
-		cout << "Durata dell'inizializzazione (s): " << t_ini << endl;
+		std::cout << "Durata dell'inizializzazione (s): " << t_ini << std::endl;
 		commands >> tmax;
-		cout << "Durata della simulazione (s): " << tmax << endl;
+		std::cout << "Durata della simulazione (s): " << tmax << std::endl;
 		commands >> t_CPU_max;
-		cout << "Massimo CPU time per una frazione di run (s): " << t_CPU_max << endl;
-        commands >> dt_sm;
-        cout << "Stepsize per slow motion (s): " << dt_sm << endl;
-        if(dt_sm > 0)
-            {
-            commands >> tsm_start;
-            cout << "Slow motion start time (s): " << tsm_start << endl;
-            commands >> tsm_stop;
-            cout << "Slow motion stop time (s): " << tsm_stop << endl;
-            }
-        else
-            {
-            tsm_start = 0;
-            tsm_stop = 0;
-            }
+		std::cout << "Massimo CPU time per una frazione di run (s): " << t_CPU_max << std::endl;
+    commands >> dt_sm;
+    std::cout << "Stepsize per slow motion (s): " << dt_sm << std::endl;
+    if(dt_sm > 0)
+    {
+      commands >> tsm_start;
+      std::cout << "Slow motion start time (s): " << tsm_start << std::endl;
+      commands >> tsm_stop;
+      std::cout << "Slow motion stop time (s): " << tsm_stop << std::endl;
+    }
+    else
+    {
+      tsm_start = 0;
+      tsm_stop = 0;
+    }
 		}
 
 	nmax = (unsigned long)floor((tmax+t_ini)/dt);
@@ -231,7 +231,7 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 */
 	// if( terminal )
 		{
-		cout << "Ambiente letto dal file " << Get_EnvironmentFile() << "\n" << endl;
+		std::cout << "Ambiente letto dal file " << Get_EnvironmentFile() << "\n" << std::endl;
 		}
 		
 	Environment input_env( EnvironmentFile );		// qui si definisce l'ambiente
@@ -244,14 +244,14 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 
 	if( terminal )
 		{
-		cout << "\nFlusso nullo (0) o non nullo (1)? ";
-		cin >> flowON;
+		std::cout << "\nFlusso nullo (0) o non nullo (1)? ";
+		std::cin >> flowON;
 		}
 	else 
 		{
 		commands >> flowON;
 		}
-	if(!flowON) cout << "In questo run il flusso e' nullo" << endl;
+	if(!flowON) std::cout << "In questo run il flusso e' nullo" << std::endl;
 
 	if(!flowON)
 		{
@@ -263,10 +263,10 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 		{
 		if( terminal )
 			{
-			cout << "Tipo di segnale (0 = costante, 1 = sinusoidale, 2 = onda quadra, 3 = impulso singolo): ";
-			cin >> ft;
-      cout << "Si modula anche l'ossigeno? (0 = NO, 1 = SI) ";
-      cin >> oxygenflowON;
+			std::cout << "Tipo di segnale (0 = costante, 1 = sinusoidale, 2 = onda quadra, 3 = impulso singolo): ";
+			std::cin >> ft;
+      std::cout << "Si modula anche l'ossigeno? (0 = NO, 1 = SI) ";
+      std::cin >> oxygenflowON;
 			}
 		else 
 			{
@@ -274,16 +274,16 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			switch (ft) 
 				{
 				case 0:
-					cout << "Segnale costante" << endl;
+					std::cout << "Segnale costante" << std::endl;
 					break;
 				case 1:
-					cout << "Segnale sinusoidale" << endl;
+					std::cout << "Segnale sinusoidale" << std::endl;
 					break;				
 				case 2:
-					cout << "Onda quadra" << endl;
+					std::cout << "Onda quadra" << std::endl;
 					break;
 				case 3:
-					cout << "Impulso singolo" << endl;
+					std::cout << "Impulso singolo" << std::endl;
 					break;
 				default:
 					break;
@@ -298,13 +298,13 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case ConstantSignal:
 			if( terminal )
 				{
-				cout << "ampiezza del flusso costante (microlitri/min): ";
-				cin >> flow_min;
+				std::cout << "ampiezza del flusso costante (microlitri/min): ";
+				std::cin >> flow_min;
 				}
 			else 
 				{
 				commands >> flow_min;
-				cout << "ampiezza del flusso costante (microlitri/min): " << flow_min <<endl;
+				std::cout << "ampiezza del flusso costante (microlitri/min): " << flow_min <<std::endl;
 				}
 
 			flow_min *= (1.e9)/60.;			// conversione da microlitri/min a micron^3/s
@@ -314,25 +314,25 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case SineSignal:
 			if( terminal )
 				{
-				cout << "flusso minimo (microlitri/min): ";
-				cin >> flow_min;
-				cout << "flusso massimo (microlitri/min): ";
-				cin >> flow_max;
-				cout << "Istante di inizio della modulazione (s): ";
-				cin >> flow_start;
-				cout << "Periodo di modulazione (s): ";
-				cin >> flow_period;
+				std::cout << "flusso minimo (microlitri/min): ";
+				std::cin >> flow_min;
+				std::cout << "flusso massimo (microlitri/min): ";
+				std::cin >> flow_max;
+				std::cout << "Istante di inizio della modulazione (s): ";
+				std::cin >> flow_start;
+				std::cout << "Periodo di modulazione (s): ";
+				std::cin >> flow_period;
 				}
 			else 
 				{
 				commands >> flow_min;
-				cout << "flusso minimo (microlitri/min): " << flow_min << endl;
+				std::cout << "flusso minimo (microlitri/min): " << flow_min << std::endl;
 				commands >> flow_max;
-				cout << "flusso massimo (microlitri/min): " << flow_max << endl;
+				std::cout << "flusso massimo (microlitri/min): " << flow_max << std::endl;
 				commands >> flow_start;
-				cout << "Istante di inizio della modulazione (s): " << flow_start << endl;
+				std::cout << "Istante di inizio della modulazione (s): " << flow_start << std::endl;
 				commands >> flow_period;
-				cout << "Periodo di modulazione (s): " << flow_period << endl;
+				std::cout << "Periodo di modulazione (s): " << flow_period << std::endl;
 				}
 
 			flow_min *= (1.e9)/60.;			// conversione da microlitri/min a micron^3/s
@@ -343,29 +343,29 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case SquareSignal:
 			if( terminal )
 				{
-				cout << "flusso minimo (microlitri/min): ";
-				cin >> flow_min;
-				cout << "flusso massimo (microlitri/min): ";
-				cin >> flow_max;
-				cout << "Istante di inizio della modulazione (s): ";
-				cin >> flow_start;
-				cout << "Durata della fase ON (s): ";
-				cin >> flow_tON;
-				cout << "Durata della fase OFF (s): ";
-				cin >> flow_tOFF;
+				std::cout << "flusso minimo (microlitri/min): ";
+				std::cin >> flow_min;
+				std::cout << "flusso massimo (microlitri/min): ";
+				std::cin >> flow_max;
+				std::cout << "Istante di inizio della modulazione (s): ";
+				std::cin >> flow_start;
+				std::cout << "Durata della fase ON (s): ";
+				std::cin >> flow_tON;
+				std::cout << "Durata della fase OFF (s): ";
+				std::cin >> flow_tOFF;
 				}
 			else 
 				{
 				commands >> flow_min;
-				cout << "flusso minimo (microlitri/min): " << flow_min << endl;
+				std::cout << "flusso minimo (microlitri/min): " << flow_min << std::endl;
 				commands >> flow_max;
-				cout << "flusso massimo (microlitri/min): " << flow_max << endl;
+				std::cout << "flusso massimo (microlitri/min): " << flow_max << std::endl;
 				commands >> flow_start;
-				cout << "Istante di inizio della modulazione (s): " << flow_start << endl;
+				std::cout << "Istante di inizio della modulazione (s): " << flow_start << std::endl;
 				commands >> flow_tON;
-				cout << "Durata della fase ON (s): " << flow_tON << endl;
+				std::cout << "Durata della fase ON (s): " << flow_tON << std::endl;
 				commands >> flow_tOFF;
-				cout << "Durata della fase OFF (s): " << flow_tOFF << endl;
+				std::cout << "Durata della fase OFF (s): " << flow_tOFF << std::endl;
 				}
 
 			flow_min *= (1.e9)/60.;			// conversione da microlitri/min a micron^3/s
@@ -376,25 +376,25 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case Pulse:
 			if( terminal )
 				{
-				cout << "flusso minimo (microlitri/min): ";
-				cin >> flow_min;
-				cout << "flusso massimo (microlitri/min): ";
-				cin >> flow_max;
-				cout << "Istante di inizio dell'impulso (s): ";
-				cin >> flow_start;
-				cout << "Istante di fine dell'impulso (s): ";
-				cin >> flow_stop;
+				std::cout << "flusso minimo (microlitri/min): ";
+				std::cin >> flow_min;
+				std::cout << "flusso massimo (microlitri/min): ";
+				std::cin >> flow_max;
+				std::cout << "Istante di inizio dell'impulso (s): ";
+				std::cin >> flow_start;
+				std::cout << "Istante di fine dell'impulso (s): ";
+				std::cin >> flow_stop;
 				}
 			else 
 				{
 				commands >> flow_min;
-				cout << "flusso minimo (microlitri/min): " << flow_min << endl;
+				std::cout << "flusso minimo (microlitri/min): " << flow_min << std::endl;
 				commands >> flow_max;
-				cout << "flusso massimo (microlitri/min): " << flow_max << endl;
+				std::cout << "flusso massimo (microlitri/min): " << flow_max << std::endl;
 				commands >> flow_start;
-				cout << "Istante di inizio dell'impulso (s): " << flow_start << endl;
+				std::cout << "Istante di inizio dell'impulso (s): " << flow_start << std::endl;
 				commands >> flow_stop;
-				cout << "Istante di fine dell'impulso (s): " << flow_stop << endl;
+				std::cout << "Istante di fine dell'impulso (s): " << flow_stop << std::endl;
 				}
 
 			flow_min *= (1.e9)/60.;			// conversione da microlitri/min a micron^3/s
@@ -414,14 +414,14 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 // la sezione che segue è del tutto analoga alla precedente e serve a definire la dose di radiazione somministrata alle cellule	
 	if( terminal )
 		{
-		cout << "\nDose di radiazione nulla (0) o non nulla (1)? ";
-		cin >> doseON;
+		std::cout << "\nDose di radiazione nulla (0) o non nulla (1)? ";
+		std::cin >> doseON;
 		}
 	else 
 		{
 		commands >> doseON;
 		}
-	if(!doseON) cout << "In questo run la dose e' nulla" << endl;
+	if(!doseON) std::cout << "In questo run la dose e' nulla" << std::endl;
 
 	if(!doseON)
 		{
@@ -432,8 +432,8 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 		{
 		if( terminal )
 			{
-			cout << "Tipo di segnale (0 = costante, 1 = sinusoidale, 2 = onda quadra, 3 = impulso singolo): ";
-			cin >> ft;
+			std::cout << "Tipo di segnale (0 = costante, 1 = sinusoidale, 2 = onda quadra, 3 = impulso singolo): ";
+			std::cin >> ft;
 			}
 		else 
 			{
@@ -441,16 +441,16 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			switch (ft) 
 				{
 				case 0:
-					cout << "Segnale costante" << endl;
+					std::cout << "Segnale costante" << std::endl;
 					break;
 				case 1:
-					cout << "Segnale sinusoidale" << endl;
+					std::cout << "Segnale sinusoidale" << std::endl;
 					break;				
 				case 2:
-					cout << "Onda quadra" << endl;
+					std::cout << "Onda quadra" << std::endl;
 					break;
 				case 3:
-					cout << "Impulso singolo" << endl;
+					std::cout << "Impulso singolo" << std::endl;
 					break;
 				default:
 					break;
@@ -464,13 +464,13 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case ConstantSignal:
 			if( terminal )
 				{
-				cout << "ampiezza della dose-rate costante (Gy/s): ";
-				cin >> dose_rate_min;
+				std::cout << "ampiezza della dose-rate costante (Gy/s): ";
+				std::cin >> dose_rate_min;
 				}
 			else 
 				{
 				commands >> dose_rate_min;
-				cout << "ampiezza della dose-rate costante (Gy/s): " << dose_rate_min << endl;
+				std::cout << "ampiezza della dose-rate costante (Gy/s): " << dose_rate_min << std::endl;
 				}
 
 			dose_rateSignal = EnvironmentalSignal( dose_rate_min );
@@ -479,25 +479,25 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case SineSignal:
 			if( terminal )
 				{
-				cout << "dose-rate minima (Gy/s): ";
-				cin >> dose_rate_min;
-				cout << "dose-rate massima (Gy/s): ";
-				cin >> dose_rate_max;
-				cout << "Istante di inizio della modulazione (s): ";
-				cin >> dose_rate_start;
-				cout << "Periodo di modulazione (s): ";
-				cin >> dose_rate_period;
+				std::cout << "dose-rate minima (Gy/s): ";
+				std::cin >> dose_rate_min;
+				std::cout << "dose-rate massima (Gy/s): ";
+				std::cin >> dose_rate_max;
+				std::cout << "Istante di inizio della modulazione (s): ";
+				std::cin >> dose_rate_start;
+				std::cout << "Periodo di modulazione (s): ";
+				std::cin >> dose_rate_period;
 				}
 			else 
 				{
 				commands >> dose_rate_min;
-				cout << "dose-rate minima (Gy/s): " << dose_rate_min << endl;
+				std::cout << "dose-rate minima (Gy/s): " << dose_rate_min << std::endl;
 				commands >> dose_rate_max;
-				cout << "dose-rate massima (Gy/s): " << dose_rate_max << endl;
+				std::cout << "dose-rate massima (Gy/s): " << dose_rate_max << std::endl;
 				commands >> dose_rate_start;
-				cout << "Istante di inizio della modulazione (s): " << dose_rate_start << endl;
+				std::cout << "Istante di inizio della modulazione (s): " << dose_rate_start << std::endl;
 				commands >> dose_rate_period;
-				cout << "Periodo di modulazione (s): " << dose_rate_period << endl;
+				std::cout << "Periodo di modulazione (s): " << dose_rate_period << std::endl;
 				}
 
 			dose_rateSignal = EnvironmentalSignal( dose_rate_type, dose_rate_min, dose_rate_max, dose_rate_start, dose_rate_period );
@@ -506,29 +506,29 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case SquareSignal:
 			if( terminal )
 				{
-				cout << "dose-rate minima (Gy/s): ";
-				cin >> dose_rate_min;
-				cout << "dose-rate massima (Gy/s): ";
-				cin >> dose_rate_max;
-				cout << "Istante di inizio della modulazione (s): ";
-				cin >> dose_rate_start;
-				cout << "Durata della fase ON (s): ";
-				cin >> dose_rate_tON;
-				cout << "Durata della fase OFF (s): ";
-				cin >> dose_rate_tOFF;
+				std::cout << "dose-rate minima (Gy/s): ";
+				std::cin >> dose_rate_min;
+				std::cout << "dose-rate massima (Gy/s): ";
+				std::cin >> dose_rate_max;
+				std::cout << "Istante di inizio della modulazione (s): ";
+				std::cin >> dose_rate_start;
+				std::cout << "Durata della fase ON (s): ";
+				std::cin >> dose_rate_tON;
+				std::cout << "Durata della fase OFF (s): ";
+				std::cin >> dose_rate_tOFF;
 				}
 			else 
 				{
 				commands >> dose_rate_min;
-				cout << "dose-rate minima (Gy/s): " << dose_rate_min  << endl;
+				std::cout << "dose-rate minima (Gy/s): " << dose_rate_min  << std::endl;
 				commands >> dose_rate_max;
-				cout << "dose-rate massima (Gy/s): " << dose_rate_max  << endl;
+				std::cout << "dose-rate massima (Gy/s): " << dose_rate_max  << std::endl;
 				commands >> dose_rate_start;
-				cout << "Istante di inizio della modulazione (s): " << dose_rate_start  << endl;
+				std::cout << "Istante di inizio della modulazione (s): " << dose_rate_start  << std::endl;
 				commands >> dose_rate_tON;
-				cout << "Durata della fase ON (s): " << dose_rate_tON  << endl;
+				std::cout << "Durata della fase ON (s): " << dose_rate_tON  << std::endl;
 				commands >> dose_rate_tOFF;
-				cout << "Durata della fase OFF (s): " << dose_rate_tOFF  << endl;
+				std::cout << "Durata della fase OFF (s): " << dose_rate_tOFF  << std::endl;
 				}
 
 			dose_rateSignal = EnvironmentalSignal( dose_rate_type, dose_rate_min, dose_rate_max, dose_rate_start, dose_rate_tON, dose_rate_tOFF );
@@ -537,25 +537,25 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 			case Pulse:
 			if( terminal )
 				{
-				cout << "dose-rate minima (Gy/s): ";
-				cin >> dose_rate_min;
-				cout << "dose-rate massima (Gy/s): ";
-				cin >> dose_rate_max;
-				cout << "Istante di inizio dell'impulso (s): ";
-				cin >> dose_rate_start;
-				cout << "Istante di fine dell'impulso (s): ";
-				cin >> dose_rate_stop;
+				std::cout << "dose-rate minima (Gy/s): ";
+				std::cin >> dose_rate_min;
+				std::cout << "dose-rate massima (Gy/s): ";
+				std::cin >> dose_rate_max;
+				std::cout << "Istante di inizio dell'impulso (s): ";
+				std::cin >> dose_rate_start;
+				std::cout << "Istante di fine dell'impulso (s): ";
+				std::cin >> dose_rate_stop;
 				}
 			else 
 				{
 				commands >> dose_rate_min;
-				cout << "dose-rate minima (Gy/s): " << dose_rate_min << endl;
+				std::cout << "dose-rate minima (Gy/s): " << dose_rate_min << std::endl;
 				commands >> dose_rate_max;
-				cout << "dose-rate massima (Gy/s): " << dose_rate_max << endl;
+				std::cout << "dose-rate massima (Gy/s): " << dose_rate_max << std::endl;
 				commands >> dose_rate_start;
-				cout << "Istante di inizio dell'impulso (s): " << dose_rate_start << endl;
+				std::cout << "Istante di inizio dell'impulso (s): " << dose_rate_start << std::endl;
 				commands >> dose_rate_stop;
-				cout << "Istante di fine dell'impulso (s): " << dose_rate_stop << endl;
+				std::cout << "Istante di fine dell'impulso (s): " << dose_rate_stop << std::endl;
 				}
 
 			dose_rateSignal = EnvironmentalSignal( dose_rate_type, dose_rate_min, dose_rate_max, dose_rate_start, dose_rate_stop );
@@ -600,8 +600,8 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 	
 	// if( terminal )
 		{
-		cout << "\nAmbiente iniziale: " << endl;
-		cout << Env << endl;						// printout delle condizioni ambientali
+		std::cout << "\nAmbiente iniziale: " << std::endl;
+		std::cout << Env << std::endl;						// printout delle condizioni ambientali
 		}
 	
 	double xmin_s = Env.Get_xmin();			// qui si recupera la forma del volume
@@ -658,31 +658,31 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 
 	if( terminal )
 		{
-		cout << "\nNumer of dt: " << dt << "steps Seconds between two file records: ";
-		cin >> nprint;
+		std::cout << "\nNumer of dt: " << dt << "steps Seconds between two file records: ";
+		std::cin >> nprint;
 		}
 	else 
 		{
 		commands >> nprint;
-		cout << "\nNumero di passi da " << dt << " secondi tra due record su file: " << nprint << endl;
+		std::cout << "\nNumero di passi da " << dt << " secondi tra due record su file: " << nprint << std::endl;
 		}
 
 	if( terminal )
 		{
-		cout << "\nNumero di passi da " << dt << " Number of 1-second steps between two on-screen recordings: ";
-		cin >> nscreen;
+		std::cout << "\nNumero di passi da " << dt << " Number of 1-second steps between two on-screen recordings: ";
+		std::cin >> nscreen;
 		}
 	else 
 		{
 		commands >> nscreen;
-		cout << "\nNumero di passi da " << dt << " secondi tra due record su schermo: " << nscreen << endl;
+		std::cout << "\nNumero di passi da " << dt << " secondi tra due record su schermo: " << nscreen << std::endl;
 		}
     
 // gestione eventi speciali
     if( terminal )
         {
-        cout << "\nEvento speciale? (NO = 0, SI = 1) ";
-        cin >> eventON;
+        std::cout << "\nEvento speciale? (NO = 0, SI = 1) ";
+        std::cin >> eventON;
         }
     else
         {
@@ -691,28 +691,28 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
     
     if( eventON )
         {
-        cout << "In questo run c'e' un evento speciale" << endl;
+        std::cout << "In questo run c'e' un evento speciale" << std::endl;
             
         if( terminal )
             {
-            cout << "Epoca dell'evento speciale: ";
-            cin >> EventTime;
+            std::cout << "Epoca dell'evento speciale: ";
+            std::cin >> EventTime;
             }
         else
             {
             commands >> EventTime;
-            cout << "\nEpoca dell'evento speciale: " << EventTime << endl;
+            std::cout << "\nEpoca dell'evento speciale: " << EventTime << std::endl;
             }
 
         if( terminal )
             {
-            cout << "probabilita' dell'evento speciale (2 = si verifica un sono evento): ";
-            cin >> pAlt;
+            std::cout << "probabilita' dell'evento speciale (2 = si verifica un sono evento): ";
+            std::cin >> pAlt;
             }
         else
             {
             commands >> pAlt;
-            cout << "\nprobabilita' dell'evento speciale (2 = si verifica un sono evento): " << pAlt << endl;
+            std::cout << "\nprobabilita' dell'evento speciale (2 = si verifica un sono evento): " << pAlt << std::endl;
             }
         }
     else
@@ -739,7 +739,7 @@ void vbl::CellsSystem::InitializeCellsSystem( bool terminal )
 
 // questo metodo definisce i nomi dei files 
 // 
-void vbl::CellsSystem::RunDefinition(  ) 
+void CellsSystem::RunDefinition(  ) 
 {
 
 	
@@ -754,14 +754,14 @@ void vbl::CellsSystem::RunDefinition(  )
 */
 
 // qui si fa l'update del numero del run	
-	fstream runfile( "./runs/run_number.txt" );			// si cerca di aprire in lettura il file run_number.txt
+	std::fstream runfile( "./runs/run_number.txt" );			// si cerca di aprire in lettura il file run_number.txt
 	if( !runfile )	// se non riesce ... 
 		{
 		
-		ofstream fileout( "./runs/run_number.txt" );	// ... allora si crea il file e ci si mette il numero 1
+		std::ofstream fileout( "./runs/run_number.txt" );	// ... allora si crea il file e ci si mette il numero 1
 		run = 1;
-		fileout << "name" << endl;
-		fileout << run << endl;
+		fileout << "name" << std::endl;
+		fileout << run << std::endl;
 		fileout.close();
 		
 		}
@@ -773,8 +773,8 @@ void vbl::CellsSystem::RunDefinition(  )
 		runfile.close();							// si chiude il file in lettura ...
 		run++;										// ... si incrementa il numero di run
 		runfile.open( "./runs/run_number.txt");		// ... quindi si sovrascrive il vecchio file 
-		runfile << machine << endl;					// con il nome della macchina
-		runfile << run << endl;						// e con il nuovo numero di run
+		runfile << machine << std::endl;					// con il nome della macchina
+		runfile << run << std::endl;						// e con il nuovo numero di run
 		runfile.close();
 		}
 
@@ -783,10 +783,10 @@ void vbl::CellsSystem::RunDefinition(  )
 	sprintf(str,"./runs/run_%d-%s/",run,machine.c_str());
 	//dir = dir+str;
 	dir = str;
-	cout << endl << "I/O directory: " << dir << "\n\n";
+	std::cout << std::endl << "I/O directory: " << dir << "\n\n";
 
 // qui si crea il directory di output
-	string command;
+	std::string command;
 	command = "mkdir ";
 	command.append(dir);
 	system( command.c_str() );
@@ -806,23 +806,23 @@ void vbl::CellsSystem::RunDefinition(  )
 	
 	
 // apertura del file stream per l'output su file delle impostazioni del run e quindi output
-	string runfilename = dir+"run_data.txt";
-	ofstream run_data( runfilename.c_str() );
-	run_data << "Parametri del run " << run << endl << endl;
+	std::string runfilename = dir+"run_data.txt";
+	std::ofstream run_data( runfilename.c_str() );
+	run_data << "Parametri del run " << run << std::endl << std::endl;
 	
 // printout dei parametri ottenuti da terminale o command file
-	run_data << "Timestep (s): " << dt << endl;
-	run_data << "Precisione per CellsSystem::Diff: " << eps << endl;
-	run_data << "Precisione nella determinazione delle velocita (micron/s): " << delta_vmax << endl;
-	run_data << "Durata inizializzazione (s): " << t_ini << endl;
-	run_data << "Durata max della simulazione (s) " << tmax << endl;
-	run_data << endl;
+	run_data << "Timestep (s): " << dt << std::endl;
+	run_data << "Precisione per CellsSystem::Diff: " << eps << std::endl;
+	run_data << "Precisione nella determinazione delle velocita (micron/s): " << delta_vmax << std::endl;
+	run_data << "Durata inizializzazione (s): " << t_ini << std::endl;
+	run_data << "Durata max della simulazione (s) " << tmax << std::endl;
+	run_data << std::endl;
 
 
 // printout dei dati ambientali
 	run_data << "Ambiente iniziale: \n";
-	run_data << Env_0 << endl;
-	run_data << endl;
+	run_data << Env_0 << std::endl;
+	run_data << std::endl;
 /*
 	run_data << "Ambiente attuale: \n";
 	run_data << CellsSystem->Env << endl;
@@ -832,41 +832,41 @@ void vbl::CellsSystem::RunDefinition(  )
 // printout di flusso e dose-rate
 	if( flowON )
 		{
-		run_data << "Flusso -- non nullo -- con le seguenti caratteristiche (ampiezze in m^3/s):  " << endl;
-		run_data << flowSignal << endl;
+		run_data << "Flusso -- non nullo -- con le seguenti caratteristiche (ampiezze in m^3/s):  " << std::endl;
+		run_data << flowSignal << std::endl;
 		}
 	else
-		run_data << "Flusso -- nullo -- " << endl;
+		run_data << "Flusso -- nullo -- " << std::endl;
 
 	if( doseON )
 		{
-		run_data << "Dose di radiazione -- non nulla -- con le seguenti caratteristiche (ampiezze in Gy/s):  " << endl;
-		run_data << dose_rateSignal << endl;
+		run_data << "Dose di radiazione -- non nulla -- con le seguenti caratteristiche (ampiezze in Gy/s):  " << std::endl;
+		run_data << dose_rateSignal << std::endl;
 		}
 	else
-		run_data << "Dose di radiazione -- nulla --" << endl;
+		run_data << "Dose di radiazione -- nulla --" << std::endl;
 
 // printout dell'evento speciale 
        if( eventON )
       		{
-        	run_data<< "In questo run c'e' un evento speciale" << endl;
-                run_data<< "Epoca dell'evento speciale: " << EventTime << endl;
-		run_data<< "\nprobabilita' dell'evento speciale: " << pAlt << endl;
+        	run_data<< "In questo run c'e' un evento speciale" << std::endl;
+                run_data<< "Epoca dell'evento speciale: " << EventTime << std::endl;
+		run_data<< "\nprobabilita' dell'evento speciale: " << pAlt << std::endl;
                 }
       else
-                run_data<< "In questo run non c'e' alcun evento speciale" << endl;
+                run_data<< "In questo run non c'e' alcun evento speciale" << std::endl;
           
 	
 // printout del tipo cellulare	
-	run_data << "\nFenotipo cellulare iniziale (cellula 0): \n" << endl;
-	run_data << *type[0] << endl;
+	run_data << "\nFenotipo cellulare iniziale (cellula 0): \n" << std::endl;
+	run_data << *type[0] << std::endl;
 	
 // printout della prima cellula
-	run_data << "\nCellula iniziale (cellula 0):\n" << endl;
+	run_data << "\nCellula iniziale (cellula 0):\n" << std::endl;
 	PrintCell( run_data, 0 );
 
 // printout del numero di cellule iniziali		
-	run_data << "\nNumero di cellule iniziali: " << nstart << endl;
+	run_data << "\nNumero di cellule iniziali: " << nstart << std::endl;
 
 // chiusura del file di logging del run	
 	run_data.close();
@@ -898,14 +898,14 @@ void vbl::CellsSystem::RunDefinition(  )
 	
 	part = 0;									// la parte attuale e' part = 0
 
-	string partfilename = dir+"part.txt";
-	ofstream partfile( partfilename.c_str() );	// qui si crea il file che contiene il numero di parte e si scrive la parte attuale (0)
-	partfile << part << endl;
+	std::string partfilename = dir+"part.txt";
+	std::ofstream partfile( partfilename.c_str() );	// qui si crea il file che contiene il numero di parte e si scrive la parte attuale (0)
+	partfile << part << std::endl;
 	partfile.close();
 
 // stampa iniziale su error log
 	
-	errorlog_file << "Errors and warnings for run " << run << "\n" << endl;
+	errorlog_file << "Errors and warnings for run " << run << "\n" << std::endl;
 	
 
 }
@@ -913,7 +913,7 @@ void vbl::CellsSystem::RunDefinition(  )
 // 
 // versione overloaded che definisce i nomi dei files nel caso di continuazione di un run
 // 
-void vbl::CellsSystem::RunDefinition( string run_name ) 
+void CellsSystem::RunDefinition( std::string run_name ) 
 {
 
 /*
@@ -928,12 +928,12 @@ void vbl::CellsSystem::RunDefinition( string run_name )
 
 // qui si definisce il nome del directory di output
 	dir = "./runs/"+run_name+"/";
-	cout << endl << "I/O directory: " << dir << "\n\n";
+	std::cout << std::endl << "I/O directory: " << dir << "\n\n";
 	
 	
 // qui si definisce la parte attuale
-	string partfilename = dir+"part.txt";
-	fstream partfile( partfilename.c_str() );	// qui si legge il file che contiene il numero di parte e dell'ultima configurazione scritta
+	std::string partfilename = dir+"part.txt";
+	std::fstream partfile( partfilename.c_str() );	// qui si legge il file che contiene il numero di parte e dell'ultima configurazione scritta
 	partfile >> part;
 	partfile.close();
 	
@@ -945,7 +945,7 @@ void vbl::CellsSystem::RunDefinition( string run_name )
 	part++;										// qui si incrementa il numero di parte e si riscrive il file
 	
 	partfile.open( partfilename.c_str() );
-	partfile << part << endl;
+	partfile << part << std::endl;
 	partfile.close();
 	
 	sprintf(partname,"%d",part);				// stringa con il nuovo numero di parte
@@ -978,7 +978,7 @@ void vbl::CellsSystem::RunDefinition( string run_name )
 
 // stampa iniziale su error log
 	
-	errorlog_file << "Errors and warnings for run " << run << "\n" << endl;
+	errorlog_file << "Errors and warnings for run " << run << "\n" << std::endl;
 	
 
 }
@@ -988,12 +988,12 @@ void vbl::CellsSystem::RunDefinition( string run_name )
 
 // questo metodo scrive il CellsSystem per poterlo ricaricare e riutilizzare
 // 
-void vbl::CellsSystem::WriteCellsSystem( )
+void CellsSystem::WriteCellsSystem( )
 {
 
-	ofstream stream;
+	std::ofstream stream;
 	
- 	stream.open( cellsys_out_filename.c_str(), ios::binary );
+ 	stream.open( cellsys_out_filename.c_str(), std::ios::binary );
 
 // parametri per la definizione del run	
 	stream.write( (char*)(&sim_type), sizeof(int) );
@@ -1154,38 +1154,38 @@ void vbl::CellsSystem::WriteCellsSystem( )
 
 // questo metodo legge il CellsSystem per poterlo ricaricare e riutilizzare
 // 
-void vbl::CellsSystem::ReadCellsSystem( )
+void CellsSystem::ReadCellsSystem( )
 { 
 
-	ifstream stream;
+	std::ifstream stream;
 	
-	stream.open( cellsys_in_filename.c_str(), ios::binary );
+	stream.open( cellsys_in_filename.c_str(), std::ios::binary );
 	if( !stream.is_open() )
 		{
-		cout << "Impossibile aprire il file " << cellsys_in_filename << ", exiting ... " << endl;
+		std::cout << "Impossibile aprire il file " << cellsys_in_filename << ", exiting ... " << std::endl;
 		exit(-1);
 		}
 
 // parametri per la definizione del run	
 	stream.read( (char*)(&sim_type), sizeof(int) );
-	cout << "Tipo di simulazione: " << sim_type << endl;
+	std::cout << "Tipo di simulazione: " << sim_type << std::endl;
 	stream.read( (char*)(&run), sizeof(int) );
-	cout << "Run: " << run << endl;
+	std::cout << "Run: " << run << std::endl;
 	stream.read( (char*)(&dt), sizeof(double) );
-	cout << "dt (s): " << dt << endl;
+	std::cout << "dt (s): " << dt << std::endl;
 	stream.read( (char*)(&dt_sm), sizeof(double) );
-	cout << "dt_sm (s): " << dt_sm << endl;
+	std::cout << "dt_sm (s): " << dt_sm << std::endl;
 	stream.read( (char*)(&t), sizeof(double) );
 	stream.read( (char*)(&t_ini), sizeof(double) );
 	stream.read( (char*)(&treal), sizeof(double) );
-	cout << "tempo simulato raggiunto (s): " << treal << endl;
+	std::cout << "tempo simulato raggiunto (s): " << treal << std::endl;
 	stream.read( (char*)(&tmax), sizeof(double) );
 	stream.read( (char*)(&tsm_start), sizeof(double) );
 	stream.read( (char*)(&tsm_stop), sizeof(double) );
 	stream.read( (char*)(&slow_motion), sizeof(bool) );
 
 	stream.read( (char*)(&t_CPU_max), sizeof(double) );
-	cout << "tempo di CPU max per una frazione di run (s): " << t_CPU_max << endl;
+	std::cout << "tempo di CPU max per una frazione di run (s): " << t_CPU_max << std::endl;
 
 	stream.read( (char*)(&nstep), sizeof(unsigned long) );
 	stream.read( (char*)(&nstep_start), sizeof(unsigned long) );
@@ -1202,21 +1202,21 @@ void vbl::CellsSystem::ReadCellsSystem( )
 	ncells = 0;
 	unsigned long old_ncells;
 	stream.read( (char*)(&old_ncells), sizeof(unsigned long) );
-	cout << "numero di cellule: " << old_ncells << endl;
+	std::cout << "numero di cellule: " << old_ncells << std::endl;
 	
 	stream.read( (char*)(&alive), sizeof(unsigned long) );
-	cout << "di cui vive: " << alive << endl;
+	std::cout << "di cui vive: " << alive << std::endl;
 	stream.read( (char*)(&ntypes), sizeof(unsigned long) );
-	cout << "numero di fenotipi: " << ntypes << endl;
+	std::cout << "numero di fenotipi: " << ntypes << std::endl;
 
 // parametri ambientali
 	// ambiente iniziale Env_0
 	Env_0.ReadEnvironment( stream );
-	cout << "volume ambiente iniziale (microlitri) " << 1e-9*Env_0.GetEnvironmentvolume() << endl;
+	std::cout << "volume ambiente iniziale (microlitri) " << 1e-9*Env_0.GetEnvironmentvolume() << std::endl;
 	
 	// ambiente attuale Env
 	Env.ReadEnvironment( stream );
-	cout << "volume ambiente attuale (microlitri) " << 1e-9*Env.GetEnvironmentvolume() << endl;
+	std::cout << "volume ambiente attuale (microlitri) " << 1e-9*Env.GetEnvironmentvolume() << std::endl;
 
 	// flussi
 	stream.read( (char*)(&flowON), sizeof(bool) );
@@ -1226,7 +1226,7 @@ void vbl::CellsSystem::ReadCellsSystem( )
 	flowSignal.ReadEnvironmentalSignal( stream );
 	dose_rateSignal.ReadEnvironmentalSignal( stream );
 	
-	cout << "flussi e segnali letti ... " << endl;
+	std::cout << "flussi e segnali letti ... " << std::endl;
 	
 	
 // vettore dei tipi cellulari
@@ -1238,7 +1238,7 @@ void vbl::CellsSystem::ReadCellsSystem( )
 		CellTypeVector[k].ReadCellType( stream );
 		}
 	
-	cout << "lettura dei tipi cellulari completata " << endl;
+	std::cout << "lettura dei tipi cellulari completata " << std::endl;
 	
 	// maxdr e i dati sul flusso globale di O2 e AcL vengono ricalcolati 
 	
@@ -1386,7 +1386,7 @@ void vbl::CellsSystem::ReadCellsSystem( )
 // 		return false;
 // }
 
-bool vbl::CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
+bool CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 {
 
     double timestep; 
@@ -1411,7 +1411,7 @@ bool vbl::CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 	
 	if(!ready2start && t > t_ini)			// condizione di fine dell'inizializzazione dello stato cellulare
 		{
-		cout << "\nFine dell'inizializzazione\n" << endl;
+		std::cout << "\nFine dell'inizializzazione\n" << std::endl;
 		ready2start = true;
 		nstep_start = nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
 		}	
@@ -1436,7 +1436,7 @@ bool vbl::CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
 // funzione che restituisce il tempo di CPU in secondi
 //
 // 
-void vbl::CellsSystem::CPU_timer( timer_button button )
+void CellsSystem::CPU_timer( timer_button button )
 {
 #pragma omp critical
 	{
@@ -1519,7 +1519,7 @@ void vbl::CellsSystem::CPU_timer( timer_button button )
 // // funzione che restituisce il tempo trascorso in secondi
 // //
 // // 
-// double vbl::CellsSystem::Timing( bool reset )
+// double CellsSystem::Timing( bool reset )
 // {
 // 
 // 	if(reset) 
@@ -1544,7 +1544,7 @@ void vbl::CellsSystem::CPU_timer( timer_button button )
 //
 // ***************************************************************
 //
-void vbl::CellsSystem::Printout()
+void CellsSystem::Printout()
 {
 
 	static bool first_print=true;
@@ -1554,8 +1554,8 @@ void vbl::CellsSystem::Printout()
 		{
 		first_print = false;
 		
-		cout << "\n   nstep     CPU time  (%diff)       time |         t       treal |lastname ncells alive|   %G0  %G1m  %G1p    %S   %G2   %M  %dead  |    volume" \
-			<< "    sph.r       %V |    av_vol     av_r   av_M   av_ATP |   env_pH" << endl;
+		std::cout << "\n   nstep     CPU time  (%diff)       time |         t       treal |lastname ncells alive|   %G0  %G1m  %G1p    %S   %G2   %M  %dead  |    volume" \
+			<< "    sph.r       %V |    av_vol     av_r   av_M   av_ATP |   env_pH" << std::endl;
 		
 		screen_dump_file << "nstep\ttotal CPU time\tdelta CPU time\t(%diff)" \
 			<< "\ttime\tt\ttreal\tnumtot\tncells\talive\t%G0\t%G1m\t%G1p\t%S\t%G2\t%M\t%dead\tvolume" \
@@ -1565,9 +1565,9 @@ void vbl::CellsSystem::Printout()
 			<< "\tloop_count_average\tloop_count_max\tloop_count_min" \
 			<< "\tn_mitoses_average\tn_mitoses_max\tn_mitoses_min" \
 			<< "\tmin_Gin\tmax_Gin\tmin_Gext\tmax_Gext\tmin_O2\tmax_O2\tmin_Ain\tmax_Ain\tmin_Aext\tmax_Aext" \
-			<< "\tmin_AcLin\tmax_AcLin\tmin_AcLext\tmax_AcLext\tmin_extvolume\tmax_extvolume" << endl;
+			<< "\tmin_AcLin\tmax_AcLin\tmin_AcLext\tmax_AcLext\tmin_extvolume\tmax_extvolume" << std::endl;
 		
-		convlog_file << "nstep\tG_env\tO2env\tA_env\tAcL_env\tGin\tGext\tO2\tAin\tAext\tAcLin\tAcLext\tATPp" << endl;
+		convlog_file << "nstep\tG_env\tO2env\tA_env\tAcL_env\tGin\tGext\tO2\tAin\tAext\tAcLin\tAcLext\tATPp" << std::endl;
 		}
 
 // variabili locali per le statistiche	
@@ -1623,42 +1623,42 @@ void vbl::CellsSystem::Printout()
 	
 // output su schermo
 
-	cout << setw(8) << right << nstep;																					// numero di passi
-	cout << " " << setw(12) << setprecision(3) << fixed << right << showpoint << delta_t_CPU;							// tempo di CPU
-	cout << " " << setw(8) << setprecision(1) << fixed << right << showpoint << (delta_t_CPU>0 ? 100.*t_CPU_int/delta_t_CPU : 0);	// frazione di tempo di CPU passata in diff
-	cout << " " << setw(10) << setprecision(0) << fixed << right << showpoint << timing;								// tempo reale
-	cout << " | " << setw(10) << setprecision(3) << fixed << right << showpoint << t/3600.;								// tempo di simulazione
+	std::cout << std::setw(8) << std::right << nstep;																					// numero di passi
+	std::cout << " " << std::setw(12) << std::setprecision(3) << std::fixed << std::right << std::showpoint << delta_t_CPU;							// tempo di CPU
+	std::cout << " " << std::setw(8) <<std::setprecision(1) << std::fixed << std::right << std::showpoint << (delta_t_CPU>0 ? 100.*t_CPU_int/delta_t_CPU : 0);	// frazione di tempo di CPU passata in diff
+	std::cout << " " << std::setw(10) << std::setprecision(0) << std::fixed << std::right << std::showpoint << timing;								// tempo reale
+	std::cout << " | " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << t/3600.;								// tempo di simulazione
     if(!slow_motion)
         {
-        cout << " " << setw(10) << setprecision(3) << fixed << right << showpoint << treal/3600.;							// tempo dalla partenza
-        cout << " ";
+        std::cout << " " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << treal/3600.;							// tempo dalla partenza
+        std::cout << " ";
         }
     else
         {
-        cout << " " << setw(10) << setprecision(6) << fixed << right << showpoint << treal-tsm_start;							// tempo dalla partenza
-        cout << "s";
+        std::cout << " " << std::setw(10) << std::setprecision(6) << std::fixed << std::right << std::showpoint << treal-tsm_start;							// tempo dalla partenza
+        std::cout << "s";
         }
-	cout << "| " << setw(6) << right << lastname;																		// numero totale di cellule 
-	cout << setw(6) << right << ncells;																		// numero totale di cellule
-	cout << " " << setw(6) << right << alive << " |";																	// numero di cellule vive
-	for(int k=0; k<Nphase-1; k++) cout << " " << setw(5) << setprecision(1) << fixed << right << 100.*((double)phase_counter[k])/alive; // % di cellule vive in ciascuna fase cellulare
-	cout << " " << setw(5) << setprecision(1) << fixed << right << 100*((double)phase_counter[Nphase-1])/ncells;	// % di cellule morte rispetto al totale
-	cout << "  | " << setw(9) << setprecision(3) << scientific << right << volume_totale;								// volume totale occupato dalle cellule
+	std::cout << "| " << std::setw(6) << std::right << lastname;																		// numero totale di cellule 
+	std::cout << std::setw(6) << std::right << ncells;																		// numero totale di cellule
+	std::cout << " " << std::setw(6) << std::right << alive << " |";																	// numero di cellule vive
+	for(int k=0; k<Nphase-1; k++) std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100.*((double)phase_counter[k])/alive; // % di cellule vive in ciascuna fase cellulare
+	std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100*((double)phase_counter[Nphase-1])/ncells;	// % di cellule morte rispetto al totale
+	std::cout << "  | " << std::setw(9) << std::setprecision(3) << std::scientific << std::right << volume_totale;								// volume totale occupato dalle cellule
 	
-	cout << " " << setw(8) << setprecision(2) << fixed << right << pow( 3.*volume_totale/(4.*PI), (double)0.333333333);		// raggio dello sferoide in micron
-	cout << " " << setw(8) << setprecision(5) << fixed << right << 100.*volume_totale/Env.GetEnvironmentvolume0();		// % volume occupato dalle cellule
-	cout << " | " << setw(9) << setprecision(3) << scientific << right << volume_totale_vive/alive;						// volume medio di una cellula viva
-	cout << " " << setw(8) << setprecision(2) << fixed << right << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);		// raggio medio di una cellula viva
-	cout << " " << setw(6) << setprecision(1) << fixed << right << av_mitocondri;										// numero medio di mitocondri
-	cout << " " << setw(8) << setprecision(2) << scientific << right << ATP_totale;										// ATPp medio per cellula
+	std::cout << " " << std::setw(8) << std::setprecision(2) << std::fixed << std::right << pow( 3.*volume_totale/(4.*PI), (double)0.333333333);		// raggio dello sferoide in micron
+	std::cout << " " << std::setw(8) << std::setprecision(5) << std::fixed << std::right << 100.*volume_totale/Env.GetEnvironmentvolume0();		// % volume occupato dalle cellule
+	std::cout << " | " << std::setw(9) << std::setprecision(3) << std::scientific << std::right << volume_totale_vive/alive;						// volume medio di una cellula viva
+	std::cout << " " << std::setw(8) << std::setprecision(2) << std::fixed << std::right << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);		// raggio medio di una cellula viva
+	std::cout << " " << std::setw(6) << std::setprecision(1) << std::fixed << std::right << av_mitocondri;										// numero medio di mitocondri
+	std::cout << " " << std::setw(8) << std::setprecision(2) << std::scientific << std::right << ATP_totale;										// ATPp medio per cellula
 
-	cout << " | " << setw(8) << setprecision(6) << fixed << right << Env.GetEnvironmentpH();							// pH ambientale
-	cout << " | ( ";
-	for(int k=0; k<7; k++) cout << death_cond[k] << " ";																// death condition
-	cout << ")";
-	cout << endl;
+	std::cout << " | " << std::setw(8) << std::setprecision(6) << std::fixed << std::right << Env.GetEnvironmentpH();							// pH ambientale
+	std::cout << " | ( ";
+	for(int k=0; k<7; k++) std::cout << death_cond[k] << " ";																// death condition
+	std::cout << ")";
+	std::cout << std::endl;
 	
-	cout.flush();
+	std::cout.flush();
 	
 	// screen dump su file
 	
@@ -1667,21 +1667,21 @@ void vbl::CellsSystem::Printout()
 	screen_dump_file << "\t" << delta_t_CPU;									// tempo di CPU
 	screen_dump_file << "\t" << (delta_t_CPU>0 ? 100.*t_CPU_int/delta_t_CPU : 0);	// frazione di tempo di CPU passata in diff
 	screen_dump_file << "\t" << timing;											// tempo reale
-	screen_dump_file << "\t" << fixed << t/3600.;								// tempo di simulazione
-	screen_dump_file << "\t" << fixed << treal/3600.;							// tempo dalla partenza
+	screen_dump_file << "\t" << std::fixed << t/3600.;								// tempo di simulazione
+	screen_dump_file << "\t" << std::fixed << treal/3600.;							// tempo dalla partenza
 	screen_dump_file << "\t" << lastname;										// numero totale di cellule
 	screen_dump_file << "\t" << ncells;											// numero totale di cellule
 	screen_dump_file << "\t" << alive;											// numero di cellule vive
 	for(int k=0; k<Nphase-1; k++) screen_dump_file << "\t" << 100*((double)phase_counter[k])/alive;	// conteggio in ciascuna fase cellulare
 	screen_dump_file << "\t" << 100*((double)phase_counter[Nphase-1])/ncells;	// % di cellule morte rispetto al totale
-	screen_dump_file << "\t" << scientific << volume_totale;					// volume totale occupato dalle cellule
+	screen_dump_file << "\t" << std::scientific << volume_totale;					// volume totale occupato dalle cellule
 	
 	screen_dump_file << "\t" << pow( 3.*volume_totale/(4.*PI), (double)0.333333333);// raggio dello sferoide in micron
 	screen_dump_file << "\t" << 100.*volume_totale/Env.GetEnvironmentvolume0();	// % volume occupato dalle cellule
-	screen_dump_file << "\t" << scientific << volume_totale_vive/alive;			// volume medio di una cellula viva
+	screen_dump_file << "\t" << std::scientific << volume_totale_vive/alive;			// volume medio di una cellula viva
 	screen_dump_file << "\t" << pow(3*volume_totale_vive/(alive*4*PI), (double)1./3.);// raggio medio di una cellula viva
 	screen_dump_file << "\t" << av_mitocondri;									// numero medio di mitocondri
-	screen_dump_file << "\t" << scientific << ATP_totale;						// ATPp medio per cellula
+	screen_dump_file << "\t" << std::scientific << ATP_totale;						// ATPp medio per cellula
 	screen_dump_file << "\t" << Env.GetEnvironmentpH();							// pH ambientale
 	for(int k=0; k<7; k++) screen_dump_file << "\t" << death_cond[k];			// death condition
 	screen_dump_file << "\t" << Get_idum();										// valore attuale del seme del generatore di numeri casuali
@@ -1696,24 +1696,24 @@ void vbl::CellsSystem::Printout()
 	screen_dump_file << "\t" << n_mitoses_max;									// numero max di mitosi passo-passo
 	screen_dump_file << "\t" << n_mitoses_min;									// numero min di mitosi passo-passo
 
-	screen_dump_file << "\t" << scientific << min_Gin;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_Gin;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_Gext;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_Gext;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_O2;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_O2;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_Ain;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_Ain;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_Aext;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_Aext;							// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_AcLin;						// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_AcLin;						// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_AcLext;						// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_AcLext;						// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << min_extvolume;					// altre statistiche estreme passo-passo (da StepStat)
-	screen_dump_file << "\t" << scientific << max_extvolume;					// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_Gin;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_Gin;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_Gext;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_Gext;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_O2;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_O2;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_Ain;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_Ain;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_Aext;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_Aext;							// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_AcLin;						// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_AcLin;						// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_AcLext;						// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_AcLext;						// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << min_extvolume;					// altre statistiche estreme passo-passo (da StepStat)
+	screen_dump_file << "\t" << std::scientific << max_extvolume;					// altre statistiche estreme passo-passo (da StepStat)
 
-	screen_dump_file << endl;
+	screen_dump_file << std::endl;
 	
 	screen_dump_file.flush();
 	
@@ -1722,7 +1722,7 @@ void vbl::CellsSystem::Printout()
 	convlog_file << nstep << "\t";
 	for(int k=0; k<NCONV_TEST-1; k++)
 		convlog_file << convergence_fail[k] << "\t";
-	convlog_file << convergence_fail[NCONV_TEST-1] << endl;
+	convlog_file << convergence_fail[NCONV_TEST-1] << std::endl;
 	
 	convlog_file.flush();
 
@@ -1735,7 +1735,7 @@ void vbl::CellsSystem::Printout()
 //
 // ***************************************************************
 //
-void vbl::CellsSystem::Print2file()
+void CellsSystem::Print2file()
 {
 
 	unsigned long n;
@@ -1754,7 +1754,7 @@ void vbl::CellsSystem::Print2file()
 			<< "\t env_AcLconc\t env_pH\t av_mother_age\t av_GAbsRate\t av_GConsRate\t av_AAbsRate\t av_AConsRate\t av_StoreFillRate "\
 			<< "\t av_StoreConsRate\t av_AcLRate\t av_AcLOutRate\t av_ATP_Ox\t av_ATP_NOx\t av_ATP2\t av_ATP3"\
 			<< "\t av_ConsATP\t av_ConsATP_1\t av_ConsATP_2\t av_ConsATP_3\t av_ConsATP_5\t av_ATPtot\t av_G\t av_A\t av_O2\t av_AcL"\
-			<< "\t AcLFlow\t O2flow\t av_neigh\t dev.st._neigh\t min_neigh\t max_neigh" << endl;
+			<< "\t AcLFlow\t O2flow\t av_neigh\t dev.st._neigh\t min_neigh\t max_neigh" << std::endl;
 		}
 
 // variabili locali per le statistiche	
@@ -1940,22 +1940,22 @@ void vbl::CellsSystem::Print2file()
 	
 	output_file << "\t" << 100.*volume_totale/Env.GetEnvironmentvolume0();			// % volume occupato dalle cellule
 	output_file << "\t" << 100.*volume_totale_vive/Env.GetEnvironmentvolume0();		// % volume occupato dalle cellule vive
-	output_file << "\t" << scientific << volume_totale_vive/alive;					// volume medio di una cellula viva
-	output_file << "\t" << scientific << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);	// raggio medio di una cellula viva
+	output_file << "\t" << std::scientific << volume_totale_vive/alive;					// volume medio di una cellula viva
+	output_file << "\t" << std::scientific << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);	// raggio medio di una cellula viva
 	output_file << "\t" << av_mitocondri;											// numero medio di mitocondri
 	output_file << "\t" << sqrt(fabs(av2_mitocondri-SQR(av_mitocondri)));			// dev. st. del numero di mitocondri
 	output_file << "\t" << min_mitocondri;											// numero min di mitocondri
 	output_file << "\t" << max_mitocondri;											// numero max di mitocondri
-	output_file << "\t" << scientific << av_DNA;									// DNA medio
-	output_file << "\t" << scientific << sqrt(fabs(av2_DNA-SQR(av_DNA)));			// dev. st. del DNA
-	output_file << "\t" << scientific << min_DNA;									// DNA minimo
-	output_file << "\t" << scientific << max_DNA;									// DNA massimo
-	output_file << "\t" << scientific << ATP_totale;								// ATPp medio per cellula
-	output_file << "\t" << scientific << ATP_prod_tot;								// ATP consumato in totale
-	output_file << "\t" << scientific << ATP_cons_tot;								// ATP prodotto in totale
+	output_file << "\t" << std::scientific << av_DNA;									// DNA medio
+	output_file << "\t" << std::scientific << sqrt(fabs(av2_DNA-SQR(av_DNA)));			// dev. st. del DNA
+	output_file << "\t" << std::scientific << min_DNA;									// DNA minimo
+	output_file << "\t" << std::scientific << max_DNA;									// DNA massimo
+	output_file << "\t" << std::scientific << ATP_totale;								// ATPp medio per cellula
+	output_file << "\t" << std::scientific << ATP_prod_tot;								// ATP consumato in totale
+	output_file << "\t" << std::scientific << ATP_cons_tot;								// ATP prodotto in totale
 	// output_file << "\t" << setw(6) << right << pRb_totale;						// pRb media per cellula
 	
-	output_file << "\t" << scientific << Env.GetEnvironmentvolume();				// volume libero dell'ambiente
+	output_file << "\t" << std::scientific << Env.GetEnvironmentvolume();				// volume libero dell'ambiente
 	output_file << "\t" << Env.GetEnvironmentG()/Env.GetEnvironmentvolume();		// concentrazione di glucosio nell'ambiente
 	output_file << "\t" << Env.GetEnvironmentA()/Env.GetEnvironmentvolume();		// concentrazione di altri nutrienti nell'ambiente
 	output_file << "\t" << Env.GetEnvironmentAcL()/Env.GetEnvironmentvolume();		// concentrazione di AcL nell'ambiente
@@ -1963,40 +1963,40 @@ void vbl::CellsSystem::Print2file()
 	output_file << "\t" << av_age_mother;											// eta' media della madre in giorni
 	
 	// valori medi di alcuni rates
-	output_file << "\t" << scientific << av_GAbsRate;								// rate di assorbimento del glucosio
-	output_file << "\t" << scientific << av_GConsRate;								// rate di consumo del glucosio
-	output_file << "\t" << scientific << av_AAbsRate;								// rate di assorbimento della glutammina
-	output_file << "\t" << scientific << av_AConsRate;								// rate di consumo del glutammmina
-	output_file << "\t" << scientific << av_StoreFillRate;							// rate di riempiemento dello store
-	output_file << "\t" << scientific << av_StoreConsRate;							// rate di consumo dello store
-	output_file << "\t" << scientific << av_AcLRate;								// rate di produzione dell'acido lattico
-	output_file << "\t" << scientific << av_AcLOutRate;								// rate di espulsione dell'acido lattico
+	output_file << "\t" << std::scientific << av_GAbsRate;								// rate di assorbimento del glucosio
+	output_file << "\t" << std::scientific << av_GConsRate;								// rate di consumo del glucosio
+	output_file << "\t" << std::scientific << av_AAbsRate;								// rate di assorbimento della glutammina
+	output_file << "\t" << std::scientific << av_AConsRate;								// rate di consumo del glutammmina
+	output_file << "\t" << std::scientific << av_StoreFillRate;							// rate di riempiemento dello store
+	output_file << "\t" << std::scientific << av_StoreConsRate;							// rate di consumo dello store
+	output_file << "\t" << std::scientific << av_AcLRate;								// rate di produzione dell'acido lattico
+	output_file << "\t" << std::scientific << av_AcLOutRate;								// rate di espulsione dell'acido lattico
 
-	output_file << "\t" << scientific << av_ATP_Ox;									// rate di produzione di ATP tramite fosforilazione ossidativa
-	output_file << "\t" << scientific << av_ATP_NOx;								// rate di produzione di ATP tramite glicolisi anaerobica
-	output_file << "\t" << scientific << av_ATP2;									// rate di produzione di ATP dallo store
-	output_file << "\t" << scientific << av_ATP3;									// rate di produzione di ATP dagli altri nutrienti
-	output_file << "\t" << scientific << av_ConsATP;								// rate di consumo di ATP associato al metabolismo
-	output_file << "\t" << scientific << av_ConsATP_1;								// rate di consumo di ATP associato ai mitocondri
-	output_file << "\t" << scientific << av_ConsATP_2;								// rate di consumo di ATP associato alla produzione di proteine
-	output_file << "\t" << scientific << av_ConsATP_3;								// rate di consumo di ATP associato alla produzione di DNA
-	output_file << "\t" << scientific << av_ConsATP_5;								// rate di consumo di ATP associato alla produzione di mtDNA
-	output_file << "\t" << scientific << av_ATPtot;									// rate totale di variazione dell'ATP = somma dei rates
+	output_file << "\t" << std::scientific << av_ATP_Ox;									// rate di produzione di ATP tramite fosforilazione ossidativa
+	output_file << "\t" << std::scientific << av_ATP_NOx;								// rate di produzione di ATP tramite glicolisi anaerobica
+	output_file << "\t" << std::scientific << av_ATP2;									// rate di produzione di ATP dallo store
+	output_file << "\t" << std::scientific << av_ATP3;									// rate di produzione di ATP dagli altri nutrienti
+	output_file << "\t" << std::scientific << av_ConsATP;								// rate di consumo di ATP associato al metabolismo
+	output_file << "\t" << std::scientific << av_ConsATP_1;								// rate di consumo di ATP associato ai mitocondri
+	output_file << "\t" << std::scientific << av_ConsATP_2;								// rate di consumo di ATP associato alla produzione di proteine
+	output_file << "\t" << std::scientific << av_ConsATP_3;								// rate di consumo di ATP associato alla produzione di DNA
+	output_file << "\t" << std::scientific << av_ConsATP_5;								// rate di consumo di ATP associato alla produzione di mtDNA
+	output_file << "\t" << std::scientific << av_ATPtot;									// rate totale di variazione dell'ATP = somma dei rates
 
-	output_file << "\t" << scientific << av_Gin;									// valore medio del glucosio interno
-	output_file << "\t" << scientific << av_Ain;									// valore medio della glutammina interna
-	output_file << "\t" << scientific << av_O2;										// valore medio dell'ossigeno 
-	output_file << "\t" << scientific << av_AcLin;									// valore medio dell'AcL interno
+	output_file << "\t" << std::scientific << av_Gin;									// valore medio del glucosio interno
+	output_file << "\t" << std::scientific << av_Ain;									// valore medio della glutammina interna
+	output_file << "\t" << std::scientific << av_O2;										// valore medio dell'ossigeno 
+	output_file << "\t" << std::scientific << av_AcLin;									// valore medio dell'AcL interno
 
-	output_file << "\t" << scientific << AcLFlow;									// flusso di acido lattico verso l'ambiente
-	output_file << "\t" << scientific << O2Flow;									// assorbimento totale di ossigeno
+	output_file << "\t" << std::scientific << AcLFlow;									// flusso di acido lattico verso l'ambiente
+	output_file << "\t" << std::scientific << O2Flow;									// assorbimento totale di ossigeno
 	
 	output_file << "\t" << av_neigh;												// numero medio di vicini
 	output_file << "\t" << sqrt(fabs(av2_neigh-SQR(av_neigh)));						// dev. st. del numero di vicini
 	output_file << "\t" << min_neigh;												// numero min di vicini
 	output_file << "\t" << max_neigh;												// numero max di vicini
 
-	output_file << endl;
+	output_file << std::endl;
 	
 	output_file.flush();
 	
@@ -2008,30 +2008,30 @@ void vbl::CellsSystem::Print2file()
 //
 // ***************************************************************
 //
-void vbl::CellsSystem::Print2logfile(string str)
+void CellsSystem::Print2logfile(std::string str)
 {
-	log_file << "\n" << str << "\n" << endl;
-	log_file << "\n\n***** Step " << nstep << " *****\n\n" << endl;
-	log_file << "Environment \n" << endl;
-	log_file << Env << "\n\n" << endl;
-	log_file << "*** ncells = " << ncells << " ***\n" << endl;
-	log_file << "First cell (0)\n" << endl;
+	log_file << "\n" << str << "\n" << std::endl;
+	log_file << "\n\n***** Step " << nstep << " *****\n\n" << std::endl;
+	log_file << "Environment \n" << std::endl;
+	log_file << Env << "\n\n" << std::endl;
+	log_file << "*** ncells = " << ncells << " ***\n" << std::endl;
+	log_file << "First cell (0)\n" << std::endl;
 	PrintCell( log_file, 0 );
-	log_file << "\n\n" << endl;
-	log_file << "Cell type (0)\n" << endl;
-	log_file << *(type[0]) << endl;
+	log_file << "\n\n" << std::endl;
+	log_file << "Cell type (0)\n" << std::endl;
+	log_file << *(type[0]) << std::endl;
 
 	if(ncells > 1) 
 		{
-		log_file << "Second cell" << endl;
+		log_file << "Second cell" << std::endl;
 		PrintCell( log_file, 1 );
-		log_file << "\n\n" << endl;
+		log_file << "\n\n" << std::endl;
 		}
 	if(ncells > 2) 
 		{
-		log_file << "Last cell (" << ncells-1 << ")\n" << endl;
+		log_file << "Last cell (" << ncells-1 << ")\n" << std::endl;
 		PrintCell( log_file, ncells-1 );
-		log_file << "\n\n" << endl;
+		log_file << "\n\n" << std::endl;
 		}
 
 }
@@ -2042,22 +2042,22 @@ void vbl::CellsSystem::Print2logfile(string str)
 //
 // ***************************************************************
 //
-void vbl::CellsSystem::PrintAll2logfile(string str)
+void CellsSystem::PrintAll2logfile(std::string str)
 {
-	log_file << "\n" << str << "\n" << endl;
-	log_file << "\n\n***** Step " << nstep << " *****\n\n" << endl;
-	log_file << "Environment \n" << endl;
-	log_file << Env << "\n\n" << endl;
-	log_file << "*** ncells = " << ncells << " ***\n" << endl;
+	log_file << "\n" << str << "\n" << std::endl;
+	log_file << "\n\n***** Step " << nstep << " *****\n\n" << std::endl;
+	log_file << "Environment \n" << std::endl;
+	log_file << Env << "\n\n" << std::endl;
+	log_file << "*** ncells = " << ncells << " ***\n" << std::endl;
 	
 	for(unsigned int n=0; n<ncells; n++)
 		{
-		log_file << "Cell " << n << "\n" << endl;
+		log_file << "Cell " << n << "\n" << std::endl;
 		PrintCell( log_file, 0 );
-		log_file << "\n\n" << endl;
+		log_file << "\n\n" << std::endl;
 		}
 
-	log_file << "\n\n" << endl;
+	log_file << "\n\n" << std::endl;
 
 }
 
@@ -2068,7 +2068,7 @@ void vbl::CellsSystem::PrintAll2logfile(string str)
 //
 // ***************************************************************
 //
-void vbl::CellsSystem::PrintConfiguration(bool isBinary)
+void CellsSystem::PrintConfiguration(bool isBinary)
 {
 
 	char str[100];
@@ -2079,8 +2079,8 @@ void vbl::CellsSystem::PrintConfiguration(bool isBinary)
         else
             sprintf(str,"%lu_sm.bin",nconfiguration);
 
-		string configuration_record = configuration_b_filename+str;
-		configuration_b_file.open( configuration_record.c_str(), ios::binary );
+		std::string configuration_record = configuration_b_filename+str;
+		configuration_b_file.open( configuration_record.c_str(), std::ios::binary );
 		
 		configuration_b_file.write( (char*)(&sim_type), sizeof(int) );
 		}
@@ -2091,10 +2091,10 @@ void vbl::CellsSystem::PrintConfiguration(bool isBinary)
         else
             sprintf(str,"%lu_sm.txt",nconfiguration);
 
-		string configuration_record = configuration_filename+str;
+		std::string configuration_record = configuration_filename+str;
 		configuration_file.open( configuration_record.c_str() );
 		
-		configuration_file << sim_type << endl;
+		configuration_file << sim_type << std::endl;
 		}
 	
 	PrintHeader(isBinary);		// header
@@ -2120,7 +2120,7 @@ void vbl::CellsSystem::PrintConfiguration(bool isBinary)
 
 // printout dell'header di una singola configurazione
 //
-void vbl::CellsSystem::PrintHeader(bool isBinary)
+void CellsSystem::PrintHeader(bool isBinary)
 {
 	if( isBinary )
 		{
@@ -2130,7 +2130,7 @@ void vbl::CellsSystem::PrintHeader(bool isBinary)
 		configuration_b_file.write( (char*)(&ncells), sizeof(ncells) );
 		}
 	else
-		configuration_file << nstep << " " << treal << " " << ncells << endl;
+		configuration_file << nstep << " " << treal << " " << ncells << std::endl;
 }
 
 
@@ -2139,7 +2139,7 @@ void vbl::CellsSystem::PrintHeader(bool isBinary)
 // printout dei punti su file 
 // i cast espliciti servono ad evitare warnings del compilatore (e comunque rendono chiara la scelta fatta)
 //
-void vbl::CellsSystem::PrintPoints(bool isBinary)
+void CellsSystem::PrintPoints(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2161,8 +2161,8 @@ void vbl::CellsSystem::PrintPoints(bool isBinary)
 			}
 		else
 			{
-			configuration_file << xpr << " " << ypr << " " << zpr << endl;
-			configuration_file << vxpr << " " << vypr << " " << vzpr << endl;
+			configuration_file << xpr << " " << ypr << " " << zpr << std::endl;
+			configuration_file << vxpr << " " << vypr << " " << vzpr << std::endl;
 			}
 		}
 }
@@ -2171,7 +2171,7 @@ void vbl::CellsSystem::PrintPoints(bool isBinary)
 //  ******************** PrintLinks ********************
 
 // questo metodo stampa solo i links su file
-void vbl::CellsSystem::PrintLinks(bool isBinary)
+void CellsSystem::PrintLinks(bool isBinary)
 {
 		
 	for(unsigned long k=0; k<ncells; k++)
@@ -2188,7 +2188,7 @@ void vbl::CellsSystem::PrintLinks(bool isBinary)
 			configuration_file << neigh[k];
 			for( int kk=0; kk< neigh[k]; kk++)
 				configuration_file << " " << vneigh[k][kk];
-			configuration_file << endl;
+			configuration_file << std::endl;
 			}
 			
 		}
@@ -2199,7 +2199,7 @@ void vbl::CellsSystem::PrintLinks(bool isBinary)
 //  ******************** PrintCHFlag ********************
 
 // questo metodo stampa solo la flag di appartenenza al CH su file
-void vbl::CellsSystem::PrintCHFlag(bool isBinary)
+void CellsSystem::PrintCHFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2212,14 +2212,14 @@ void vbl::CellsSystem::PrintCHFlag(bool isBinary)
 			
 		}
 		
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 }
 
 //  ******************** PrintASFlag ********************
 
 // questo metodo stampa solo la flag di appartenenza all'AS su file
-void vbl::CellsSystem::PrintASFlag(bool isBinary)
+void CellsSystem::PrintASFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2232,14 +2232,14 @@ void vbl::CellsSystem::PrintASFlag(bool isBinary)
 			
 		}
 		
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 }
 
 //  ******************** PrintBVFlag ********************
 
 // this method prints on file the isonBV flag
-void vbl::CellsSystem::PrintBVFlag(bool isBinary)
+void CellsSystem::PrintBVFlag(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2252,14 +2252,14 @@ void vbl::CellsSystem::PrintBVFlag(bool isBinary)
 			
 		}
 		
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 }
 
 //  ******************** PrintR ********************
 
 // questo metodo stampa solo i raggi cellulari su file
-void vbl::CellsSystem::PrintR(bool isBinary)
+void CellsSystem::PrintR(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2269,7 +2269,7 @@ void vbl::CellsSystem::PrintR(bool isBinary)
 		else
 			configuration_file << " " << rpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 }
 
@@ -2277,7 +2277,7 @@ void vbl::CellsSystem::PrintR(bool isBinary)
 //  ******************** PrintPhase ********************
 
 // questo metodo stampa il codice della fase cellulare
-void vbl::CellsSystem::PrintPhase(bool isBinary)
+void CellsSystem::PrintPhase(bool isBinary)
 {
 	for(unsigned long k=0; k<ncells; k++)
 		{
@@ -2286,14 +2286,14 @@ void vbl::CellsSystem::PrintPhase(bool isBinary)
 		else		
 			configuration_file << " " << phase[k];
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 }
 
 //  ******************** PrintType ********************
 
 // questo metodo stampa il nome del CellType
-void vbl::CellsSystem::PrintType(bool isBinary)
+void CellsSystem::PrintType(bool isBinary)
 {
     for(unsigned long k=0; k<ncells; k++)
     {
@@ -2304,7 +2304,7 @@ void vbl::CellsSystem::PrintType(bool isBinary)
         else
             configuration_file << " " << name;
     }
-    if( !isBinary ) configuration_file << endl;
+    if( !isBinary ) configuration_file << std::endl;
     
 }
 
@@ -2312,7 +2312,7 @@ void vbl::CellsSystem::PrintType(bool isBinary)
 //  ******************** PrintVar ********************
 
 // questo metodo stampa variabili importanti dentro le cellule
-void vbl::CellsSystem::PrintVar(bool isBinary)
+void CellsSystem::PrintVar(bool isBinary)
 {
 	// G
 	for(unsigned long k=0; k<ncells; k++)
@@ -2323,7 +2323,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << Gpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// G extracellulare
 	for(unsigned long k=0; k<ncells; k++)
@@ -2334,7 +2334,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << concGextra;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di assorbimento del glucosio
 	for(unsigned long k=0; k<ncells; k++)
@@ -2345,7 +2345,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << GAbsRatepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di consumo del glucosio
 	for(unsigned long k=0; k<ncells; k++)
@@ -2356,7 +2356,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << GConsRatepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// G6P
 	for(unsigned long k=0; k<ncells; k++)
@@ -2367,7 +2367,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << G6Ppr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// O2
 	for(unsigned long k=0; k<ncells; k++)
@@ -2378,7 +2378,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << concO2;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// Store
 	for(unsigned long k=0; k<ncells; k++)
@@ -2389,7 +2389,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << storepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// A
 	for(unsigned long k=0; k<ncells; k++)
@@ -2400,7 +2400,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << Apr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// A extracellulare
 	for(unsigned long k=0; k<ncells; k++)
@@ -2411,7 +2411,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << concAextra;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di assorbimento della glutammina
 	for(unsigned long k=0; k<ncells; k++)
@@ -2422,7 +2422,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << AAbsRatepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di consumo della glutammina
 	for(unsigned long k=0; k<ncells; k++)
@@ -2433,7 +2433,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << AConsRatepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// AcL
 	for(unsigned long k=0; k<ncells; k++)
@@ -2444,7 +2444,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << AcLpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// AcL extracellulare
 	for(unsigned long k=0; k<ncells; k++)
@@ -2455,7 +2455,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << concAcL;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// ATPp
 	for(unsigned long k=0; k<ncells; k++)
@@ -2466,7 +2466,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << ATPppr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// Mitocondri
 	for(unsigned long k=0; k<ncells; k++)
@@ -2477,7 +2477,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << Mpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// pH extracellulare
 	for(unsigned long k=0; k<ncells; k++)
@@ -2488,7 +2488,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << pHpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 	// protein
 	for(unsigned long k=0; k<ncells; k++)
@@ -2499,7 +2499,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << proteinpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// prot_rate
 	for(unsigned long k=0; k<ncells; k++)
@@ -2510,7 +2510,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << prot_ratepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// pRb
 	for(unsigned long k=0; k<ncells; k++)
@@ -2521,7 +2521,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << pRbpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// ConcS
 	for(unsigned long k=0; k<ncells; k++)
@@ -2532,7 +2532,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << ConcSpr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// DNA_rate
 	for(unsigned long k=0; k<ncells; k++)
@@ -2543,7 +2543,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << DNA_ratepr;
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// age
 	for(unsigned long k=0; k<ncells; k++)
@@ -2553,7 +2553,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << age[k];
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 
 	// phase age
 	for(unsigned long k=0; k<ncells; k++)
@@ -2563,7 +2563,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 		else
 			configuration_file << " " << phase_age[k];
 		}
-	if( !isBinary ) configuration_file << endl;
+	if( !isBinary ) configuration_file << std::endl;
 	
 
 /*
@@ -2595,7 +2595,7 @@ void vbl::CellsSystem::PrintVar(bool isBinary)
 //  ******************** PrintEnv ********************
 
 // questo metodo stampa i dati ambientali essenziali
-void vbl::CellsSystem::PrintEnv(bool isBinary)
+void CellsSystem::PrintEnv(bool isBinary)
 {
 	double EnvVol = (double)Env.GetEnvironmentvolume(); 
 	double concG = (double)(Env.GetEnvironmentG()/Env.GetEnvironmentvolume());
@@ -2613,7 +2613,7 @@ void vbl::CellsSystem::PrintEnv(bool isBinary)
 		}
 	else
 		{
-		configuration_file << EnvVol << " " << concG << " " << concO2 << " " << concA << " " << concAcL << endl;
+		configuration_file << EnvVol << " " << concG << " " << concO2 << " " << concA << " " << concAcL << std::endl;
 		}
 	
 }
@@ -2623,7 +2623,7 @@ void vbl::CellsSystem::PrintEnv(bool isBinary)
 // funzione che calcola le statistiche ad ogni passo
 //
 // 
-void vbl::CellsSystem::StepStat( bool reset_stat )
+void CellsSystem::StepStat( bool reset_stat )
 {
 	
 	if(reset_stat)
