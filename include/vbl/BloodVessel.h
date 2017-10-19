@@ -49,7 +49,7 @@ public:
     // nessun distruttore, utilizzo il default del compilatore
     
     // overloaded =
-    BloodVessel& operator=(const BloodVessel& bv);
+//     BloodVessel& operator=(const BloodVessel& bv);
     
     // setters
     void SetBloodVesselR(const double newR) { R = newR; };

@@ -153,8 +153,14 @@ double BloodVessel::DistanceFromVessel( const ANNpoint &x1)
     return(bvd);
     
 }
-BloodVessel& BloodVessel::operator=(const BloodVessel& bv)
-{
-  std::cout<< "here error" <<std::endl;
-}
+// namespace vbl{
+// BloodVessel& operator=(const BloodVessel& bv)
+// {
+//   std::cout<< "here error" <<std::endl;
+// }
+// }
+// BloodVessel& operator=(const BloodVessel& bv)
+// {
+//   std::cout<< "here error" <<std::endl;
+// }
 

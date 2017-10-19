@@ -375,14 +375,14 @@ void CellsSystem::Diff()
 
 		if(isonBV[n])
 			{
-			BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
+			BloodVessel *BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
 			//vbl::BloodVessel BV = bloodVesselMap[isonBV[n]-1];
 			  
-			rhoG_bv = BV.GetBloodVesselG();			// glucose concentration in BV	
-			rhoO2_bv = 0.5*(BV.GetBloodVesselO2start()+BV.GetBloodVesselO2end());			
+			rhoG_bv = BV->GetBloodVesselG();			// glucose concentration in BV	
+			rhoO2_bv = 0.5*(BV->GetBloodVesselO2start()+BV->GetBloodVesselO2end());			
 													// oxygen concentration in BV
-			rhoA_bv = BV.GetBloodVesselA();			// other nutrients concentration in BV
-			rhoAcL_bv = BV.GetBloodVesselAcL();		// lactate concentration in BV 
+			rhoA_bv = BV->GetBloodVesselA();			// other nutrients concentration in BV
+			rhoAcL_bv = BV->GetBloodVesselAcL();		// lactate concentration in BV 
 			
 			// cout << rhoG_bv << "\t" << rhoO2_bv << "\t" << rhoA_bv << "\t" << rhoAcL_bv << endl;
 

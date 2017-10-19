@@ -494,7 +494,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
     
     int nbv;                                // numero di vasi sanguigni
     // the vector structure messes with the memory
-    std::vector<BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
+    std::vector<BloodVessel*> BloodVesselVector;  // vettore dei vasi sanguigni
     //boost::unordered_map<uint, vbl::BloodVessel> bloodVesselMap;
     
 // *** fine dei dati associati a vasi sanguigni
@@ -774,7 +774,8 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_n_mitosis(const std::vector<int>& newn_mitosis ) { n_mitosis = newn_mitosis; };
 	void Set_n_mitosis(const int k, const int newn_mitosis ) { n_mitosis[k] = newn_mitosis; };
 
-	void Add_BloodVessel_at(uint index, BloodVessel &NewBV );
+	void Set_BloodVesselVector_at(int index, BloodVessel *NewBV );
+  BloodVessel* Get_BloodVessel_pointer_at(int index){ return BloodVesselVector[index];}
 // 	{
 // 	  nbv++;
 //   //Vector()[index] = NewBV;
@@ -1033,8 +1034,8 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	std::vector<int> Get_n_mitosis() { return n_mitosis; };
 	int Get_n_mitosis( const unsigned long int k ) { return n_mitosis[k]; };
 
-	std::vector<BloodVessel> Get_BloodVesselVector() { return BloodVesselVector; };
-	BloodVessel Get_BloodVessel(const int k) { return BloodVesselVector[k];}
+	std::vector<BloodVessel*> Get_BloodVesselVector() { return BloodVesselVector; };
+	BloodVessel* Get_Vessel_Pointer_at(const int k) { return BloodVesselVector[k];}
 	//boost::unordered_map<uint, vbl::BloodVessel> Get_BloodVesselMap() { return bloodVesselMap; };
 	//vbl::BloodVessel* Get_BloodVessel(int k) { return &bloodVesselMap[k];}
 	int Get_nbv() { return nbv; };
