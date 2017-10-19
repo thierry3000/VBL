@@ -9,7 +9,7 @@
  *
  */
 #include "CellsSystem.h"
-
+using namespace vbl;
 
 // ************ Part of the CGAL interface ************ //
 // 

@@ -10,8 +10,9 @@
  */
 
 #include "CellsSystem.h"
+using namespace vbl;
 
-#include <sys/utsname.h>	// header per i metodi di identificazione della macchina
+
 
 extern double EventTime;
 extern bool eventON;

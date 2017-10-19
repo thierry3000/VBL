@@ -16,7 +16,7 @@ double pAlt;        // Probability of the special event "transition to the alter
 /** see http://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
  * to create random numbers with c++11
  */
-#if __GNUC_PREREQ(4,5)
+#if __GNUC_PREREQ(5,0)
   //from http://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
   std::random_device rd;  //Will be used to obtain a seed for the random number engine
   std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
@@ -27,7 +27,7 @@ double pAlt;        // Probability of the special event "transition to the alter
 
 double ran2(int &idum)
 {
-#if __GNUC_PREREQ(4,5)
+#if __GNUC_PREREQ(5,0)
   return dis(gen);
 #else
   std::srand(std::time(0));

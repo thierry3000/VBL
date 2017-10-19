@@ -11,6 +11,7 @@
  */
 
 #include "CellsSystem.h"
+using namespace vbl;
 
 extern double EventTime;
 extern bool eventON;

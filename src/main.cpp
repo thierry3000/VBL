@@ -4,7 +4,8 @@
 
 
 #include <../include/vbl.h>
-
+using namespace std;
+using namespace vbl;
 
 
 // **********************************************************************************

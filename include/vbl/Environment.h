@@ -10,6 +10,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>      // std::setprecision  std::scientific
+namespace vbl{
 class Environment 
 {
 // friends
@@ -103,5 +104,5 @@ public:
 
 
 };
-
+}//namespace vbl{
 #endif //#ifndef ENVIRONMENT_H

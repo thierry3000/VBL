@@ -7,7 +7,7 @@
 
 #include "sim.h"
 #include "EnvironmentalSignals.h"
-
+using namespace vbl;
 // costruttore (caso ConstantSignal, SineSignal, Pulse, e per il momento UserDefined, che pero' e' vuoto)
 EnvironmentalSignal::EnvironmentalSignal( const EnvironmentalSignalType ctype, const double cAmpMin, const double cAmpMax, const double ctA, const double ctB )
 {

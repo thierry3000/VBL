@@ -8,13 +8,18 @@
 #define CELLTYPE_H  // header guard
 #include <iostream>
 #include <string>
+
+namespace vbl{
+// class CellsSystem; //forward declaration
 class CellType 
 {
 // friends
 
 		// funzione di stampa di tutti i dati della classe
-		friend void PrintCellType( CellType &cCellType);		
-		friend std::ostream& operator<<(std::ostream& s, CellType& cCellType);
+	friend void PrintCellType( CellType &cCellType);		
+	friend std::ostream& operator<<(std::ostream& s, CellType& cCellType);
+  void PrintCellType( CellType &cCellType);		
+// 	std::ostream& operator<<(std::ostream& s, CellType& cCellType);
 		
 	private: 
 	
@@ -24,6 +29,7 @@ class CellType
 		CellType(const std::string filename);
 		// copia
 		CellType(const CellType& cCellType);
+    
 		// nessun distruttore, utilizzo il default del compilatore
 		
 		CellType& operator=(const CellType& ct);
@@ -347,4 +353,5 @@ class CellType
 
 };
 
+}//namespace vbl{
 #endif //#ifndef CELLTYPE_H

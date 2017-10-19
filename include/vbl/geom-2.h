@@ -12,6 +12,7 @@
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 
 
+
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 
 typedef CGAL::Triangulation_vertex_base_with_info_3<int, K>		VbI;
@@ -46,7 +47,6 @@ typedef K::Ray_3										Ray;
 typedef K::Object_3										Object;
 
 typedef CGAL::Vector_3<K>								Vector;
-
 
 //spatial sort traits to use with a pair of point pointers and integer.
 template<class Triangulation>

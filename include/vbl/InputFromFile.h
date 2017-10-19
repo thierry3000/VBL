@@ -35,4 +35,5 @@ inline double InputRealPar(std::ifstream& ParameterFile)
 	
 	return value;
 }
+
 #endif //#ifndef INPUT_FROM_FILE_H

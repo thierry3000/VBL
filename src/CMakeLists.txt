@@ -4,7 +4,7 @@ add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp Cel
 set_target_properties(vbl PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(vbl PROPERTIES SOVERSION 1)
 
-#set_target_properties(vbl PROPERTIES PUBLIC_HEADER ../include/vbl.h)
+set_target_properties(vbl PROPERTIES PUBLIC_HEADER ../include/vbl.h)
 
 message("linking to: ${myLibs}")
 #target_link_libraries(vbl "${myLibs}")
@@ -12,10 +12,10 @@ message("linking to: ${myLibs}")
 target_link_libraries(vbl boost_thread CGAL gmp gmpxx)
 
 
-add_executable(vbl-v3.2 main.cpp )
-target_include_directories(vbl-v3.2 PRIVATE ../include)
-target_link_libraries(vbl-v3.2 vbl)
-install(TARGETS vbl-v3.2 DESTINATION bin)
+# add_executable(vbl-v3.2 main.cpp )
+# target_include_directories(vbl-v3.2 PRIVATE ../include)
+# target_link_libraries(vbl-v3.2 vbl)
+# install(TARGETS vbl-v3.2 DESTINATION bin)
 
 message("header goes to: ${CMAKE_INSTALL_INCLUDEDIR}")
 install(TARGETS vbl

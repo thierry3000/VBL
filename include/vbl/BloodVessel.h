@@ -9,12 +9,13 @@
 //
 #include <ANN/ANN.h>
 #include <vector>
-
+namespace vbl{
+class CellsSystem; //forward declaration
 class BloodVessel
 {
     // friends
     
-    // friend class CellsSystem;
+    friend class CellsSystem;
     
     // printout function
     friend std::ostream& operator<<(std::ostream& s, BloodVessel& cBloodVessel);
@@ -95,7 +96,7 @@ public:
     
 };
 
-
+}//namespace vbl{
 #endif //#ifndef BLOODVESSEL_H
 
 

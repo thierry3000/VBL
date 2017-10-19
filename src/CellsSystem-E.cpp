@@ -11,7 +11,7 @@
 
 #include "CellsSystem.h"
 
-
+using namespace vbl;
 // ***************************************************************
 // Cluster mechanics
 // ***************************************************************
@@ -323,5 +323,4 @@ void CellsSystem::DummyDynamics( )
 {
 	maxdr = 0;	// spostamento massimo
 }
-
 

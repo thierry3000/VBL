@@ -8,7 +8,7 @@
 
 #include "sim.h"
 #include "BloodVessel.h"
-
+using namespace vbl;
 // costruttori
 // costruttore di default (nessun attributo specificato)
 BloodVessel::BloodVessel()

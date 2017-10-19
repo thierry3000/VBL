@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+
+namespace vbl{
 class EnvironmentalSignal
 {
 
@@ -70,5 +72,5 @@ public:
 	
 	
 };
-
+}//namespace vbl{
 #endif //#ifndef ENVIRONMENTSIGNAL_H

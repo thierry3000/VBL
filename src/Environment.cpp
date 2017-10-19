@@ -9,6 +9,7 @@
 
 #include "InputFromFile.h"
 #include "Environment.h"
+using namespace vbl;
 
 // costruttore di default (corrisponde al mezzo di coltura standard senza circolazione del fluido)
 Environment::Environment()
@@ -288,25 +289,44 @@ Environment& Environment::operator=(const Environment& e)
 // update
 void EnvironmentChange(Environment& env, Environment& env_delta)
 {
-	env.xmin += env_delta.xmin;
-	env.xmax += env_delta.xmax;
-	env.ymin += env_delta.ymin;
-	env.ymax += env_delta.ymax;
-	env.zmin += env_delta.zmin;
-	env.zmax += env_delta.zmax;
+  env.Set_xmin(env.Get_xmin()+env_delta.Get_xmin());
+  env.Set_xmax(env.Get_xmax()+env_delta.Get_xmax());
+  env.Set_ymin(env.Get_ymin()+env_delta.Get_ymin());
+  env.Set_ymax(env.Get_ymax()+env_delta.Get_ymax());
+  env.Set_zmin(env.Get_zmin()+env_delta.Get_zmin());
+  env.Set_zmax(env.Get_zmax()+env_delta.Get_zmax());
+// 	env.xmin += env_delta.xmin;
+// 	env.xmax += env_delta.xmax;
+// 	env.ymin += env_delta.ymin;
+// 	env.ymax += env_delta.ymax;
+// 	env.zmin += env_delta.zmin;
+// 	env.zmax += env_delta.zmax;
 	
-	env.T += env_delta.T;	
-	if(env.T < 0) 
-		{
-		env.T = 0;
-		std::cout << "Errore in Environment::EnvironmentChange: variazione di temperatura troppo grande e negativa\n" << std::endl;
-		}
-	env.G += env_delta.G;
-	if(env.G < 0) 
-		{
-		env.G = 0;
-		std::cout << "Errore in Environment::EnvironmentChange: variazione di glucosio troppo grande e negativa\n" << std::endl;
-		}
+  env.SetEnvironmentT(env.GetEnvironmentT()+env_delta.GetEnvironmentT());
+  if(env.GetEnvironmentT()<0)
+  {
+    env.SetEnvironmentT(0);
+    std::cout << "Errore in Environment::EnvironmentChange: variazione di temperatura troppo grande e negativa\n" << std::endl;
+  }
+// 	env.T += env_delta.T;	
+// 	if(env.T < 0) 
+// 		{
+// 		env.T = 0;
+// 		std::cout << "Errore in Environment::EnvironmentChange: variazione di temperatura troppo grande e negativa\n" << std::endl;
+// 		}
+  env.SetEnvironmentG(env.GetEnvironmentG()+env_delta.GetEnvironmentG());
+  if(env.GetEnvironmentG()<0)
+  {
+    env.SetEnvironmentG(0);
+    std::cout << "Errore in Environment::EnvironmentChange: variazione di glucosio troppo grande e negativa\n" << std::endl;
+  }
+// 	env.G += env_delta.G;
+// 	if(env.G < 0) 
+// 		{
+// 		env.G = 0;
+// 		std::cout << "Errore in Environment::EnvironmentChange: variazione di glucosio troppo grande e negativa\n" << std::endl;
+// 		}
+#if 0
 	env.O2 += env_delta.O2;
 	if(env.O2 < 0) 
 		{
@@ -352,7 +372,7 @@ void EnvironmentChange(Environment& env, Environment& env_delta)
 		}
 
 	env.pH =  7.5443-(env.AcL/env.volume)/BufCapEnv;
-	
+#endif
 }
 
 
@@ -360,8 +380,9 @@ void EnvironmentChange(Environment& env, Environment& env_delta)
 std::ostream& operator<<(std::ostream& stream, Environment& cEnvironment)
 {
 
-	stream << "T: " <<  cEnvironment.T << " deg C" << std::endl;																// temperatura
-	stream << "G: " <<  cEnvironment.G/cEnvironment.volume << " g/cm^3 -> "  <<  cEnvironment.G*1e-9 << " mg" << std::endl;			// quantita' (mg) di glucosio ambientale
+	stream << "T: " <<  cEnvironment.GetEnvironmentT() << " deg C" << std::endl;																// temperatura
+	stream << "G: " <<  cEnvironment.GetEnvironmentG()/cEnvironment.GetEnvironmentvolume() << " g/cm^3 -> "  <<  cEnvironment.GetEnvironmentG()*1e-9 << " mg" << std::endl;			// quantita' (mg) di glucosio ambientale
+#if 0
 	stream << "O2: " <<  cEnvironment.O2/cEnvironment.volume << " g/cm^3 -> "   <<  cEnvironment.O2*1e-9 << " mg" <<  std::endl;		// quantita' (mg) di ossigeno ambientale
 	stream << "CO2: " <<  cEnvironment.CO2/cEnvironment.volume << " g/cm^3 -> "   <<  cEnvironment.CO2*1e-9 << " mg" <<  std::endl;	// quantita' (mg) di anidride carbonica ambientale
 	stream << "A: " <<  cEnvironment.A/cEnvironment.volume << " g/cm^3 -> "   <<  cEnvironment.A*1e-9 << " mg" <<  std::endl;		// quantita' (mg) di altri nutrienti nell'ambiente
@@ -376,7 +397,7 @@ std::ostream& operator<<(std::ostream& stream, Environment& cEnvironment)
 	stream << "volume0: " <<  1e-9*cEnvironment.volume0 << " µl" << std::endl;													// volume iniziale dell'ambiente
 	stream << "volume: " <<  1e-9*cEnvironment.volume << " µl" << std::endl;														// volume dell'ambiente
 	stream << "Radiazione di fondo: " <<  cEnvironment.DoseRate << " Gy/s" << std::endl;										// rate di radiazione nell'ambiente (Gy/s)
-	
+#endif
 	return stream;
 
 }

@@ -17,7 +17,7 @@
 
 #ifndef SIM_H
 #define SIM_H  // header guard
-
+namespace vbl{
 // #include <iostream>			// inclusione della libreria standard di I/O
 // #include <iomanip>			// inclusione dei manipolatori per l'I/O
 // #include <fstream>			// dichiarazione headers che servono per l'I/O su file 
@@ -27,11 +27,11 @@
 // #include <list>				// inclusione della libreria per la manipolazione delle liste STL
 // #include <vector>			// inclusione della libreria per la manipolazione dei vettori STL
 
-using namespace std;
-
-#include <cmath>			// inclusione della libreria matematica standard del C
-#include <cstdio>			// inclusione della libreria stdio del C
-#include <cstdlib>			// inclusione della stdlib del C
+// using namespace std;
+// 
+// #include <cmath>			// inclusione della libreria matematica standard del C
+// #include <cstdio>			// inclusione della libreria stdio del C
+// #include <cstdlib>			// inclusione della stdlib del C
 // #include <time.h>			// inclusione delle utilities di timing del C
 // #include <string.h>			// inclusione delle utilities di stringhe del C
 // 
@@ -213,4 +213,5 @@ const double CO2_BV = 3.4e-4;         // kg*m^-3 concentrazione anidride carboni
 
 const double A_BV = 0.4e-3;           // pg*micron^-3 concentrazione altri nutrienti
 
+}//namespace vbl{
 #endif// header guard

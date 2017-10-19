@@ -25,15 +25,13 @@
   #include<time.h>
 #endif
 
-#include "sim.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>      // std::setprecision  std::scientific
 
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "CellsSystem.h"
-#include "Utilities.h"
+#include <cmath> // log exp sin tan floor
+// namespace vbl{
 
 
 double ran2(int &idum);
@@ -43,4 +41,5 @@ double factln(const int n);
 double bico(const int n, const int k);
 double bnldev(const double pp, const int n, int &idum);
 
+// }//namespace vbl{
 #endif //headerguard

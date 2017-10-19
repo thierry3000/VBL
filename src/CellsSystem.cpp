@@ -7,16 +7,9 @@
  *
  */
 
-#include "sim.h"
 
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "geom-2.h"
-#include "BloodVessel.h"
 #include "CellsSystem.h"
-#include "Utilities.h"
+using namespace vbl;
 
 #include <chrono>
 #include <boost/format.hpp>

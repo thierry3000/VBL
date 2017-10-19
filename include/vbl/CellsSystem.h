@@ -11,6 +11,8 @@
 // and methods for operations on all cells
 #ifndef CELLSSYSTEM_H
 #define CELLSSYSTEM_H // header guard
+
+#include <sys/utsname.h>	// header per i metodi di identificazione della macchina
 #include "sim.h"
 
 #include "InputFromFile.h"
@@ -29,6 +31,8 @@
 #endif
 
 #define W_timing
+
+namespace vbl{
 // #ifndef NDEBUG
 //   // means debugging
 //   #define W_timing
@@ -1451,5 +1455,6 @@ inline double CellsSystem::Distance(const int j, const int k)
 	return sqrt( SQR(x[j]-x[k]) + SQR(y[j]-y[k]) + SQR(z[j]-z[k]) );
 }
 
+}//namespace vbl{
 #endif //#ifndef CELLSSYSTEM_H
 
