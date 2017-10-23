@@ -13,10 +13,10 @@ using namespace vbl;
 // costruttore di default (nessun attributo specificato)
 BloodVessel::BloodVessel()
 {
-    a.assign(3,0.);
-    b.assign(3,0.);
-    va.assign(3,0.);
-    vb.assign(3,0.);
+    //a=.assign(3,0.); // std::array is zero initialized by default
+    //b.assign(3,0.);
+    //va.assign(3,0.);
+    //vb.assign(3,0.);
     R=0.;
     vR=0.;
     O2start=0.;
@@ -30,7 +30,7 @@ BloodVessel::BloodVessel()
 }
 
 // costruttore con valori specificati
-BloodVessel::BloodVessel( const std::vector<double> ca, const std::vector<double> cb, const std::vector<double> cva, const std::vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
+BloodVessel::BloodVessel( const std::array<double,3> ca, const std::array<double,3> cb, const std::array<double,3> cva, const std::array<double,3> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL )
 {
     a = ca;
     b = cb;
@@ -67,9 +67,8 @@ BloodVessel::BloodVessel(const BloodVessel& bv)
 }
 
 // funzione distanza e posizione punto piu' vicino
-double BloodVessel::DistanceFromVessel( const std::vector<double> x1, double* x0 )
+double BloodVessel::DistanceFromVessel( const std::array<double,3> x1, double* x0 )
 {
-    
     double tp = 0;
     double nrm = 0;
     double bvd = 0;

@@ -8,7 +8,7 @@
 //
 //
 #include <ANN/ANN.h>
-#include <vector>
+#include <array>
 namespace vbl{
 class CellsSystem; //forward declaration
 class BloodVessel
@@ -22,10 +22,10 @@ class BloodVessel
     
 private:
     
-    std::vector<double> a;           // starting position (start)
-    std::vector<double> b;           // end position (end)
-    std::vector<double> va;          // velocità della posizione di inizio
-    std::vector<double> vb;          // velocità della posizione di fine
+    std::array<double,3> a;           // starting position (start)
+    std::array<double,3> b;           // end position (end)
+    std::array<double,3> va;          // velocità della posizione di inizio
+    std::array<double,3> vb;          // velocità della posizione di fine
     double R;                   // raggio
     double vR;                  // velocità del raggio
     double O2start;				// O2 concentration at start
@@ -42,7 +42,7 @@ public:
     // costruttore di default (nessun attributo specificato)
     BloodVessel();
     // costruttore con valori specificati
-    BloodVessel(const std::vector<double> ca, const std::vector<double> cb, const std::vector<double> cva, const std::vector<double> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL);
+    BloodVessel(const std::array<double,3> ca, const std::array<double,3> cb, const std::array<double,3> cva, const std::array<double,3> cvb, const double cR, const double cvR, const double cO2start, const double cO2end, const double cCO2start, const double cCO2end, const double cG, const double cA, const double cAcL);
     // costruttore copia
     BloodVessel(const BloodVessel& bv);
     
@@ -54,10 +54,10 @@ public:
     // setters
     void SetBloodVesselR(const double newR) { R = newR; };
     void SetBloodVesselvR(const double newvR) { vR = newvR; };
-    void SetBloodVessela(const std::vector<double> newa) { a = newa; };
-    void SetBloodVesselb(const std::vector<double> newb) { b = newb; };
-    void SetBloodVesselva(const std::vector<double> newva) { va = newva; };
-    void SetBloodVesselvb(const std::vector<double> newvb) { vb = newvb; };
+    void SetBloodVessela(const std::array<double,3> newa) { a = newa; };
+    void SetBloodVesselb(const std::array<double,3> newb) { b = newb; };
+    void SetBloodVesselva(const std::array<double,3> newva) { va = newva; };
+    void SetBloodVesselvb(const std::array<double,3> newvb) { vb = newvb; };
     void SetBloodVesselak( const double newak, const int k ) { a[k] = newak; };
     void SetBloodVesselbk( const double newbk, const int k ) { b[k] = newbk; };
     void SetBloodVesselvak( const double newvak, const int k ) { va[k] = newvak; };
@@ -71,10 +71,10 @@ public:
     void SetBloodVesselAcL(const double newAcL) { AcL = newAcL; };
     
     // getters
-    std::vector<double> GetBloodVessela() { return a; };
-    std::vector<double> GetBloodVesselb() { return b; };
-    std::vector<double> GetBloodVesselva() { return va; };
-    std::vector<double> GetBloodVesselvb() { return vb; };
+    std::array<double,3> GetBloodVessela() { return a; };
+    std::array<double,3> GetBloodVesselb() { return b; };
+    std::array<double,3> GetBloodVesselva() { return va; };
+    std::array<double,3> GetBloodVesselvb() { return vb; };
     double GetBloodVesselR() { return R; };
     double GetBloodVesselvR() { return vR; };
     double GetBloodVesselO2start() { return O2start; };
@@ -89,7 +89,7 @@ public:
     // altri metodi
     double GetBloodVesselLength() { return sqrt( (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])+(a[2]-b[2])*(a[2]-b[2]) ); };
     double GetBloodVesselVolume() { return M_PI * R * R * sqrt( (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])+(a[2]-b[2])*(a[2]-b[2]) ); };
-    double DistanceFromVessel( const std::vector<double> y, double* x0 );
+    double DistanceFromVessel( const std::array<double,3> y, double* x0 );
     double DistanceFromVessel( const ANNpoint &y );
     // read and write binario
         

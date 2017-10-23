@@ -140,27 +140,27 @@ void CellsSystem::Diff()
 	
 #pragma omp parallel for ordered schedule(dynamic)
 	for(unsigned long n=0; n<ncells; n++)						// loop sulle cellule per il calcolo delle somme
-		{
+	{
 		// volume totale occupato dalle cellule
 		cell_volume += volumeOld[n];
 		
 		// le somme per il calcolo della diffusione nell'ambiente sono non-zero solo per cellule che appartengono all'alpha shape
 		if( isonAS[n] )
-			{
+		{
 			s0_env += g_env[n];
 			sG_env += g_env[n]*(mGextOld[n]/volume_extraOld[n]);
 			sO2_env += g_env[n]*(mO2Old[n]/volumeOld[n]);
 			sA_env += g_env[n]*(mAextOld[n]/volume_extraOld[n]);
 			sAcL_env += g_env[n]*(mAcLextOld[n]/volume_extraOld[n]);
-			}
-			
 		}
+			
+	}
 
 	
 	volume_envNew = Env_0.GetEnvironmentvolume() - cell_volume;
 
 	if( flowON && ready2start )				// se si lavora con il bioreattore allora le equazioni per l'ambiente devono tenere conto di termini in piu' ... 
-		{
+  {
 		mG_envNew = ( Env.GetEnvironmentG() + dt*( Diff_W_G*sG_env + Env_0.GetEnvironmentG()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(treal) ) )\
 			/( 1. + dt*(Diff_W_G*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
 		
@@ -177,9 +177,9 @@ void CellsSystem::Diff()
 		// l'acido lattico nella soluzione nutritiva pulita e' sempre zero
 		mAcL_envNew = ( Env.GetEnvironmentAcL() + dt*( Diff_W_AcL*sAcL_env ) )\
 			/( 1. + dt*(Diff_W_AcL*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
-		}
+  }
 	else if( !flowON && ready2start )		// ... altrimenti si utilizzano le equazioni senza i termini aggiuntivi (questo e' vero anche per l'inizializzazione)
-		{
+  {
 		mG_envNew = ( Env.GetEnvironmentG() + dt*( Diff_W_G*sG_env ) )\
 			/( 1. + dt*(Diff_W_G*s0_env)/volume_envOld );
 		
@@ -195,9 +195,9 @@ void CellsSystem::Diff()
 		// l'acido lattico nella soluzione nutritiva pulita e' sempre zero
 		mAcL_envNew = ( Env.GetEnvironmentAcL() + dt*( Diff_W_AcL*sAcL_env ) )\
 			/( 1. + dt*(Diff_W_AcL*s0_env)/volume_envOld );
-		}
+  }
 	else if ( !ready2start )				// infine, durante la fase di inizializzazione si tengono fisse le concentrazioni ambientali
-		{
+  {
 		mG_envNew = (Env_0.GetEnvironmentG()/Env_0.GetEnvironmentvolume()) * volume_envOld;
 		
 		mO2_envNew = (Env_0.GetEnvironmentO2()/Env_0.GetEnvironmentvolume()) * volume_envOld;
@@ -205,7 +205,7 @@ void CellsSystem::Diff()
 		mA_envNew = (Env_0.GetEnvironmentA()/Env_0.GetEnvironmentvolume()) * volume_envOld;
 		
 		mAcL_envNew = (Env_0.GetEnvironmentAcL()/Env_0.GetEnvironmentvolume()) * volume_envOld;
-		}
+  }
 
 	// P.S. ... si noti che nell'implementazione attuale il bioreattore funziona solo introducendo liquido di coltura pulito, uguale a quello iniziale
 	// se si vogliono introdurre dosi diverse (ad esempio valori di glutammina piu' alti rispetto al valore iniziale), allora si deve modificare questa parte 
@@ -218,10 +218,7 @@ void CellsSystem::Diff()
 
 #pragma omp parallel for ordered schedule(dynamic)
 	for(unsigned long n=0; n<ncells; n++)						// loop sulle cellule
-		{
-		
-		
-		
+  {
 		// coefficienti (queste assegnazioni non sono strettamente necessarie, ma servono a rendere il codice piu' leggibile)
 		double vmax2 = type[n]->Get_VMAX_2();
 		double vmax22 = type[n]->Get_VMAX_22();
@@ -287,24 +284,24 @@ void CellsSystem::Diff()
 
 		
 		if( phase[n] != dead )
-			{
+		{
 			// se la cellula e' viva il volume cambia
 			volumeNew[n] = Vmin * (1+DNANew[n]) + C2*MitOld[n] + C1*ATPpOld[n];		
 			volume_extraNew[n] = surface[n]*type[n]->Get_extvolume_thickness()*type[n]->Get_extvolume_fraction();
-			}
+		}
 		else
-			{
+		{
 			// se la cellula e' morta il volume resta fisso (viene ridotto solo alla fine di questo metodo)
 			volumeNew[n] = volumeOld[n];
 			volume_extraNew[n] = volume_extraOld[n];
-			}
+		}
 		
 		ATP_St[n] = ATPSt;
 		double dSensO2_O2 = 0.;	// *** REV *** ha senso includere anche queste due var in CellsSystem ???
 		double SensATP = 0.;
 		
 		if( phase[n] != dead )
-			{
+		{
 			SensO2[n] = mO2Old[n]/(volumeOld[n]*type[n]->Get_KmO2() + mO2Old[n]);
 			dSensO2_O2 = volumeOld[n]*type[n]->Get_KmO2()/pow(volumeOld[n]*type[n]->Get_KmO2() + mO2Old[n],2);
 			ATP_Ox[n] = 30.*(PM_ATP/PM_G)*SensO2[n] * ( coeffg2 + coeffg3*StoreOld[n]/(volumeOld[n]*Kmc+StoreOld[n]) ) * mG6POld[n];
@@ -313,28 +310,28 @@ void CellsSystem::Diff()
 			ATP2[n] = SensO2[n]*SensATP*(ATP_St[n] - ATP_Ox[n])*StoreOld[n]/(volumeOld[n]*Kmc+StoreOld[n]) ;
 			ATP3[n] = (14./5.)*SensO2[n]*SensATP*(ATP_St[n] - ATP_Ox[n]) * mAinOld[n]/(volumeOld[n]*Kmd+mAinOld[n]);
 			ConsATP[n] = 2.*(PM_ATP/PM_G) * tp11*tpH * coeffr1 * (1.-SensATP) * mAinOld[n]/(volumeOld[n]*Kmd+mAinOld[n]);
-			}
+		}
 		else
 			ATP_Ox[n] = ATP_NOx[n] = ATP2[n] = ConsATP[n] = 0.;
 		
 		double vp, dvp_A, dvp_ATPp;					// produzione di proteine senza il termine vmax 
 		// la produzione di proteine e' bloccata in fase G0
 		if(phase[n] != G0_phase && phase[n] != dead)	
-			{
+		{
 			vp = ATPpOld[n]*mAinOld[n]/(pow(volumeOld[n],2)*Kmp+ATPpOld[n]*mAinOld[n]);
 			dvp_A = ATPpOld[n]*pow(volumeOld[n],2)*Kmp/pow(pow(volumeOld[n],2)*Kmp+ATPpOld[n]*mAinOld[n],2);
 			dvp_ATPp = pow(volumeOld[n],2)*Kmp*mAinOld[n]/pow(pow(volumeOld[n],2)*Kmp+ATPpOld[n]*mAinOld[n],2);
-			}
+		}
 		else
 			vp= dvp_A = dvp_ATPp = 0.;
 		
 		double vDNA, dvDNA_A, dvDNA_ATPp;			// produzione di DNA senza il termine vmax
 		if(phase[n] == S_phase)	// la produzione di DNA procede solo in fase S
-			{
+		{
 			vDNA = ATPpOld[n]*mAinOld[n]/(pow(volumeOld[n],2)*KmDNA+ATPpOld[n]*mAinOld[n]);
 			dvDNA_A = ATPpOld[n]*pow(volumeOld[n],2)*KmDNA/pow(pow(volumeOld[n],2)*KmDNA+ATPpOld[n]*mAinOld[n],2);
 			dvDNA_ATPp = pow(volumeOld[n],2)*KmDNA*mAinOld[n]/pow(pow(volumeOld[n],2)*KmDNA+ATPpOld[n]*mAinOld[n],2);
-			}
+		}
 		else
 			vDNA = dvDNA_A = dvDNA_ATPp = 0.;
 		DNA_rate[n] = vmaxDNA*vDNA;
@@ -342,21 +339,21 @@ void CellsSystem::Diff()
 		// produzione di mtDNA: termine comune a mitocondri, glutammina e ATPp senza le vmax, e sue derivate rispetto A e ATPp
 		double vM, dvM_A, dvM_ATPp;
 		if(phase[n] != dead)
-			{
+		{
 			vM = ATPpOld[n]*mAinOld[n]/(pow(volumeOld[n],2)*KmM+ATPpOld[n]*mAinOld[n]);
 			dvM_A = ATPpOld[n]*pow(volumeOld[n],2)*KmM/pow(pow(volumeOld[n],2)*KmM+ATPpOld[n]*mAinOld[n],2);
 			dvM_ATPp = pow(volumeOld[n],2)*KmM*mAinOld[n]/pow(pow(volumeOld[n],2)*KmM+ATPpOld[n]*mAinOld[n],2);
-			}
+		}
 		else
 			vM = dvM_A = dvM_ATPp = 0.;
 
 
         // qui si definisce il valore dell' O2-dependent glucose-transport efficiency h
         // ma solo se la cellula e' viva ... 
-        if( phase[n] != dead )
-            {
-            h[n] = 0.5*(1.3*(1.-mO2Old[n]/(volumeOld[n]*O2st))+1.)*(1.+tanh(100.*(1-mO2Old[n]/(volumeOld[n]*O2st)))) + 0.5*(1-tanh(100.*(1.-mO2Old[n]/(volumeOld[n]*O2st))));
-            }
+    if( phase[n] != dead )
+    {
+      h[n] = 0.5*(1.3*(1.-mO2Old[n]/(volumeOld[n]*O2st))+1.)*(1.+tanh(100.*(1-mO2Old[n]/(volumeOld[n]*O2st)))) + 0.5*(1-tanh(100.*(1.-mO2Old[n]/(volumeOld[n]*O2st))));
+    }
 		
 		double v1max = type[n]->Get_VMAX_1()*surface[n]*h[n];
 		double vmaxA = type[n]->Get_VMAX_A()*surface[n];
@@ -373,20 +370,19 @@ void CellsSystem::Diff()
 		double rhoA_bv = 0.;
 		double rhoAcL_bv = 0.;
 
-		if(isonBV[n])
-			{
-			BloodVessel *BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
-			//vbl::BloodVessel BV = bloodVesselMap[isonBV[n]-1];
-			  
-			rhoG_bv = BV->GetBloodVesselG();			// glucose concentration in BV	
-			rhoO2_bv = 0.5*(BV->GetBloodVesselO2start()+BV->GetBloodVesselO2end());			
-													// oxygen concentration in BV
-			rhoA_bv = BV->GetBloodVesselA();			// other nutrients concentration in BV
-			rhoAcL_bv = BV->GetBloodVesselAcL();		// lactate concentration in BV 
-			
-			// cout << rhoG_bv << "\t" << rhoO2_bv << "\t" << rhoA_bv << "\t" << rhoAcL_bv << endl;
-
-			}
+		if(isonBV[n])//n for until numerOfCells
+    {
+      BloodVessel BV = BloodVesselVector[isonBV[n]-1];	// extract blood vessel
+      //vbl::BloodVessel BV = bloodVesselMap[isonBV[n]-1];
+        
+      rhoG_bv = BV.GetBloodVesselG();			// glucose concentration in BV	
+      rhoO2_bv = 0.5*(BV.GetBloodVesselO2start()+BV.GetBloodVesselO2end());			
+                          // oxygen concentration in BV
+      rhoA_bv = BV.GetBloodVesselA();			// other nutrients concentration in BV
+      rhoAcL_bv = BV.GetBloodVesselAcL();		// lactate concentration in BV 
+      
+      // cout << rhoG_bv << "\t" << rhoO2_bv << "\t" << rhoA_bv << "\t" << rhoAcL_bv << endl;
+    }
 
 // ***** contribution of blood vessels, end init
 		

@@ -250,11 +250,16 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
         if(Get_ncells() > 1) 
         {
           CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
-          #pragma omp parallel sections
+          //#pragma omp parallel sections
           {
-            #pragma omp section
+            //#pragma omp section
             {
-          
+              /**
+               * segmentation fault, when creating instance of delany triangulation
+               * Dt DelTri;
+               * see CellsSystem-D-2.cpp
+               * NOTE: commenting the #pragma s here get rid of the seg fault
+               */
               Geometry( );				// Calculation of cluster geometry
             }//end #pragma omp section
           }//end #pragma omp parallel sections
@@ -531,6 +536,7 @@ void CellsSystem::Set_reserve(const int reserve)
 void CellsSystem::Set_BV_reserve(const int reserve_bv)
 {
 	BloodVesselVector.reserve(reserve_bv);
+//   BloodVesselVector = new BloodVessel[reserve_bv];
 }
 
 
@@ -1677,15 +1683,20 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	
 }
 
-void CellsSystem::Set_BloodVesselVector_at(int index, BloodVessel *NewBV)
+void CellsSystem::Add_BloodVesselVector(BloodVessel NewBV)
 {
-  nbv++;
+  
   //Vector()[index] = NewBV;
-  //BloodVesselVector.push_back(NewBV);
-  BloodVesselVector[index] = NewBV; /*cout << "New blood vessel in CellsSystem" << endl;*/
+  BloodVesselVector[nbv] = NewBV;
+  nbv++;
+  //BloodVesselVector[index] = NewBV; /*cout << "New blood vessel in CellsSystem" << endl;*/
   //bloodVesselMap[index] = NewBV;
 }
-
+void CellsSystem::clean_BloodVesselVector()
+{
+  this->nbv=0;
+  std::fill(std::begin(BloodVesselVector),std::end(BloodVesselVector), BloodVessel());
+}
 //  ******************** Timing ********************
 //
 // funzione che restituisce il tempo trascorso in secondi

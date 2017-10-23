@@ -26,6 +26,8 @@ void CellsSystem::Geometry()
   unsigned long k;
 
   // Creation of Delaunay's triangulation structure
+  /** segmentation fault, when running in multiple threads... what does that mean?
+   */
   Dt DelTri;
 
   // cout << "Triangolazione OK" << endl;
@@ -34,7 +36,7 @@ void CellsSystem::Geometry()
   // vector<Point> v( ncells );	
 
   // inserimento del centri delle cellule nel vettore
-#pragma omp parallel for
+//#pragma omp parallel for
   for(k=0; k<ncells; k++)
   {
     v[k] = Point( x[k], y[k], z[k] );
@@ -198,7 +200,8 @@ void CellsSystem::Geometry()
 	// the following loop identifies those cells that are in contact with blood vessels 
 	for(k=0; k<ncells; k++)
 	{
-	  std::vector<double> cellpos(3); // store the cell coordinates in a 3-vector
+	  //std::vector<double> cellpos(3); // store the cell coordinates in a 3-vector
+    std::array<double,3> cellpos;
 	  cellpos[0]=x[k];
 	  cellpos[1]=y[k];
 	  cellpos[2]=z[k];
@@ -209,10 +212,10 @@ void CellsSystem::Geometry()
 	  for( int nvessel=0; nvessel<nbv; nvessel++ ) // loop over all blood vessels
 	  {
 	    double x0[3]; // position on blood vessel axis closest to cell
-	    double dbv = BloodVesselVector[nvessel]->DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
+	    double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
 	    //double dbv = bloodVesselMap[nvessel].DistanceFromVessel( cellpos, x0 );
 	    // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
-	    if( dbv < BloodVesselVector[nvessel]->GetBloodVesselR() + r[k] )
+	    if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k] )
 	    //if( dbv < bloodVesselMap[nvessel].GetBloodVesselR() + r[k] )
 	    {
 	      /** note the shift, which is done to use the value 0
