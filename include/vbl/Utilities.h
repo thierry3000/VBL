@@ -13,17 +13,7 @@
 
 // versione standalone di ran2 (versione NR modificata)
 
-// for old compilers we need some tricks
-#include<features.h> // gives various information on the build system
-#if __GNUC_PREREQ(5,0)
-    // means gnu compiler is higher than 4.5 and fully c++11 compatible
-    // we don't need to hacking
-  #include <random> // std random number generator
-#else
-  //old fashioned
-  #include<cstdlib>
-  #include<time.h>
-#endif
+#include <boost/random.hpp>
 
 #include <iostream>
 #include <fstream>

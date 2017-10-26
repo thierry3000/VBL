@@ -1619,8 +1619,15 @@ void CellsSystem::Printout()
 
 		}
 
-	av_mitocondri /= alive;			// numero medio di mitocondri per cellula
-	ATP_totale /= alive;			// ATPp medio per cellula
+  if( alive>0)
+  {
+    av_mitocondri /= alive;			// numero medio di mitocondri per cellula
+    ATP_totale /= alive;			// ATPp medio per cellula
+  }
+  else
+  {
+    throw std::runtime_error(" no alive cell anymore ");
+  }
 	
 // output su schermo
 
