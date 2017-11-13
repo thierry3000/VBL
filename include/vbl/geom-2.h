@@ -50,24 +50,31 @@ typedef CGAL::Vector_3<K>								Vector;
 
 //spatial sort traits to use with a pair of point pointers and integer.
 template<class Triangulation>
-struct Traits_for_spatial_sort:public Triangulation::Geom_traits{
+struct Traits_for_spatial_sort:public Triangulation::Geom_traits
+{
   typedef typename Triangulation::Geom_traits Gt;
   typedef std::pair<const typename Triangulation::Point*,int> Point_3;
   
-  struct Less_x_3{
-    bool operator()(const Point_3& p,const Point_3& q) const {
+  struct Less_x_3
+  {
+    bool operator()(const Point_3& p,const Point_3& q) const
+    {
       return typename Gt::Less_x_3()(*(p.first),*(q.first));
     }
   };
 
-  struct Less_y_3{
-    bool operator()(const Point_3& p,const Point_3& q) const {
+  struct Less_y_3
+  {
+    bool operator()(const Point_3& p,const Point_3& q) const 
+    {
       return typename Gt::Less_y_3()(*(p.first),*(q.first));
     }
   };
 
-  struct Less_z_3{
-    bool operator()(const Point_3& p,const Point_3& q) const {
+  struct Less_z_3
+  {
+    bool operator()(const Point_3& p,const Point_3& q) const 
+    {
       return typename Gt::Less_z_3()(*(p.first),*(q.first));
     }
   };  
@@ -89,7 +96,8 @@ build_triangulation_with_indices(
 {
   std::vector<std::pair<const typename Triangulation::Point*,int> > points;
   int index=-1;
-  for (Point_iterator it=begin;it!=end;++it){
+  for (Point_iterator it=begin;it!=end;++it)
+  {
     points.push_back(std::make_pair(&(*it),++index));
   }
  // std::random_shuffle (points.begin(), points.end());

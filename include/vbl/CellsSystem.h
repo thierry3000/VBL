@@ -233,8 +233,8 @@ EnvironmentalSignal dose_rateSignal;
 // definizione del vettore dei fenotipi cellulari
 std::vector<CellType> CellTypeVector;
 
-// parametri legati alla geometria e alla dinamica del cluster
-double maxdr;				// spostamento max nel sistema di cellule in un passo di dinamica
+// parameters related to geometry and dynamics of the cluster
+double maxdr;				// max displacement in the cellular system at a dynamic pace
 
 // parametri metabolici del cluster
 double O2Flow;				// flusso di O2 dalla periferia alle regioni interne (in kg/s)

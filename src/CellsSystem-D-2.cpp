@@ -35,7 +35,7 @@ void CellsSystem::Geometry()
   // vettore dei punti
   // vector<Point> v( ncells );	
 
-  // inserimento del centri delle cellule nel vettore
+  // Inserting cell cells into the carrier
 //#pragma omp parallel for
   for(k=0; k<ncells; k++)
   {
@@ -45,101 +45,103 @@ void CellsSystem::Geometry()
   // cout << "Primo punto: {" << v[0] << "} = " << x[0] << ", " << y[0] << ", " << z[0] << endl;
 
 
-  // inserimento modificato dei punti nella triangolazione (equivalente all'inserimento sequenziale)
+  // modified point insertion in triangulation (equivalent to sequential insertion)
   build_triangulation_with_indices(v.begin(),v.end(),DelTri);
 
+  // Below is the list of links and the areas of contact surfaces are estimated
 
-  // nel seguito si trova la lista dei collegamenti e si stimano le aree delle superfici di contatto
+  std::vector<Vertex_handle> vn;// vector of neighbors vertex_handle
 
-  std::vector<Vertex_handle> vn;// vettore delle vertex_handle dei vicini
-
-  // si rifa' il loop sui vertici finiti (k e' il nome della cellula attuale)
+  // the loop on the finished vertices (k is the name of the current cell)
   for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
   {
     k = vit->info();
-    DelTri.incident_vertices(vit, back_inserter(vn));		// qui si ottiene la lista dei vicini
-    neigh[k] = vn.size();								// numero dei vicini (finiti E infiniti)
+    DelTri.incident_vertices(vit, back_inserter(vn));		// here is the list of neighbors
+    neigh[k] = vn.size();								// number of neighbors (finite and infinite)
 			
-    vneigh[k].resize(neigh[k]);							// inizializzazione del vettore dei nomi dei vicini
-    vcsurf[k].resize(neigh[k]);							// inizializzazione del vettore delle aree delle superfici di contatto
+    vneigh[k].resize(neigh[k]);							// Initializing the carrier of neighbor names
+    vcsurf[k].resize(neigh[k]);							// Initialize the vector of contact surface areas
 			
-    vdist[k].resize(neigh[k]);							// allocazione del vettore delle distanze
-    gnk[k].resize(neigh[k]);							// allocazione del vettore dei fattori geometrici
-    isonCH[k]=false;									// variabile che dice se la cellula e' sul convex hull
-    env_surf[k] = 0.;									// superficie di contatto con l'ambiente
-    g_env[k] = 0.;										// fattore geometrico relativo al contatto con l'ambiente
+    vdist[k].resize(neigh[k]);							// allocation of distances carrier
+    gnk[k].resize(neigh[k]);							// allocation of the vector of the geometric factors
+    isonCH[k]=false;									// variable that says if the cell is on the convex hull
+    env_surf[k] = 0.;									// surface of contact with the environment
+    g_env[k] = 0.;										// geometric factor for contact with the environment
 			
-    // raggio pesato della cellula considerata
+    // weighed beam of the considered cell
     double rk = (type[k]->Get_extension_coeff())*r[k];
 			
-    contact_surf[k] = 0.;								// inizializzazione calcolo superficie di contatto totale
+    contact_surf[k] = 0.;								// Initialization total contact surface calculation
 			
-    int nFV = 0;										// inizializzazione del numero dei vertici finiti adiacenti	
-    for(int kk=0; kk < neigh[k] ; kk++)					// in questo loop si prepara la lista dei vicini e si calcolano le sup. di contatto
+    int nFV = 0;										// initialization of the number of adjacent finite vertices
+    for(int kk=0; kk < neigh[k] ; kk++)					// in this loop you prepare the list of neighbors and calculate the shoulders. of contact
     {
-      if(!DelTri.is_infinite(vn[kk]))	// se si c'e' un vertice finito adiacente
+      if(!DelTri.is_infinite(vn[kk]))	// if there is an adjacent end vertex
       {
-	int neighbor = vn[kk]->info();				// nome del vicino
-	vneigh[k][nFV] = neighbor;					// memorizzazione del nome del vicino
+        int neighbor = vn[kk]->info();				// neighbor's name
+        vneigh[k][nFV] = neighbor;					// memorizing the neighbor's name
 
-	// raggio pesato della cellula adiacente
-	double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
-	double dd = Distance( k,neighbor );			// distanza tra le due cellule
+        // weighed radius of the adjacent cell
+        double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
+        double dd = Distance( k,neighbor );			// distance between the two cells
 					
-	// *********** controllo per debugging
-	if(dd != dd || dd <= 0)
-	{
-	  std::cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << std::endl;
-	}
-	// *********** fine controllo per debugging
+        // *********** controllo per debugging
+        if(dd != dd || dd <= 0)
+        {
+          std::cout << "cellula " << k << "-esima, vicina " << neighbor << "-esima, distanza indefinita" << std::endl;
+        }
+        // *********** fine controllo per debugging
 
-	vdist[k][nFV] = dd;
+        vdist[k][nFV] = dd;
 
-	if( dd < (rk+rkk) ) 						// calcolo della superficie di contatto
-	{
-	  vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
-	  if( vcsurf[k][nFV] < 0 )
-	  {
-	    vcsurf[k][nFV] = 0;
-	  }
-	  contact_surf[k] += vcsurf[k][nFV];
-	}
-	else
-	{
-	  vcsurf[k][nFV] = 0.;
-	}
+        if( dd < (rk+rkk) ) 						// calculation of contact surface
+        {
+          vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
+          if( vcsurf[k][nFV] < 0 )
+          {
+            vcsurf[k][nFV] = 0;
+          }
+          contact_surf[k] += vcsurf[k][nFV];
+        }
+        else
+        {
+          vcsurf[k][nFV] = 0.;
+        }
 
-					if(vcsurf[k][nFV] > 0)						// fattore geometrico
-						gnk[k][nFV] = vcsurf[k][nFV]/dd;
-					else
-						gnk[k][nFV] = 0;
+        if(vcsurf[k][nFV] > 0)						// geometric factor
+          gnk[k][nFV] = vcsurf[k][nFV]/dd;
+        else
+          gnk[k][nFV] = 0;
 
 					//***
+        // here the counter of the finite vertices is increased
+        nFV++;
+        }
+      else
+      {
+        isonCH[k]=true;// if one of the adjacent vertices is infinite then the vertex is on the convex hull
+      }
+    }
 
-					nFV++;										// qui si incrementa il contatore dei vertici finiti
-					}
-				else
-					isonCH[k]=true;								// se uno dei vertici adiacenti e' infinito allora il vertice si trova sul convex hull
-				}
-
-
-			if( nFV != neigh[k] )	// qui si controlla il numero di vertici finiti e se questo e' diverso dal numero totale di vertici
-									// si fa un resize dei vettori
-				{
-				neigh[k] = nFV;
-				vneigh[k].resize(neigh[k]);						// resizing del vettore dei nomi dei vicini
-				vcsurf[k].resize(neigh[k]);						// resizing del vettore delle aree delle superfici di contatto
-				vdist[k].resize(neigh[k]);						// resizing del vettore delle distanze
-				gnk[k].resize(neigh[k]);						// resizing del vettore dei fattori geometrici
-				}
-			
-		// *** inizio calcolo fattore geometrico ambientale
-			// calcolo della superficie di contatto con l'ambiente: si assume che tutta la superficie della cellula che non e' a
-			// contatto con le cellule adiacenti sia in contatto con l'ambiente: questo calcolo viene fatto comunque, ma il 
-			// contatto con l'ambiente c'e' in realta' solo le la cellula sta sull'alpha shape
-			
-			env_surf[k] = 0.;								// normalmente la sup. di contatto con l'ambiente e' nulla
-			g_env[k] = 0.;									// e naturalmente anche il fattore geometrico associato e' nullo
+/* here you control the number of finite vertices and if this is different from the total number of vertices
+ * you make a resize of the carriers
+ */
+    if( nFV != neigh[k] )
+    {
+      neigh[k] = nFV;
+      vneigh[k].resize(neigh[k]);						// resizing del vettore dei nomi dei vicini
+      vcsurf[k].resize(neigh[k]);						// resizing del vettore delle aree delle superfici di contatto
+      vdist[k].resize(neigh[k]);						// resizing del vettore delle distanze
+      gnk[k].resize(neigh[k]);						// resizing del vettore dei fattori geometrici
+    }
+/** start calculating geometric environmental factor
+ * calculating the surface of contact with the environment: 
+ * it is assumed that the entire surface of the cell that is not in contact 
+ * with adjacent cells with the environment: this calculation is done however, but the
+ * contact with the environment is in fact only the cell is on the alpha shape
+ */
+    env_surf[k] = 0.;								// normally the shoulder. contacting the environment is nothing
+    g_env[k] = 0.;									// and of course the associated geometric factor is also null
 			
 			
 //			env_surf[k] = surface[k] - contact_surf[k];		// qui si calcola la superficie esposta all'ambiente
@@ -147,55 +149,55 @@ void CellsSystem::Geometry()
 //				env_surf[k] = 0.;							// in linea di principio (causa algoritmo approssimato) questa superficie esposta 
 															// puo' essere negativa, e in questo caso la si annulla
 
-
-// nuovo calcolo della superficie esposta all'ambiente: si calcola il numero di vicini + l'ambiente e si assume che la superficie surface[k]
-// sia equamente suddivisa tra vicini e ambiente
-			env_surf[k] = surface[k]/(neigh[k]+1);			// qui si calcola la superficie esposta all'ambiente
-
-			g_env[k] = env_surf[k]/r[k];					// fattore geometrico verso l'ambiente
+/** new calculation of the surface exposed to the environment: 
+ * calculate the number of neighbors + the environment and assume that the surface surface [k]
+ * be equally divided between neighbors and the environment
+ */
+    env_surf[k] = surface[k]/(neigh[k]+1);			// here we calculate the surface exposed to the environment
+    g_env[k] = env_surf[k]/r[k];					// geometric factor towards the environment
 			
-		// *** fine del calcolo del fattore geometrico con l'ambiente
+// *** the end of the geometric factor calculation with the environment
 			
-			
-			vn.clear();											// si ripulisce la lista dei vicini in preparazione del prossimo vertice
+			vn.clear();											// the neighbors list is cleared in preparation for the next summit
 
-			}
+  }
 	
 	// Calculation of alpha shape as, with ALPHA defined in sim.h
 
-	if( ncells < 5 )	// se ci sono meno di 5 cellule, queste stanno certamente sull'alpha shape
-		{
-		for(k=0; k<ncells; k++)
-			isonAS[k] = true;
-		}
+	if( ncells < 5 )	// if there are less than 5 cells, these are certainly on the alpha shape
+  {
+    for(k=0; k<ncells; k++)
+    {
+      isonAS[k] = true;
+    }
+  }
 	else 
-		{
-		Alpha_shape_3 as(DelTri);
-		as.set_mode(Alpha_shape_3::GENERAL);
-	
-		// Alpha_shape_3::NT alpha_solid = as.find_alpha_solid();
-		// std::cout << "Smallest alpha value to get a solid through data points is " << scientific << alpha_solid << std::endl;
+  {
+    Alpha_shape_3 as(DelTri);
+    as.set_mode(Alpha_shape_3::GENERAL);
 
-		
-		std::vector<Vertex_handle> vertices_on_alpha_shape;
-		as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::REGULAR,ALPHAVALUE);
-		as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::SINGULAR,ALPHAVALUE);
-		
-		
-		// cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
+    // Alpha_shape_3::NT alpha_solid = as.find_alpha_solid();
+    // std::cout << "Smallest alpha value to get a solid through data points is " << scientific << alpha_solid << std::endl;
 
-		// per default i vertici sono interni
-		for(k=0; k<ncells; k++)
-			isonAS[k] = false;
-		
-		for(k=0; k<vertices_on_alpha_shape.size(); k++)
-			isonAS[vertices_on_alpha_shape[k]->info()] = true;
-		
-		}
+    std::vector<Vertex_handle> vertices_on_alpha_shape;
+    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::REGULAR,ALPHAVALUE);
+    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Alpha_shape_3::SINGULAR,ALPHAVALUE);
+    
+    
+    // cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
+
+    // by default, the vertices are internal
+    for(k=0; k<ncells; k++)
+      isonAS[k] = false;
+    
+    for(k=0; k<vertices_on_alpha_shape.size(); k++)
+      isonAS[vertices_on_alpha_shape[k]->info()] = true;
+  }
 	
-	// questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
+	// this loop resets the g_env of all cells that are not on the alpha shape
 	for(k=0; k<ncells; k++)
-		if( !isonAS[k] ) g_env[k]=0.;
+		if( !isonAS[k] ) 
+      g_env[k]=0.;
 		
 	// the following loop identifies those cells that are in contact with blood vessels 
 	for(k=0; k<ncells; k++)
@@ -243,13 +245,12 @@ void CellsSystem::Geometry()
 // Minimum calculations in case of dispersed cells
 void CellsSystem::NoGeometry()
 {
-
-	for(unsigned long k=0; k<ncells; k++)
-		{
-		env_surf[k] = surface[k];				// Here we calculate the surface exposed to the environment
-		g_env[k] = env_surf[k]/r[k];			// Geometric factor towards the environment
-		contact_surf[k] = 0;					// Sup. Contacting the other cells is nothing in the case of dispersed cells
-		}
+  for(unsigned long k=0; k<ncells; k++)
+  {
+    env_surf[k] = surface[k];				// Here we calculate the surface exposed to the environment
+    g_env[k] = env_surf[k]/r[k];			// Geometric factor towards the environment
+    contact_surf[k] = 0;					// Sup. Contacting the other cells is nothing in the case of dispersed cells
+  }
 
 
 }
