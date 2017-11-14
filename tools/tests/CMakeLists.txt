@@ -13,6 +13,9 @@ target_link_libraries(test_delauny gmp CGAL tbb)
 add_executable(test_delauny_parallel test_delauny_parallel.cpp)
 target_link_libraries(test_delauny_parallel gmp CGAL)
 
+add_executable(test_regular_parallel test_regular_triangulation_parallel.cpp)
+target_link_libraries(test_regular_parallel gmp CGAL)
+
 #receive by email from Edoardo Milotti 14.11.2017
 add_executable(test_thread test_thread.cpp)
 target_link_libraries(test_thread gmp CGAL)
@@ -32,6 +35,7 @@ if( ACTIVATE_CONCURRENCY )
     include(${TBB_USE_FILE})
     target_link_libraries(test_delauny_parallel ${TBB_LIBRARIES})
     target_link_libraries(test_thread ${TBB_LIBRARIES})
+    target_link_libraries(test_regular_parallel ${TBB_LIBRARIES})
   endif()
 endif()
 
