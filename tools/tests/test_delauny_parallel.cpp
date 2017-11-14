@@ -18,7 +18,7 @@ int main()
   typedef Rt::Bare_point                                      Bare_point;
   typedef Rt::Weighted_point                                  Weighted_point;
   typedef Rt::Vertex_handle                                   Vertex_handle;
-  const int NUM_INSERTED_POINTS = 500;
+  const int NUM_INSERTED_POINTS = 5000000;
   CGAL::Random_points_in_cube_3<Bare_point> rnd(1.);
   // Construction from a vector of 1,000,000 points
   std::vector<Weighted_point> V;
