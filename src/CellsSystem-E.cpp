@@ -25,24 +25,18 @@ using namespace vbl;
 //
 void CellsSystem::Dynamics( )
 {
-
-
-	// prima parte, inizializzazione e calcolo della forza 
-	// il calcolo della forza si fa una volta per tutte, corrisponde alla parte esplicita dell'integrazione
+// first part, initialization and calculation of the force
+// the calculation of force is done once and for all, corresponds to the explicit part of the integration
 
 	GetForces( );
 	
 	// calcolo di nuove velocità e posizioni
 	NewPositionsAndVelocities( );
-
-
-		
 }
 
 // Calculating force between cells in the current configuration
 void CellsSystem::GetForces()
 {
-
 	// ridimensionamento dei vettori
 	fx.resize(ncells);
 	fy.resize(ncells);
@@ -55,10 +49,10 @@ void CellsSystem::GetForces()
 		
 	// la forza cellula-cellula si calcola solo se ci sono almeno due cellule
 	if(ncells>1)
-		{
+  {
 #pragma omp parallel for
 		for(unsigned long n=0; n<ncells; n++)
-			{
+    {
 			
 			// parametri relativi alla cellula n-esima
 			double rn = (type[n]->Get_packing_factor())*r[n];					// raggio della cellula pesato con il packing factor
@@ -70,11 +64,11 @@ void CellsSystem::GetForces()
 
 			int nneigh = neigh[n];				// numero di cellule adiacenti alla cellula n-esima
 			
-			// loop sulle cellule adiacenti alla cellula n-esima (si calcola solo se c'e' almeno una cellula vicina)
+			// loop on cells adjacent to the n-th cell (it is calculated only if there is at least one cell nearby)
 			if(nneigh > 0)
-				{
+      {
 				for( int k=0; k< nneigh; k++)					
-					{
+        {
 					int neighbor = vneigh[n][k];	// nome della k-esima cellula adiacente
 					double dd = Distance(n,neighbor);	// distanza tra cellula n-esima e la k-esima cellula vicina
 
@@ -118,14 +112,10 @@ void CellsSystem::GetForces()
 					cout << "kC: " << scientific << kC << endl;
 					cout << "modulo della forza: " << scientific << fm << " (" << sqrt( SQR(fx[n]) + SQR(fy[n]) + SQR(fz[n]) ) << ") " << "\n" << endl;
 		*/
-					
-					}
-				}
-			
-			}
-		}
-
-
+        }
+      }
+    }
+  }
 }
 
 
@@ -142,25 +132,22 @@ void CellsSystem::NewPositionsAndVelocities( )
 	loop_count = 0;	// conteggio dei passaggi nel loop
 	
 	if( ncells > 1 )
-		{
-				
-		while( true )	// loop infinito, viene interrotto da un break quando si raggiunge la condizione di stop
-			{
-			
+  {
+		while( true )	// The infinite loop is interrupted by a break when the stop condition is reached
+    {
 			double dvmax = 0;	// max modulo della diff di velocita' tra due iterazioni
 
-#pragma omp parallel for ordered schedule(dynamic)
-			for(unsigned long n=0; n<ncells; n++)	// loop sulle cellule
-				{
-				
-				int nneigh = neigh[n];					// numero di cellule adiacenti
-
-				double rn = r[n];					// raggio della cellula (ora serve al calcolo del coeff di attrito)
+//#pragma omp parallel for ordered schedule(dynamic)
+#pragma omp parallel for
+			for(unsigned long n=0; n<ncells; n++)	// loop on the cells
+      {
+				int nneigh = neigh[n];		// number of adjacent cells
+				double rn = r[n];					// cell radius (now used to calculate the friction coefficient)
 				
 				// inizializzazioni
 				
-				// coefficienti di attrito
-				// ATTENZIONE ... questo statement dovrebbe entrare nel fenotipo
+				// coefficients of friction
+				// WARNING ... this statement should enter the phenotype
 				double gamma = 6.*PI*VISCOSITY_ENV*rn;
 				double gamma_int = 0.1e15;	// viscosita' interna in pg/(micron s)
 				
@@ -181,7 +168,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 				double mn = mass[n];				// massa della cellula
 				
 				for( int k=0; k< nneigh; k++)							// loop sulle cellule adiacenti
-					{
+        {
 					int neighbor = vneigh[n][k];		// nome della k-esima cellula adiacente
 					
 					double drx = (x[n]-x[neighbor]);				// componenti del raggio vettore tra le cellule n e neighbor
@@ -201,8 +188,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 					ayy += dry*dry/dd2;
 					ayz += dry*drz/dd2;
 					azz += drz*drz/dd2;
-					
-					}
+        }//check, all used variables are local --> openMP compatible!
 				
 				bx = vx[n] + (gamma_int*bx + fx[n])*dt/mn;
 				by = vy[n] + (gamma_int*by + fy[n])*dt/mn;
@@ -221,6 +207,11 @@ void CellsSystem::NewPositionsAndVelocities( )
 				vynew[n] = ( (axz*ayz-axy*azz)*bx + (axx*azz-axz*axz)*by + (axy*axz-ayz*axx)*bz )/det;
 				vznew[n] = ( (axy*ayz-axz*ayy)*bx + (axy*axz-ayz*axx)*by + (axx*ayy-axy*axy)*bz )/det;
 
+        /* T.F. 
+         * I am not sure whether this is threadsafe, what happens if
+         * one thread reads vxnew[n] while an other thread writes vxnew[m] ?
+         * I try and see what happens.
+         */
 				double dv = sqrt((vx[n]-vxnew[n])*(vx[n]-vxnew[n])+(vy[n]-vynew[n])*(vy[n]-vynew[n])+(vz[n]-vznew[n])*(vz[n]-vznew[n]));
 				if(dv > dvmax) dvmax = dv;
 
@@ -243,45 +234,42 @@ void CellsSystem::NewPositionsAndVelocities( )
 				cout << "v:    (" << scientific << vx[n] << ", " << vy[n] << ", " << vz[n] << ") " << endl;
 				cout << "vnew: (" << scientific << vxnew[n] << ", " << vynew[n] << ", " << vznew[n] << ") " << endl;
 */				
-				}
+      }// end // loop on the cells
 			
 			loop_count++; 
 			
 			//if(loop_count > 100) exit(0);
 			// if( dvmax < (1.e-11) ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.01 nm/s
 			if( dvmax < delta_vmax ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.1 nm/s
-
+#pragma omp parallel for
 			for(unsigned long n=0; n<ncells; n++)	// qui si copiano in v i nuovi valori vnew
-				{
+      {
 				vx[n] = vxnew[n];
 				vy[n] = vynew[n];
 				vz[n] = vznew[n];
-				}
-			
-			}
-		}
+      }
+    }// end infinite loop
+  }//if( ncells > 1 )
 	else 
-	// soluzione nel caso ci sia un'unica cellula: l'unico coeff di attrito e' quello con l'ambiente e l'unico indice e' n=0
-		{
+	// solution if there is only one cell: the only coefficient of friction is that with the environment and the only index is' n = 0
+  {
 		double rn = r[0];					// raggio dell'unica cellula (ora serve al calcolo del coeff di attrito)
-        double mn = mass[0];				// massa della cellula
-        double gamma = 6.*PI*VISCOSITY_ENV*rn;
+    double mn = mass[0];				// massa della cellula
+    double gamma = 6.*PI*VISCOSITY_ENV*rn;
 		
 		vx[0] = vx[0]/(1.+gamma*dt/mn);
 		vy[0] = vy[0]/(1.+gamma*dt/mn);
 		vz[0] = vz[0]/(1.+gamma*dt/mn);
-		
-		}
+  }
 
-	
-		
+
 	// calcolo delle nuove posizioni
 	
 	maxdr = 0;	// inizializzazione dello spostamento massimo nel sistema di cellule
-
+	
+#pragma omp parallel for
 	for(unsigned long n=0; n<ncells; n++)				// loop sulle cellule
-		{
-
+  {
 		double rn = r[n];			// raggio della cellula
 
 		double dx = vx[n]*dt;						// variazioni delle coordinate
@@ -291,8 +279,8 @@ void CellsSystem::NewPositionsAndVelocities( )
 		double dr = sqrt( dx*dx + dy*dy + dz*dz);	// spostamento totale
 		if(dr>maxdr) maxdr = dr;						// update dello spostamento massimo
 			
-		if( dr > rn )		// gestione di possibili errori nel calcolo della posizione
-			{
+		if( dr > rn )		// management of possible errors in the calculation of the position
+    {
 			std::cout << "Errore in Cells::NewPositionsAndVelocities: " << std::endl;
 			std::cout << "Al passo " << nstep;
 			std::cout << " si e' verificato un problema nel calcolo della posizione della cellula " << n << "-esima" << std::endl;
@@ -306,15 +294,12 @@ void CellsSystem::NewPositionsAndVelocities( )
 			std::cout << "cellForcey = " << std::scientific << fy[n] << std::endl;
 			std::cout << "cellForcez = " << std::scientific << fz[n] << std::endl;
 			exit(0);
-			}
-			
-		x[n] += dx;				// calcolo delle nuove coordinate
+    }
+    // calcolo delle nuove coordinate
+		x[n] += dx;
 		y[n] += dy;
 		z[n] += dz;
-
-		
-		}
-		
+  }
 }
 
 

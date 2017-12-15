@@ -57,7 +57,7 @@ bool CellsSystem::CellEvents( )
 			//	death_condition[n] += 1;
 			if( pHi[n] < type[n]->Get_pHimin() )
 				death_condition[n] += 2;
-			if( ran2(idum) < 1.-exp(-(type[n]->Get_a_R()) * ConcAcL*dt \
+			if( ran2() < 1.-exp(-(type[n]->Get_a_R()) * ConcAcL*dt \
 				  -(type[n]->Get_alpha_R( phase[n] ))*dose \
 				  -(type[n]->Get_beta_R( phase[n] ))*pow(dose,2)) )
 				death_condition[n] += 4;
@@ -196,7 +196,7 @@ bool CellsSystem::CellEvents( )
 
 		// *** si copia la struttura della cellula madre nella nuova cellula (che va in fondo alla lista)
 		// P.S. questa istruzione aumenta automaticamente il numero di instances di type
-			if(treal < EventTime || (ran2(idum) > pAlt || pAlt < 2 ))
+			if(treal < EventTime || (ran2() > pAlt || pAlt < 2 ))
                 ReplicateCell( n );
             else
                 {
@@ -224,7 +224,7 @@ bool CellsSystem::CellEvents( )
 			// caso l'assegnazione a newcell e' automatica, perche' newcell contiene tutto quello che la cellula n-esima non contiene
 			
 			double Mit = bnldev(0.5, clusters_M, idum) * ClusteringFactor;	// distribuzione binomiale
-			if(ran2(idum) > 0.5) Mit += rest_M;
+			if(ran2() > 0.5) Mit += rest_M;
 			
 			M[n] = Mit;										// questi statements definiscono M e ATPmin
 			M[ncells-1] = old_M - Mit;
@@ -329,11 +329,11 @@ bool CellsSystem::CellEvents( )
 
 
 			// definizione di DNA_spread e M_T
-			DNA_spread[n] = type[n]->Get_DNA_MAX_SPREAD() * (2.*ran2(idum)-1.);
-			M_T[n] = type[n]->Get_M_T_MEAN() * (1.+ type[n]->Get_PHASE_SPREAD() * (2.*ran2(idum)-1.));
+			DNA_spread[n] = type[n]->Get_DNA_MAX_SPREAD() * (2.*ran2()-1.);
+			M_T[n] = type[n]->Get_M_T_MEAN() * (1.+ type[n]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
 
-			DNA_spread[ncells-1] = type[ncells-1]->Get_DNA_MAX_SPREAD() * (2.*ran2(idum)-1.);
-			M_T[ncells-1] = type[ncells-1]->Get_M_T_MEAN() * (1.+ type[ncells-1]->Get_PHASE_SPREAD() * (2.*ran2(idum)-1.));
+			DNA_spread[ncells-1] = type[ncells-1]->Get_DNA_MAX_SPREAD() * (2.*ran2()-1.);
+			M_T[ncells-1] = type[ncells-1]->Get_M_T_MEAN() * (1.+ type[ncells-1]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
 			
 
 			// le cellule sono temporanemente create isolate
@@ -359,9 +359,9 @@ bool CellsSystem::CellEvents( )
 				// geometria della mitosi (solo nel caso di simulazione Full3D)
 				if( sim_type == Full3D ) 
 					{
-					double xr = 1.-2.*ran2(idum); 
-					double yr = 1.-2.*ran2(idum); 
-					double zr = 1.-2.*ran2(idum); 
+					double xr = 1.-2.*ran2(); 
+					double yr = 1.-2.*ran2(); 
+					double zr = 1.-2.*ran2(); 
 					double len = sqrt(xr*xr + yr*yr + zr*zr);
 					xr /= len;
 					yr /= len;

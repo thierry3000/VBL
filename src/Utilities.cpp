@@ -20,7 +20,7 @@ boost::random::mt19937 rng;         // produces randomness out of thin air
                                     // see pseudo-random number generators
 boost::random::uniform_01<> uni_f;
 
-double ran2(int &idum)
+double ran2()
 {
   return uni_f(rng);
 }
@@ -41,6 +41,7 @@ double gammln(const double xx)
 	return -tmp+log(2.5066282746310005*ser/x);
 }
 
+//log of factorial
 double factln(const int n)
 {
 	static double a[101];
@@ -55,6 +56,7 @@ double factln(const int n)
 		return gammln(n+1.0);
 }
 
+//binomial coefficient
 double bico(const int n, const int k)
 {
 	return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
@@ -74,12 +76,12 @@ double bnldev(const double pp, const int n, int &idum)
 	if (n < 25) {
 		bnl=0.0;
 		for (j=0;j<n;j++)
-			if (ran2(idum) < p) ++bnl;
+			if (ran2() < p) ++bnl;
 	} else if (am < 1.0) {
 		g=exp(-am);
 		t=1.0;
 		for (j=0;j<=n;j++) {
-			t *= ran2(idum);
+			t *= ran2();
 			if (t < g) break;
 		}
 		bnl=(j <= n ? j : n);
@@ -97,14 +99,14 @@ double bnldev(const double pp, const int n, int &idum)
 		sq=sqrt(2.0*am*pc);
 		do {
 			do {
-				angle=PI*ran2(idum);
+				angle=PI*ran2();
 				y=tan(angle);
 				em=sq*y+am;
 			} while (em < 0.0 || em >= (en+1.0));
 			em=floor(em);
 			t=1.2*sq*(1.0+y*y)*exp(oldg-gammln(em+1.0)
 				-gammln(en-em+1.0)+em*plog+(en-em)*pclog);
-		} while (ran2(idum) > t);
+		} while (ran2() > t);
 		bnl=em;
 	}
 	if (p != pp) bnl=n-bnl;
@@ -120,8 +122,8 @@ double gasdev(int &idum)
 	if (idum < 0) iset=0;
 	if (iset == 0) {
 		do {
-			v1=2.0*ran2(idum)-1.0;
-			v2=2.0*ran2(idum)-1.0;
+			v1=2.0*ran2()-1.0;
+			v2=2.0*ran2()-1.0;
 			rsq=v1*v1+v2*v2;
 		} while (rsq >= 1.0 || rsq == 0.0);
 		fac=sqrt(-2.0*log(rsq)/rsq);

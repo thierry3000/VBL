@@ -169,70 +169,54 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;
 #ifdef W_timing
-  std::ofstream timing_file;
-  boost::format template_name("./runs/run_%d-%s/timing_of_runMainLoop_in_run.txt");
-  std::string fn = boost::str(template_name % run % machine);
-  timing_file.open(fn);
+//   std::ofstream timing_file;
+//   boost::format template_name("./runs/run_%d-%s/timing_of_runMainLoop_in_run.txt");
+//   std::string fn = boost::str(template_name % run % machine);
+//   timing_file.open(fn);
+  myTiming.reset();
 #endif
   while(active_run)
   {
 #ifdef W_timing
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #endif
-    #pragma omp parallel sections
-    {
-      #pragma omp section
-      {
-// #ifndef NDEBUG
-//         tid = ::omp_get_thread_num();
-//         printf("starting active run on thread = %d\n", tid);
-//         if (tid == 0)
-//         {
-//           nthreads = ::omp_get_num_threads();
-//           printf("Number of threads in dynamics = %d\n", nthreads);
-//         }
-// #endif
-        // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
-        if(Get_ready2start() && Get_sim_type() == Full3D )	
-        {
-          Dynamics( );						// Calculation of mechanical interactions
-        // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
-        }
-      }// end #pragma omp section
-      
-// #ifndef NDEBUG
-//     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-//     std::cout << "ran Dynamics for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
-// #endif
 
-      #pragma omp section
-      {
-#ifndef NDEBUG
-//         tid = ::omp_get_thread_num();
-//         printf("starting diff on thread = %d\n", tid);
-//         if (tid == 0)
-//         {
-//           nthreads = ::omp_get_num_threads();
-//           printf("Number of threads in diff = %d\n", nthreads);
-//         }
-#endif
-        CPU_timer(Start_intertime);			// start intertempo del CPU timer
-        Diff();								// metabolismo e diffusione
-        CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
-      }// end #pragma omp section
-    }// end #pragma omp parallel sections
+    // The calculation of geometry and dynamic is only done if 3D calculation is selected and the system is ready to start
+    if(Get_ready2start() && Get_sim_type() == Full3D )	
+    {
+      Dynamics( );						// Calculation of mechanical interactions
+    // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
+    }
 #ifdef W_timing
     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-    timing_file << "run Diff for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    myTiming.time_diff = end-begin;
+    myTiming.dynamics = myTiming.dynamics + myTiming.time_diff.count();
 #endif
+      
+
+    CPU_timer(Start_intertime);			// start intertempo del CPU timer
+#ifdef W_timing
+    begin = std::chrono::steady_clock::now();
+#endif
+    Diff();								// metabolismo e diffusione
+#ifdef W_timing
+    end= std::chrono::steady_clock::now();
+    myTiming.time_diff = end-begin;
+    myTiming.diff = myTiming.diff + myTiming.time_diff.count();
+#endif
+    CPU_timer(Stop_intertime);			// stop intertempo del CPU timer
+
+
 #ifdef W_timing
     begin = std::chrono::steady_clock::now();
 #endif
     bool mitosis = CellEvents( );		// Cellular events
 #ifdef W_timing
     end= std::chrono::steady_clock::now();
-    timing_file << "run CellEvents for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    myTiming.time_diff = end-begin;
+    myTiming.cellEvents = myTiming.cellEvents + myTiming.time_diff.count();
 #endif
+    
     // The calculation of geometry and dynamic is only done if 3D calculation is selected and if the system is ready to go
 #ifdef W_timing
     begin = std::chrono::steady_clock::now();
@@ -283,7 +267,8 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
     }
 #ifdef W_timing
     end= std::chrono::steady_clock::now();
-    timing_file << "run Geometry for " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms "<<std::endl;
+    myTiming.time_diff = end-begin;
+    myTiming.geometry = myTiming.geometry + myTiming.time_diff.count();
 #endif
 
     StepStat( false );// calcolo delle statistiche passo-passo
@@ -294,7 +279,10 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
     //
     // *** Printing summary statistics every nscreen step, or at each step in the case of slowmotion ***
     //
-
+#ifdef W_timing
+    begin = std::chrono::steady_clock::now();
+#endif
+    
     if(Get_nstep()%Get_nscreen() == 0 || Get_slow_motion() )		
     // if(CellsSystem.Get_nstep()%CellsSystem.Get_nscreen() == 0 || mitosis)		
     {
@@ -312,35 +300,39 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 														      
       StepStat( true );				// Reinitializing statistics (also resets the convergence_fail vector)
     }
+#ifdef W_timing
+    end= std::chrono::steady_clock::now();
+    myTiming.time_diff = end-begin;
+    myTiming.writeToFile = myTiming.writeToFile + myTiming.time_diff.count();
+#endif
 
 
-
-    //
-    // *** Printing the configurations every apoint steps, or at each step in the case of slowmotion ***
-    //
-    if(Get_nstep()%Get_nprint() == 0 || Get_slow_motion() )		
-    {
-      if(Get_ready2start() && Get_sim_type() == Full3D )
-      {
-        #pragma omp parallel sections
-        {
-          #pragma omp section
-          {
-            PrintConfiguration(true);		// Printed on a binary file
-            //CellsSystem.PrintConfiguration(false);	// printout su file ascii
-          }// end #pragma omp section
-
-          #pragma omp section
-          {
-            if(Get_ncells()>2)
-              /* calculation of flow only makes sense for more than one cell!!!*/
-              PrintFlows();					// printout dei flussi extracellulari su file binario
-          }//end #pragma omp section
-        }// end #pragma omp parallel sections
-        
-        Step_nconfiguration();	// print extracellular streams on a binary file
-      }// end CellsSystem.Get_ready2start()
-    }// end CellsSystem.Get_nstep()
+//     //
+//     // *** Printing the configurations every apoint steps, or at each step in the case of slowmotion ***
+//     //
+//     if(Get_nstep()%Get_nprint() == 0 || Get_slow_motion() )		
+//     {
+//       if(Get_ready2start() && Get_sim_type() == Full3D )
+//       {
+//         #pragma omp parallel sections
+//         {
+//           #pragma omp section
+//           {
+//             PrintConfiguration(true);		// Printed on a binary file
+//             //CellsSystem.PrintConfiguration(false);	// printout su file ascii
+//           }// end #pragma omp section
+// 
+//           #pragma omp section
+//           {
+//             if(Get_ncells()>2)
+//               /* calculation of flow only makes sense for more than one cell!!!*/
+//               PrintFlows();					// printout dei flussi extracellulari su file binario
+//           }//end #pragma omp section
+//         }// end #pragma omp parallel sections
+//         
+//         Step_nconfiguration();	// print extracellular streams on a binary file
+//       }// end CellsSystem.Get_ready2start()
+//     }// end CellsSystem.Get_nstep()
 		      
 	      
     active_run = TimersAdvanceUntil( endtime );		// advancing timers (including the last call timer to CGAL)
@@ -352,9 +344,9 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
     }
 
   }// end while
-#ifdef W_timing
-  timing_file.close();
-#endif
+// #ifdef W_timing
+//   timing_file.close();
+// #endif
   return 0;
 }
 
@@ -830,7 +822,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	age_mother[k] = 0.;												// eta' della madre al momento della mitosi (inizializzata a 0, che vuol dire che non c'e' madre per questa cellula)
 	n_mitosis[k] = 0;												// numero di mitosi dall'inizio della simulazione
 
-	DNA_spread[k] = type[k]->DNA_MAX_SPREAD*(2*ran2(idum)-1.);		// fluttuazione della velocita' di sintesi del DNA
+	DNA_spread[k] = type[k]->DNA_MAX_SPREAD*(2*ran2()-1.);		// fluttuazione della velocita' di sintesi del DNA
 	M_T[k] = type[k]->M_T_MEAN;										// durata fase M
 		
 	ConcS[k] = type[k]->ConcS_0;									// inizializzazione della concentrazione di S
@@ -1505,10 +1497,10 @@ righe temporanemente eliminate
 
 }
 
-// rimozione della una cellula corrispondente alla posizione n-esima
-//  1. ridimensiona i vettori utilizzando il metodo erase (questo non e' il metodo piu' efficiente, ma la sua funzionalita' e' chiara, 
-//     e per il momento uso questo)
-//  2. decrementa ncells 
+//Removing a cell corresponding to the nth position
+// 1. Scales the vectors using the erase method (this is not the most efficient method, but its functionality is clear,
+// and for the moment I use this)
+// 2. decreases ncells
 void CellsSystem::RemoveCell( const unsigned long int n )
 {
 

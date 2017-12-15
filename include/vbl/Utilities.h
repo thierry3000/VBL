@@ -24,7 +24,7 @@
 // namespace vbl{
 
 
-double ran2(int &idum);
+double ran2();
 double gasdev(int &idum);
 double gammln(const double xx);
 double factln(const int n);

@@ -11,20 +11,26 @@
 
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 
-
-
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-
 typedef CGAL::Triangulation_vertex_base_with_info_3<int, K>		VbI;
+
 typedef CGAL::Alpha_shape_vertex_base_3<K,VbI>					Vb;
 typedef CGAL::Alpha_shape_cell_base_3<K>						Fb;
-typedef CGAL::Triangulation_data_structure_3<Vb,Fb>				Tds;
+
+#ifdef _parallel
+//typedef CGAL::Triangulation_cell_base_3<K> CB;
+typedef CGAL::Triangulation_data_structure_3<Vb,Fb, CGAL::Parallel_tag> Tds;
+#else
+typedef CGAL::Triangulation_data_structure_3<Vb,Fb> Tds;
+#endif
 typedef CGAL::Delaunay_triangulation_3<K,Tds>					Dt;
-typedef CGAL::Alpha_shape_3<Dt>									Alpha_shape_3;
 
 typedef Dt::Finite_vertices_iterator					Finite_vertices_iterator;
-typedef Alpha_shape_3::Vertex_handle					Vertex_handle;
 typedef Dt::Point										Point;
+
+
+typedef CGAL::Alpha_shape_3<Dt>									Alpha_shape_3;
+typedef Alpha_shape_3::Vertex_handle					Vertex_handle;
 
 // ****************
 
@@ -96,11 +102,13 @@ build_triangulation_with_indices(
 {
   std::vector<std::pair<const typename Triangulation::Point*,int> > points;
   int index=-1;
+  //asign index to every point
   for (Point_iterator it=begin;it!=end;++it)
   {
     points.push_back(std::make_pair(&(*it),++index));
   }
  // std::random_shuffle (points.begin(), points.end());
+ 
   spatial_sort (points.begin(),points.end(), Traits_for_spatial_sort<Triangulation>());
 
   typename Triangulation::Cell_handle hint;

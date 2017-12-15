@@ -12,6 +12,14 @@
 #ifndef CELLSSYSTEM_H
 #define CELLSSYSTEM_H // header guard
 
+#include <CGAL/Default.h>
+
+#if 1
+#ifdef CGAL_LINKED_WITH_TBB
+  //#define _parallel
+#endif
+#endif
+
 #include <sys/utsname.h>	// header per i metodi di identificazione della macchina
 #include "sim.h"
 
@@ -23,6 +31,11 @@
 #include "BloodVessel.h"
 #include "Utilities.h"
 
+#ifdef _parallel
+  #include <tbb/tbb.h>
+  #include <tbb/concurrent_vector.h>
+#endif
+#include <mutex>
 
 #include <limits>
 #include <iterator>
@@ -42,6 +55,33 @@ struct ReadInParameters
 {
   /* imulation with dispersed cells (0) or full 3D (1) */
   int sim_type;
+};
+template <class T>
+struct Timing
+{
+  T diff = 0;
+  T dynamics =0;
+  T geometry = 0;
+  T cellEvents = 0;
+  T writeToFile = 0;
+  T diff_loop_1 = 0;
+  T diff_loop_2 = 0;
+  T diff_loop_3 = 0;
+  T bico_call = 0;
+  std::chrono::duration<T> time_diff;
+  std::chrono::duration<T> time_diff_loop;
+  std::chrono::duration<T> time_run_bico;
+  void reset()
+  {
+    diff=0;
+    diff_loop_1 = 0;
+    diff_loop_2 = 0;
+    diff_loop_3 = 0;
+    bico_call = 0;
+    dynamics=0;
+    geometry=0;
+    cellEvents=0;
+  };
 };
 
 class CellsSystem
@@ -294,7 +334,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
-	
+#ifdef _parallel
 	std::vector<int> neigh;					// numero di vicini
 	std::vector< std::vector<int> > vneigh;		// vettore dei vicini
 	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
@@ -317,7 +357,30 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
 	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
+#else
+  std::vector<int> neigh;					// numero di vicini
+	std::vector< std::vector<int> > vneigh;		// vettore dei vicini
+	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
+	std::vector< std::vector<double> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
+	std::vector< std::vector<double> > gnk;		// vettore dei fattori geometrici
+	std::vector<double> contact_surf;		// area totale della superficie di contatto con le cellule adiacenti
+	
+	std::vector<bool> isonCH;				// label che indica se la cellula si trova sul convex hull
+	std::vector<bool> isonAS;				// label che indica se la cellula si trova sull'alpha shape
+	std::vector<int> isonBV;					// this label is true if the cell is in contact
+										// with a blood vessel
+										// if a cell is not in contact with blood vessel, 
+										// then isonBV[n] = 0, else isonBV[n] = position 
+										// of vessel in BloodVesselVector + 1
+										// this shift is done so that isonBV can also be 
+										// used as a boolean variable 
+										
+	std::vector<double> env_surf;			// superficie di contatto con l'ambiente
+	std::vector<double> g_env;				// fattore geometrico relativo al contatto con l'ambiente
 
+	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
+	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
+#endif
 	std::vector<double> M;					// numero di mitocondri 
 
 	// lista delle variabili metaboliche all'interno della cellula
@@ -1289,7 +1352,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	std::vector<double> Get_NpRbk() { return NpRbk; };
 	double Get_NpRbk( const unsigned long int k ) { return NpRbk[k]; };
 
-	
+  vbl::Timing<double> myTiming;
 
 	// overloaded =
 	// Cells& operator=(const Cells& newcell);

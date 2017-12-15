@@ -52,7 +52,11 @@ include_directories($ENV{SPACK_TRANSITIVE_INCLUDE_PATH})
 
 endif()
 ###############  end spack stuff  ##############
-
+# Activate concurrency?
+option(ACTIVATE_CONCURRENCY
+       "Enable concurrency"
+       ON)
+       
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
 

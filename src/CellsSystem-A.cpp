@@ -643,9 +643,9 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 
 		for(n=0; n<nstart; n++)
 			{
-			x[n] = x_0 + 0.1*delta_x*(2.*ran2(idum)-1.);	// inizializzazione dei centri delle cellule
-			y[n] = y_0 + 0.1*delta_y*(2.*ran2(idum)-1.);
-			z[n] = z_0 + 0.1*delta_z*(2.*ran2(idum)-1.);
+			x[n] = x_0 + 0.1*delta_x*(2.*ran2()-1.);	// inizializzazione dei centri delle cellule
+			y[n] = y_0 + 0.1*delta_y*(2.*ran2()-1.);
+			z[n] = z_0 + 0.1*delta_z*(2.*ran2()-1.);
 			vx[n] =  0.;									// inizializzazione delle velocita'
 			vy[n] =  0.;
 			vz[n] =  0.;

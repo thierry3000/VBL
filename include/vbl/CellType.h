@@ -76,8 +76,8 @@ class CellType
 		double DNA_MAX_SPREAD;			// fluttuazione massima di DNA_FRACTION nella singola cellula
 		double v_WORK;					// pg/(s·micron^3) consumo di ATP per sostenere il funzionamento generale della cellula
 		double PHASE_SPREAD;			// fluttuazione della durata di G2 e M dovuta ad effetti "meccanici"
-		int k_pRb;							// k soglia pRB
-		int N_pRb;							// N siti pRb
+		int k_pRb;							// k threshold pRB
+		int N_pRb;							// N sites pRb
 		double pRb_ONOFFratio;			// k_ON/k_OFF in unità di concentrazione molare per la fosforilazione della pRb
 		double pRb_fraction;			// frazione delle proteine che e' pRb
 		double cyclinD_fraction;		// frazione delle proteine che e' ciclina D

@@ -20,10 +20,6 @@ target_link_libraries(test_regular_parallel gmp CGAL)
 add_executable(test_thread test_thread.cpp)
 target_link_libraries(test_thread gmp CGAL)
 
-# Activate concurrency?
-option(ACTIVATE_CONCURRENCY
-       "Enable concurrency"
-       ON)
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;")
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
