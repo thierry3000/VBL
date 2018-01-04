@@ -90,6 +90,8 @@ endif()
 ### Boost
 find_package(Boost REQUIRED COMPONENTS "thread")
 set(myLibs "${myLibs};${Boost_THREAD_LIBRARY}")
+find_package(Boost REQUIRED COMPONENTS "random")
+set(myLibs "${myLibs};${Boost_RANDOM_LIBRARY}")
 
 ### OPENMP
 find_package(OpenMP REQUIRED)

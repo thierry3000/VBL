@@ -13,7 +13,8 @@
 
 // versione standalone di ran2 (versione NR modificata)
 
-#include <boost/random.hpp>
+# include <boost/random.hpp>
+# include <boost/random/random_device.hpp>
 
 #include <iostream>
 #include <fstream>

@@ -1,4 +1,5 @@
 add_executable(check_random check_random.cpp)
+target_link_libraries(check_random boost_random)
 # find_package(TBB REQUIRED)
 # message("TBB_LIBRARIES_DIR: ${TBB_LIBRARIES_DIR}")
 # message("TBB_LIBRARY: ${TBB_LIBRARY}")
