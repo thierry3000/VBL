@@ -41,6 +41,20 @@ double gammln(const double xx)
 	return -tmp+log(2.5066282746310005*ser/x);
 }
 
+double factln_fast(const int n)
+{
+	if (n < 0) 
+		std::cout << "Negative factorial in routine factln";
+	if (n <= 1) 
+		return 0.0;
+	if (n < 1000)
+		return factln_values[n];
+	else
+		//return gammln(n+1.0);
+    //stirling equation
+    return n*log(n)-n;
+}
+
 //log of factorial
 double factln(const int n)
 {
@@ -59,7 +73,8 @@ double factln(const int n)
 //binomial coefficient
 double bico(const int n, const int k)
 {
-	return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
+	//return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
+  return floor(0.5+exp(factln_fast(n)-factln_fast(k)-factln_fast(n-k)));
 }
 
 

@@ -231,8 +231,8 @@ void CellsSystem::Diff()
     // begin loop 2
 #endif
     double time_run_bico = 0.0;
-//#pragma omp parallel for ordered schedule(dynamic)
-#pragma omp parallel for reduction(+: time_run_bico)
+    
+#pragma omp parallel for
     for(unsigned long n=0; n<ncells; n++)// loop on the cells
     {
       // coefficienti (queste assegnazioni non sono strettamente necessarie, ma servono a rendere il codice piu' leggibile)
@@ -943,19 +943,12 @@ void CellsSystem::Diff()
         
         double Pk_pRb = 0.;
         // WARNING nested loop --> how much N_pRb are there?
-#ifdef W_timing
-        std::chrono::steady_clock::time_point begin_bico = std::chrono::steady_clock::now();
-#endif
+        // NOTE bound by maximal number of neighbours!
+
         for(int l=k_pRb; l<=N_pRb; l++)
         {
           Pk_pRb += bico(N_pRb,k_pRb) * pow(p_pRb,l)*pow(1.-p_pRb,N_pRb-l);
         }
-#ifdef W_timing
-        std::chrono::steady_clock::time_point end_bico= std::chrono::steady_clock::now();
-        std::chrono::duration<double> time_run_bico_local_in_thread = end_bico-begin_bico;
-        time_run_bico = time_run_bico + time_run_bico_local_in_thread.count();
-        //myTiming.time_run_bico = end_bico-begin_bico;
-#endif
         
         double ConcE = ConcpRb*Pk_pRb;	// concentrazione MOLARE dell'enzima
 
