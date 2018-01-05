@@ -16,13 +16,12 @@ double pAlt;        // Probability of the special event "transition to the alter
 /** see http://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
  * to create random numbers with c++11
  */
-boost::random::mt19937 rng;         // produces randomness out of thin air
-                                    // see pseudo-random number generators
+boost::random::random_device gen;
 boost::random::uniform_01<> uni_f;
 
 double ran2()
 {
-  return uni_f(rng);
+  return uni_f(gen);
 }
 
 double gammln(const double xx)

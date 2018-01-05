@@ -2,28 +2,28 @@
  * so I try to test the environment with this.
  */
 # include <boost/random.hpp>
+# include <boost/random/random_device.hpp>
+# include <stdio.h>
 # include <numeric> // std::accumulate
-boost::random::mt19937 rng;         // produces randomness out of thin air
+boost::random::random_device gen;
+
+//note: this is only pseudo random!!!
+//static boost::random::mt19937 rng;         // produces randomness out of thin air
                                     // see pseudo-random number generators
 boost::random::uniform_01<> six_f;
+boost::random::uniform_int_distribution<> six(1,6);
 
 int main(int argc, char *argv[])
 {
-  //works for int, see boost examples
-  
-  
-  boost::random::uniform_int_distribution<> six(1,6);
-                                    // distribution that maps to 1..6
-                                    // see random number distributions
+  boost::random::random_device gen;
   for( int i=0;i<100;i++)
   {
-    int x = six(rng);                   // simulate rolling a die
+    
+    int x = six(gen);                   // simulate rolling a die
     printf("i: %i, %i\n", i,x);
   }
   
-//   boost::random::uniform_real_distribution<> six_f(1,6);
-  
-  const int n=10000;
+  const int n=100;
 //   for( int i=0;i<100;i++)
 //   {
 //     float x = six_f(rng);                   // simulate rolling a die
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   std::vector<float> my_random_numbers;
   for( int i=0;i<n;i++)
   {
-    float x = six_f(rng);                   // simulate rolling a die
+    float x = six_f(gen);                   // simulate rolling a die
     my_random_numbers.push_back(x);
   }
   double sum = std::accumulate(my_random_numbers.begin(), my_random_numbers.end(), 0.0);
