@@ -27,7 +27,7 @@
 #include "CellType.h"
 #include "Environment.h"
 #include "EnvironmentalSignals.h"
-#include "geom-2.h"
+#include "geometry.h"
 #include "BloodVessel.h"
 #include "Utilities.h"
 
@@ -330,7 +330,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fy;
 	std::vector<double> fz;
 	
-	std::vector<Point> v;					// vettore dei punti passati alla triangolazione di CGAL
+	std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
@@ -1473,6 +1473,9 @@ unsigned int runMainLoop( boost::optional<double> endtime);
             }
         if( fabs( ATPmin[k] - ((type[k]->fATPmin)*((type[k]->C2) * M[k])/(type[k]->C1)) ) > (std::numeric_limits<double>::epsilon( )) )
             {
+              /* T. F.
+               * this often broke when running on the cluster
+               */
             std::cout << "Inconsistent value of ATPmin in the cell " << name[k] << ": ATPmin=" << ATPmin[k] << std::endl;
             std::cout << std::scientific << "ATPmin[k] = " << ATPmin[k] << 
                                   "type[k]->fATPminVmin " << type[k]->fATPmin <<

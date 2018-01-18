@@ -10,6 +10,7 @@
 int main()
 {
 #ifdef CGAL_LINKED_WITH_TBB
+  printf("CGAL linked with TBB!\n");
   typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
   // Delaunay T3
   typedef CGAL::Triangulation_data_structure_3< 
@@ -19,7 +20,7 @@ int main()
   typedef CGAL::Delaunay_triangulation_3<K, Tds> Triangulation;
   typedef Triangulation::Point          Point;
   
-  const int NUM_INSERTED_POINTS = 5e6;
+  const int NUM_INSERTED_POINTS = 5e2;
   CGAL::Random_points_in_cube_3<Point> rnd(1.);
   // Construction from a vector of 1,000,000 points
   std::vector<Point> V;

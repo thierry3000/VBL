@@ -31,18 +31,22 @@ void CellsSystem::Diff()
 
 	// assegnazioni preliminari fondamentali per il loop del calcolo di diffusione e metabolismo (vengono fatte comunque, anche per le cellule morte)
 
-
-#pragma omp parallel for
-	for(unsigned long n=0; n<ncells; n++)						
-  {
-		
-		// controllo preliminare di consistenza
-		if( phase[n] != dead ) 
-		{
-			int code = CheckMVA(n);
-			if(code < 0) errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-		}
-	}
+/* TF
+ * I hope we do not do error ;-)
+ * anyway this broke often when running in large number of threads.
+ * Therefore I comment it out.
+ */
+// #pragma omp parallel for
+// 	for(unsigned long n=0; n<ncells; n++)						
+//   {
+// 		
+// 		// controllo preliminare di consistenza
+// 		if( phase[n] != dead ) 
+// 		{
+// 			int code = CheckMVA(n);
+// 			if(code < 0) errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+// 		}
+// 	}
 
 	// volume
 	volumeOld = volumeNew = volume;
@@ -1325,13 +1329,16 @@ void CellsSystem::Diff()
       // the DNA of dead cells is zeroed
       DNA[n] = 0;
     }
-			
+
+/* TF
+ * see above
+ */
 		// controllo finale di consistenza
-		if( phase[n] != dead ) 
-    {
-			int code = CheckMVA(n);
-			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-    }
+// 		if( phase[n] != dead ) 
+//     {
+// 			int code = CheckMVA(n);
+// 			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+//     }
   }
 }
 

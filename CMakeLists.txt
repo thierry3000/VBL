@@ -108,22 +108,29 @@ if (OPENMP_FOUND)
 else()
   message(FATAL_ERROR "OpenMP stuff is not found, but labeled as found")
 endif()
-
+### NOTE THIS IS A HACK AND SHOULD BE DONE PROPERLY IN FUTURE!!!
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;/localdisk/thierry/local/lib64/CGAL")
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 ### CGAL
+
 find_package(CGAL REQUIRED)
 if(CGAL_FOUND)
   message("Found CGAL_LIBRARY: ${CGAL_LIBRARY})")
   set(myLibs "${myLibs};${CGAL_LIBRARY}" )
 endif()
+find_package(GMP REQUIRED)
+message("Found GMP_LIBRARIES: ${GMP_LIBRARIES})")
+set(myLibs "${myLibs};${GMP_LIBRARIES}" )
 
 ### GMP
 ### added FindGMP.cmake to this project!
-message("CMAKE_ROOT: ${CMAKE_ROOT}")
-message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/;")
-message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-find_package(GMP)#provides variables ${GMP_LIBRARIES} and ${GMPXX_LIBRARIES}
-set(myLibs "${myLibs};${GMP_LIBRARIES};${GMPXX_LIBRARIES}")
+# message("CMAKE_ROOT: ${CMAKE_ROOT}")
+# message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+# set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/;")
+# message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+# find_package(GMP)#provides variables ${GMP_LIBRARIES} and ${GMPXX_LIBRARIES}
+# set(myLibs "${myLibs};${GMP_LIBRARIES};${GMPXX_LIBRARIES}")
 
 ### cmake debug output CMAKE_EXE_LINKER_FLAGS
 message("set content of mylib: ${myLibs}")

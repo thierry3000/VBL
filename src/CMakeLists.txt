@@ -1,6 +1,6 @@
 
 
-add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp CellsSystem-A.cpp CellsSystem-B.cpp CellsSystem-C.cpp CellsSystem-D-2.cpp CellsSystem-E.cpp CellsSystem-F.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
+add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp CellsSystem-A.cpp CellsSystem-B.cpp CellsSystem-C.cpp CellsSystem-D.cpp CellsSystem-E.cpp CellsSystem-F.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
 set_target_properties(vbl PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(vbl PROPERTIES SOVERSION 1)
 
@@ -17,10 +17,7 @@ target_include_directories(vbl-v3.2 PRIVATE ../include)
 target_link_libraries(vbl-v3.2 vbl)
 set_target_properties(vbl-v3.2 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-### NOTE THIS IS A HACK AND SHOULD BE DONE PROPERLY IN FUTURE!!!
-message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;/localdisk/thierry/local/lib64/CGAL")
-message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+find_package(CGAL REQUIRED)
 if( ACTIVATE_CONCURRENCY )
   find_package( TBB REQUIRED )
   message("TBB_LIBRARIES: ${TBB_LIBRARIES}") # variable used by CGAL

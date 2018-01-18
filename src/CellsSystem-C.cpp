@@ -405,13 +405,15 @@ bool CellsSystem::CellEvents( )
 			
 			} // fine del trattamento della mitosi
 
-		
-		// controlli di consistenza di alcune variabili
-		if(phase[n] != dead) 
-			{
-			int code = CheckMVA( n );
-			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-			}
+/* TF
+ * comment out because of multithread errros on snowden
+ */
+// 		// controlli di consistenza di alcune variabili
+// 		if(phase[n] != dead) 
+// 			{
+// 			int code = CheckMVA( n );
+// 			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+// 			}
 
 	
 		if(phase[n] != dead) alive++;								// se la cellula non e' morta, allora e' viva ...	

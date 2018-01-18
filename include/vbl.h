@@ -24,7 +24,7 @@
 
 #include "vbl/Environment.h"
 #include "vbl/EnvironmentalSignals.h"
-#include "vbl/geom-2.h"
+#include "vbl/geometry.h"
 
 
 #endif // header guard
