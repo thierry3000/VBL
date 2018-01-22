@@ -14,12 +14,7 @@
 
 #include <CGAL/Default.h>
 
-#if 1
-#ifdef CGAL_LINKED_WITH_TBB
-  //#define _parallel
-#endif
-#endif
-
+#include <boost/optional.hpp>
 #include <sys/utsname.h>	// header per i metodi di identificazione della macchina
 #include "sim.h"
 
@@ -27,9 +22,9 @@
 #include "CellType.h"
 #include "Environment.h"
 #include "EnvironmentalSignals.h"
-#include "geometry.h"
 #include "BloodVessel.h"
 #include "Utilities.h"
+#include "geometry.h"
 
 #ifdef _parallel
   #include <tbb/tbb.h>
@@ -329,9 +324,10 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fx;					// forze
 	std::vector<double> fy;
 	std::vector<double> fz;
-	
-	std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 
+  std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
+  const int MAX_NCELLS = 1e2;
+  std::array<std::shared_ptr<std::vector<Vertex_handle>>, 100> arr_of_vn_pointers; // vector of Vertex_handle's of neighbors
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
 #ifdef _parallel
@@ -699,6 +695,7 @@ void CleanCellsSystem( );
 
 // geometria
 void Geometry();
+void Geometry_serial(); //needed for the case of new cells
 void NoGeometry();	// versione ridotta, calcoli minimi per cellule disperse
 
 // meccanica del cluster

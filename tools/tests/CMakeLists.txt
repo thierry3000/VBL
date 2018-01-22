@@ -42,6 +42,10 @@ if( ACTIVATE_CONCURRENCY )
     add_executable(info_insert_with_pair_iterator_parallel info_insert_with_pair_iterator_parallel.cpp)
     target_link_libraries(info_insert_with_pair_iterator_parallel ${myLibs})
     target_link_libraries(info_insert_with_pair_iterator_parallel ${TBB_LIBRARIES})
+    add_executable(info_insert_with_pair_iterator info_insert_with_pair_iterator.cpp)
+    target_link_libraries(info_insert_with_pair_iterator ${myLibs})
+    #note: tbb is not used in this example but required since CGAL is linked against it
+    target_link_libraries(info_insert_with_pair_iterator ${TBB_LIBRARIES})
   endif()
 endif()
 

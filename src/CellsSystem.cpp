@@ -231,27 +231,27 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
        */
       if( mitosis || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
       {
-        if(Get_ncells() > 1) 
+        //the geometry part assumes that there are at least 5 cells!
+        if(Get_ncells() > 5)
         {
-          CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
-          //#pragma omp parallel sections
-          {
-            //#pragma omp section
-            {
-              /**
-               * segmentation fault, when creating instance of delany triangulation
-               * Dt DelTri;
-               * see CellsSystem-D-2.cpp
-               * NOTE: commenting the #pragma s here get rid of the seg fault
-               */
-              Geometry( );				// Calculation of cluster geometry
-            }//end #pragma omp section
-          }//end #pragma omp parallel sections
+//           if(Get_ncells() > 5)
+//           {
+//             CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
+//             Geometry( );				// Calculation of cluster geometry
+//           }
+//           else
+//           {
+//             CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
+//             Geometry_serial( );				// Calculation of cluster geometry
+//           }
+          CleanCellsSystem();
+          Geometry_serial();
+          
           Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
         }
         else 
         {
-          NoGeometry( );
+          Geometry_serial( );
         }
       // CellsSystem.Print2logfile("Cellule dopo una chiamata a Geometry");
       }// end mitosis
@@ -385,7 +385,7 @@ void CellsSystem::Set_reserve(const int reserve)
 	fy.reserve(reserve);
 	fz.reserve(reserve);
 	
-	v.reserve(reserve);
+	//v.reserve(reserve);
 	
 	r.reserve(reserve);
 	surface.reserve(reserve);
@@ -570,7 +570,7 @@ void CellsSystem::AddCells( const int newcells )
 	fy.resize(ncells);
 	fz.resize(ncells);
 	
-	v.resize(ncells);
+	//v.resize(ncells);
 	
 	r.resize(ncells);
 	surface.resize(ncells);
@@ -1534,7 +1534,7 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	fy.erase(fy.begin()+n);
 	fz.erase(fz.begin()+n);
 	
-	v.erase(v.begin()+n);
+	//v.erase(v.begin()+n);
 	
 	r.erase(r.begin()+n);
 	surface.erase(surface.begin()+n);

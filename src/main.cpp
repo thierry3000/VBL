@@ -142,7 +142,20 @@ int main( int argc, char* argv[] )
   if( CellsSystem.Get_sim_type() == 1 )	// If this is a 3D simulation then an initial calculation of geometry is made
   {
     cout << "\nInitial calculation of geometry" << endl;
-    CellsSystem.Geometry( );// Initial calculation of cluster geometry
+    if(CellsSystem.Get_ncells() > 5)
+    {
+
+      //CleanCellsSystem();
+      CellsSystem.Geometry_serial();
+      
+      //Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
+    }
+    else 
+    {
+      //CellsSystem.NoGeometry( );
+      CellsSystem.Geometry_serial();
+    }
+    //CellsSystem.Geometry_serial( );// Initial calculation of cluster geometry
     cout << "Initial calculation of complete geometry" << endl;
     CellsSystem.Set_time_from_CGAL(0.);	// Timer reset from last call to CGAL
   }
