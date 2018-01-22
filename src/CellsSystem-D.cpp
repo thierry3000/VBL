@@ -18,6 +18,19 @@ using namespace vbl;
 void CellsSystem::Geometry()
 {
   unsigned long k;
+  /* I use a pointer now
+   * this allows to either use the parallel code (tbb) or the serial variant.
+   * I is important to have both. parallel version works only with a minimum of 5 cells
+   * (see tools/tests/info_insert_with_pair_iterator_parallel.cpp )
+   */
+  Triangulation_3 *DelTri; // I use a pointer now
+  
+  double min_x = std::numeric_limits<double>::max();
+  double max_x = std::numeric_limits<double>::min();
+  double min_y = std::numeric_limits<double>::max();
+  double max_y = std::numeric_limits<double>::min();
+  double min_z = std::numeric_limits<double>::max();
+  double max_z = std::numeric_limits<double>::min();
   // cout << "Triangulation OK" << endl;
 
   // insertion of cells' centres into the vector of Point structures
@@ -28,113 +41,139 @@ void CellsSystem::Geometry()
   arr_of_vn_pointers.clear();
   arr_of_vn_pointers.resize(ncells);
 
-  for(k=0; k<ncells; k++)
-    v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) ); 
-	
-	// cout << "v size: " << v.size() << endl;
-
-	// cout << "Setup punti OK" << endl;
-	// cout << "Primo punto: {" << v[0] << "} = " << x[0] << ", " << y[0] << ", " << z[0] << endl;
-
 //Delaunay triangulation
-  Triangulation_3 DelTri( v.begin(),v.end() );
+  if(ncells <10)
+  {
+    for(k=0; k<ncells; k++)
+    {
+      v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
+    }
+    DelTri = new Triangulation_3( v.begin(),v.end() );
+  }
+  else
+  {
+    for(k=0; k<ncells; k++)
+    {
+      v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
+    
+      // find min, max to estimate lock data structure
+      if(x[k]<min_x)
+      {
+	min_x=x[k];
+      }
+      if(x[k]>max_x)
+      {
+	max_x=x[k];
+      }
+      if(y[k]<min_y)
+      {
+	min_y=y[k];
+      }
+      if(y[k]>max_y)
+      {
+	max_y=y[k];
+      }
+      if(z[k]<min_z)
+      {
+	min_z=z[k];
+      }
+      if(z[k]>max_z)
+      {
+	max_z=z[k];
+      }
+    }
+    Triangulation_3::Lock_data_structure locking_ds(CGAL::Bbox_3(min_x, min_y, min_z, max_x, max_y, max_z), 20);
+    DelTri = new Triangulation_3( v.begin(),v.end(), &locking_ds );
+  }
 
 // next we find the list of connections and we estimate contact areas
 
-	//std::vector<Vertex_handle> vn; // vector of Vertex_handle's of neighbors
-
 // loop over finite vertices (k is the name of current cell)
-  for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
-    {
-      k = vit->info();
-      arr_of_vn_pointers[k] = std::shared_ptr<std::vector<Vertex_handle>>(new std::vector<Vertex_handle>);
-      DelTri.incident_vertices(vit, std::back_inserter(*arr_of_vn_pointers[k])); // list of neighbors
-      //DelTri.incident_vertices(vit, back_inserter(vn));	// list of neighbors
-    }
-//#pragma omp parallel for
-/* each thread needs its own neighbor array! */
-  std::array<int,MAX_N_NEIGH> neigh_per_thread;					// numero di vicini
-  std::array< std::vector<int>, MAX_N_NEIGH > vneigh_per_thread;		// vettore dei vicini
-  std::array< std::vector<double>, MAX_N_NEIGH > vdist_per_thread;     // vettore delle distanze dai vicini
-  std::array< std::vector<double>, MAX_N_NEIGH > vcsurf_per_thread;	// vettore delle superfici di contatto con i vicini (calcolo approx)
-  std::array< std::vector<double>, MAX_N_NEIGH> gnk_per_thread;		// vettore dei fattori geometrici
-  std::array<double, MAX_N_NEIGH> contact_surf_per_thread;
-  for( k = 0;k<ncells; ++k)
+// note: we do not now how many vertices are finite at this stage
+// therefore we need to do this in a single thread
+  for (Finite_vertices_iterator vit = DelTri->finite_vertices_begin(); vit != DelTri->finite_vertices_end(); ++vit)
   {
-    //neigh[k] = vn.size();								// number of all neighbors
-    neigh[k] = (*arr_of_vn_pointers[k]).size();
+    k = vit->info();
+    arr_of_vn_pointers[k] = std::shared_ptr<std::vector<Vertex_handle>>(new std::vector<Vertex_handle>);
+    DelTri->incident_vertices(vit, std::back_inserter(*arr_of_vn_pointers[k])); // list of neighbors
+    
+    //these are the not thread safe operations!
+    neigh[k] = (*arr_of_vn_pointers[k]).size();// number of all neighbors
     vneigh[k].resize(neigh[k]);							// init names of neighbors
     vcsurf[k].resize(neigh[k]);							// init contact areas
-
     vdist[k].resize(neigh[k]);							// allocate distance vect
     gnk[k].resize(neigh[k]);							// allocate geom factors
-    isonCH[k]=false;									// bool true if ON convex 
-												      // hull
-    env_surf[k] = 0.;									// contact area with 
-												      // environment
-    g_env[k] = 0.;										// geom factor with 
-												      // environment
+  }
+  
+#pragma omp parallel for
+  for( k = 0;k<ncells; ++k)
+  {
+    isonCH[k]=false;				// bool true if ON convex hull
+    env_surf[k] = 0.;				// contact area with environment
+    g_env[k] = 0.;				// geom factor with environment
 
     // weighted radius of current cell
     double rk = (type[k]->Get_extension_coeff())*r[k];
 
-    contact_surf[k] = 0.;								// init total contact area
-
-    int nFV = 0;										// init number of finite 
-												      // vertices
+    contact_surf[k] = 0.;			// init total contact area
+    int nFV = 0;				// init number of finite vetices
 
     // in this loop we prepare the list of neighbors and we compute contact areas 
-    if(neigh[k] > 0)
+    for(int kk=0; kk < neigh[k] ; kk++)					
     {
-      for(int kk=0; kk < neigh[k] ; kk++)					
-      {
-	if(!DelTri.is_infinite((*arr_of_vn_pointers[k])[kk]))	// if true, then there is a neighboring 
-	     // finite vertex
-	{  
-	  int neighbor = (*arr_of_vn_pointers[k])[kk]->info(); // name of neighbor
-	  vneigh[k][nFV] = neighbor; // store name of neighbor
-	  //***
-	  // weighted radius of neighboring cell
-	  double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
-	  double dd = Distance( k,neighbor ); // distance between current cell and neigbor
-	  // *********** check for debugging
-	  if(dd != dd || dd <= 0)
+      if(!DelTri->is_infinite((*arr_of_vn_pointers[k])[kk]))	// if true, then there is a neighboring finite vertex
+      {  
+	int neighbor = (*arr_of_vn_pointers[k])[kk]->info(); 	// name of neighbor
+	vneigh[k][nFV] = neighbor; 				// store name of neighbor
+	//***
+	// weighted radius of neighboring cell
+	double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
+	double dd = Distance( k,neighbor ); 			// distance between current cell and neigbor
+	// *********** check for debugging
+#ifndef NDEBUG // this check is only performed in the Debug build, other wise it is not present which saves time
+	if(dd != dd || dd <= 0)
+	{
+	  std::cout << k << "-th cell, neighbor " << neighbor << ", undefined distance " << dd << std::endl;
+	}
+#endif
+	      // *********** end check for debugging
+	vdist[k][nFV] = dd;
+	if( dd < (rk+rkk) ) // here we compute the contact area
+	{
+	  vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
+	  if( vcsurf[k][nFV] < 0 )
 	  {
-	    std::cout << k << "-th cell, neighbor " << neighbor << ", undefined distance " << dd << std::endl;
-	  }
-		// *********** end check for debugging
-		
-	  vdist[k][nFV] = dd;
-	  
-	  if( dd < (rk+rkk) ) // here we compute the contact area
-	  {
-	    vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
-	    if( vcsurf[k][nFV] < 0 ) vcsurf[k][nFV] = 0;
-	    contact_surf[k] += vcsurf[k][nFV];
-	  }
-	  else
-	  {
-	    vcsurf[k][nFV] = 0.;
-	  }
-
-	  if(vcsurf[k][nFV] > 0)						// geometric factor
-	  {
-		  gnk[k][nFV] = vcsurf[k][nFV]/dd;
+	    vcsurf[k][nFV] = 0;
+	    gnk[k][nFV] = 0;
 	  }
 	  else
 	  {
-		  gnk[k][nFV] = 0;
+	    gnk[k][nFV] = vcsurf[k][nFV]/dd;
 	  }
-	      //***
-	nFV++;	// here we increase the counter of finite vertices
+	  contact_surf[k] += vcsurf[k][nFV];
 	}
 	else
 	{
-	  isonCH[k]=true;	// if any one of the adjacent vertices is infinite 
-						// then cell is on convex hull
+	  vcsurf[k][nFV] = 0.;
 	}
+// NOTE is saves time to this in one if
+// 	if(vcsurf[k][nFV] > 0)						// geometric factor
+// 	{
+// 		gnk[k][nFV] = vcsurf[k][nFV]/dd;
+// 	}
+// 	else
+// 	{
+// 		gnk[k][nFV] = 0;
+// 	}
+	    //***
+      nFV++;	// here we increase the counter of finite vertices
       }
-    }//end if if(neigh[k] > 0)
+      else
+      {
+	isonCH[k]=true;	// if any one of the adjacent vertices is infinite 
+					      // then cell is on convex hull
+      }
+    }
 
 
     if( nFV != neigh[k] )	// qui si controlla il numero di vertici finiti e se questo e' diverso dal numero totale di vertici
@@ -170,13 +209,11 @@ void CellsSystem::Geometry()
 
     // *** fine del calcolo del fattore geometrico con l'ambiente
 
-
     //vn.clear();											// si ripulisce la lista dei vicini in preparazione del prossimo vertice
     arr_of_vn_pointers[k]->clear();
   }// end for( k = 0;k<ncells; ++k) end PARALLEL 
 
   // compute fixed alpha shape with ALPHAVALUE defined in sim.h
-
   if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
   {
     for(k=0; k<ncells; k++)
@@ -208,10 +245,13 @@ void CellsSystem::Geometry()
     if( !isonAS[k] ) g_env[k]=0.;
   }
     
-  // the following loop identifies those cells that are in contact with blood vessels 
+  // the following loop identifies those cells that are in contact with blood vessels
+#pragma omp parallel
+{
+  std::array<double,3> cellpos; // store the cell coordinates in a 3-vector
+#pragma omp for
   for(k=0; k<ncells; k++)
   {    
-    std::array<double,3> cellpos; // store the cell coordinates in a 3-vector
     cellpos[0]=x[k];
     cellpos[1]=y[k];
     cellpos[2]=z[k];
@@ -234,19 +274,20 @@ void CellsSystem::Geometry()
     }
     // g_bv[k] = 0; // **** TEMPORARY, used only to eliminate blood vessels from calculations !!!   
   }
+}// #pragma omp parallel
 }
 
 // calcoli minimi nel caso di cellule disperse
 void CellsSystem::NoGeometry()
 {
 
-	for(unsigned long k=0; k<ncells; k++)
-		{
-		env_surf[k] = surface[k];				// qui si calcola la superficie esposta all'ambiente
-		g_env[k] = env_surf[k]/r[k];			// fattore geometrico verso l'ambiente
-		contact_surf[k] = 0;					// la sup. di contatto con le altre cellule e' nulla nel caso di cellule disperse
-		g_bv[k] = 0;							// no contact with blood vessels
-		}
+  for(unsigned long k=0; k<ncells; k++)
+  {
+    env_surf[k] = surface[k];				// qui si calcola la superficie esposta all'ambiente
+    g_env[k] = env_surf[k]/r[k];			// fattore geometrico verso l'ambiente
+    contact_surf[k] = 0;					// la sup. di contatto con le altre cellule e' nulla nel caso di cellule disperse
+    g_bv[k] = 0;							// no contact with blood vessels
+  }
 
 
 }
