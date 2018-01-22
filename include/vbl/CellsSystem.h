@@ -40,6 +40,7 @@
 #endif
 
 #define W_timing
+//#define serial
 
 namespace vbl{
 // #ifndef NDEBUG
@@ -325,9 +326,9 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fy;
 	std::vector<double> fz;
 
-  std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
-  const int MAX_NCELLS = 1e2;
-  std::array<std::shared_ptr<std::vector<Vertex_handle>>, 100> arr_of_vn_pointers; // vector of Vertex_handle's of neighbors
+	std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
+	static const int MAX_NCELLS = 1e2;
+	std::vector<std::shared_ptr<std::vector<Vertex_handle>>> arr_of_vn_pointers; // vector of Vertex_handle's of neighbors
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
 #ifdef _parallel
@@ -354,7 +355,8 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
 	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
 #else
-  std::vector<int> neigh;					// numero di vicini
+	static const int MAX_N_NEIGH =10;
+	std::vector<int> neigh;					// numero di vicini
 	std::vector< std::vector<int> > vneigh;		// vettore dei vicini
 	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
 	std::vector< std::vector<double> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
@@ -695,7 +697,9 @@ void CleanCellsSystem( );
 
 // geometria
 void Geometry();
+#ifdef serial
 void Geometry_serial(); //needed for the case of new cells
+#endif
 void NoGeometry();	// versione ridotta, calcoli minimi per cellule disperse
 
 // meccanica del cluster

@@ -146,14 +146,14 @@ int main( int argc, char* argv[] )
     {
 
       //CleanCellsSystem();
-      CellsSystem.Geometry_serial();
+      CellsSystem.Geometry();
       
       //Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
     }
     else 
     {
       //CellsSystem.NoGeometry( );
-      CellsSystem.Geometry_serial();
+      CellsSystem.Geometry();
     }
     //CellsSystem.Geometry_serial( );// Initial calculation of cluster geometry
     cout << "Initial calculation of complete geometry" << endl;

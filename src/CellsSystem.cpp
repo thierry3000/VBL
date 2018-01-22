@@ -232,7 +232,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
       if( mitosis || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
       {
         //the geometry part assumes that there are at least 5 cells!
-        if(Get_ncells() > 5)
+        if(Get_ncells() > 0)
         {
 //           if(Get_ncells() > 5)
 //           {
@@ -244,14 +244,14 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 //             CleanCellsSystem( );		// First you do the cleaning of the memory (elimination of dead cells now too small)
 //             Geometry_serial( );				// Calculation of cluster geometry
 //           }
-          CleanCellsSystem();
-          Geometry_serial();
+          //CleanCellsSystem();
+          Geometry();
           
           Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
         }
         else 
         {
-          Geometry_serial( );
+          Geometry( );
         }
       // CellsSystem.Print2logfile("Cellule dopo una chiamata a Geometry");
       }// end mitosis

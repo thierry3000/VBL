@@ -110,7 +110,8 @@ else()
 endif()
 ### NOTE THIS IS A HACK AND SHOULD BE DONE PROPERLY IN FUTURE!!!
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;/localdisk/thierry/local/lib64/CGAL")
+### last one is for ubuntu 16
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;/localdisk/thierry/local/lib64/CGAL;/usr/lib/x86_64-linux-gnu/cmake/CGAL")
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 ### CGAL
 
