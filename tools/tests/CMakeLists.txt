@@ -50,5 +50,4 @@ if( ACTIVATE_CONCURRENCY )
 endif()
 
 
-
-
+add_subdirectory(slurm)

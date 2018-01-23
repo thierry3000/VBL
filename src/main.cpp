@@ -3,7 +3,7 @@
 // 
 
 
-#include <../include/vbl.h>
+#include <../include/vbl/CellsSystem.h>
 using namespace std;
 using namespace vbl;
 

@@ -326,9 +326,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fy;
 	std::vector<double> fz;
 
-	std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 	static const int MAX_NCELLS = 1e2;
-	std::vector<std::shared_ptr<std::vector<Vertex_handle>>> arr_of_vn_pointers; // vector of Vertex_handle's of neighbors
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
 #ifdef _parallel

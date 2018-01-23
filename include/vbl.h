@@ -16,15 +16,15 @@
 
 
 
-#include "vbl/BloodVessel.h"
+// #include "vbl/BloodVessel.h"
 #include "vbl/CellsSystem.h"
-#include "vbl/CellType.h"
-#include "vbl/sim.h"
-#include "vbl/InputFromFile.h"
-
-#include "vbl/Environment.h"
-#include "vbl/EnvironmentalSignals.h"
-#include "vbl/geometry.h"
+// #include "vbl/CellType.h"
+// #include "vbl/sim.h"
+// #include "vbl/InputFromFile.h"
+// 
+// #include "vbl/Environment.h"
+// #include "vbl/EnvironmentalSignals.h"
+// #include "vbl/geometry.h"
 
 
 #endif // header guard
