@@ -355,7 +355,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 #else
 	static const int MAX_N_NEIGH =10;
 	std::vector<int> neigh;					// numero di vicini
-	std::vector< std::vector<int> > vneigh;		// vettore dei vicini
+	std::vector< std::vector<unsigned long> > vneigh;		// vettore dei vicini
 	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
 	std::vector< std::vector<double> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
 	std::vector< std::vector<double> > gnk;		// vettore dei fattori geometrici
@@ -1145,7 +1145,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	int Get_neigh( const unsigned long int k ) { return neigh[k]; };
 
 	// questi getters esistono solo nella forma per singole cellule (restituiscono vettori di lunghezza variabile)
-	std::vector<int> Get_vneigh( const unsigned long int k ) { return vneigh[k]; };
+	//std::vector<int> Get_vneigh( const unsigned long int k ) { return vneigh[k]; };
 	std::vector<double> Get_vdist( const unsigned long int k ) { return vdist[k]; };
 	std::vector<double> Get_vcsurf( const unsigned long int k ) { return vcsurf[k]; };
 	std::vector<double> Get_gnk( const unsigned long int k ) { return gnk[k]; };

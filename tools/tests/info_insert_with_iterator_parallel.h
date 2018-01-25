@@ -17,7 +17,7 @@
   typedef Fixed_alpha_shape_3::Vertex_handle					Vertex_handle;
   typedef Delaunay::Finite_vertices_iterator			Finite_vertices_iterator;
 
-const int NUM_INSERTED_POINTS = 2e5;
+const int NUM_INSERTED_POINTS = 6;
 
 std::array<std::shared_ptr<std::vector<Vertex_handle>>, NUM_INSERTED_POINTS> arr_vn; // vector of Vertex_handle's of neighbors
 #endif
