@@ -9,7 +9,33 @@
 #include "CellsSystem.h"
 
 using namespace vbl;
+void Foo(Vertex_handle &i)
+{
+  std::cout << "in Foo i: " << i->info() << std::endl;
+  sleep(5);
+}
 
+void SerialApplyFoo( Vertex_handle a[], size_t n)
+{
+  for( size_t i=0; i!=n; ++i)
+  {
+    Foo(a[i]);
+  }
+}
+void ApplyGeometricCalculation::operator()(const tbb::blocked_range<size_t> &r) const
+{
+  Vertex_handle *a = my_current_vertex_handle;
+  
+  for( size_t i=r.begin(); i!=r.end(); ++i)
+    apply_geometry(a[i], p_DelTri);
+}
+void apply_geometry(Vertex_handle &i, Triangulation_3 *p_DelTri)
+{
+  if(!p_DelTri->is_infinite(i))
+  {
+    printf("I apply geometry calculations on vertex %i\n", i->info());
+  }
+}
 // ************ this section contains the interface to CGAL ************ //
 // 
 // REMARK: the CGAL methods are used ONLY in this part of the program, and are isolated 
@@ -92,9 +118,10 @@ void CellsSystem::Geometry()
    * this makes sure that the memory space is safely freed after this function has finished
    */
   CGAL::Compact_container<Vertex_handle> *myContainer = new CGAL::Compact_container<Vertex_handle>();
+  CGAL::Concurrent_compact_container<Vertex_handle> *myContainer2 = new CGAL::Concurrent_compact_container<Vertex_handle>();
   
 // next we find the list of connections and we estimate contact areas
-//#define myDebugComments
+#define myDebugComments
 // loop over finite vertices (k is the name of current cell)
 // note: we do not now how many vertices are finite at this stage
 // therefore we need to do this in a single thread
@@ -114,6 +141,7 @@ void CellsSystem::Geometry()
 //     vdist[k].resize(neigh[k]);							// allocate distance vect
 //     gnk[k].resize(neigh[k]);							// allocate geom factors
     myContainer->insert(vit);
+    myContainer2->insert(vit);
     //k = vit->info();
     //arr_of_vn_pointers[k] = std::shared_ptr<std::vector<Vertex_handle>>(new std::vector<Vertex_handle>);
     //DelTri->incident_vertices(vit, std::back_inserter(*arr_of_vn_pointers[k])); // list of neighbors
@@ -128,6 +156,8 @@ void CellsSystem::Geometry()
     //env_surf[k] = 0.;				// contact area with environment
     //g_env[k] = 0.;				// geom factor with environment
   }
+  //SerialApplyFoo(&(*myContainer)[0], myContainer->size());
+  //tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer2->size()), ApplyGeometricCalculation(&(*myContainer2), DelTri.get()));
 //   for(int t =0;t<ncells;++t)
 //   {
 //     vneigh[t].resize(MAX_NEIGHBOR);							// init names of neighbors
@@ -188,8 +218,8 @@ void CellsSystem::Geometry()
     assert(neighbor_id < ncells);
 #endif
   #ifdef myDebugComments
-    printf("k: %i, neighbor: %i, nFV: %i, vneigh.size(): %i \n", k, neighbor, nFV, vneigh.size());
-          std::cout << "neighbor: " << neighbor << std::endl;
+    printf("k: %i, neighbor: %i, nFV: %i, vneigh.size(): %i \n", k, neighbor_id, nFV, vneigh.size());
+          std::cout << "neighbor: " << neighbor_id << std::endl;
   #endif
           vneigh[k_mt][nFV] = neighbor_id; 				// store name of neighbor
           //***

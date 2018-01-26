@@ -1,5 +1,6 @@
 #ifndef INFO_INSERT_WITH_ITERATOR_PARALLEL
 #define INFO_INSERT_WITH_ITERATOR_PARALLEL
+#include <CGAL/Compact_container.h>
 
 #ifdef CGAL_LINKED_WITH_TBB
   typedef CGAL::Exact_predicates_inexact_constructions_kernel     	K;
@@ -16,9 +17,27 @@
   typedef K::Point_3                                          Point;
   typedef Fixed_alpha_shape_3::Vertex_handle					Vertex_handle;
   typedef Delaunay::Finite_vertices_iterator			Finite_vertices_iterator;
+  typedef Delaunay::All_vertices_iterator			All_vertices_iterator;
 
-const int NUM_INSERTED_POINTS = 6;
+const int NUM_INSERTED_POINTS = 16;
 
-std::array<std::shared_ptr<std::vector<Vertex_handle>>, NUM_INSERTED_POINTS> arr_vn; // vector of Vertex_handle's of neighbors
+std::array<std::shared_ptr<std::vector<Vertex_handle>>, NUM_INSERTED_POINTS> arr_vn;
+void apply_geometry(Vertex_handle &i, Delaunay *_p);
+class ApplyGeometricCalculation{
+  Vertex_handle *const my_current_vertex_handle;
+  Delaunay *const p_DelTri;
+public:
+  void operator()(const tbb::blocked_range<size_t> &r) const;
+  ApplyGeometricCalculation( Vertex_handle a[], Delaunay *_p): my_current_vertex_handle(a), p_DelTri(_p){};
+};
+
+class ApplyGeometricCalculation2{
+  Vertex_handle *const my_current_vertex_handle;
+  Delaunay *const p_DelTri;
+public:
+  void operator()(const tbb::blocked_range<size_t> &r) const;
+  ApplyGeometricCalculation2( Vertex_handle a[], Delaunay *_p): my_current_vertex_handle(a), p_DelTri(_p){};
+};
+// vector of Vertex_handle's of neighbors
 #endif
 #endif

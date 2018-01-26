@@ -33,6 +33,17 @@ typedef Triangulation_3::All_vertices_iterator			All_vertices_iterator;
 static std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 static std::vector<std::shared_ptr<std::vector<Vertex_handle>>> arr_of_vn_pointers; // vector of Vertex_handle's of neighbors
 
+void Foo(Vertex_handle &i);
+void SerialApplyFoo( Vertex_handle a[], size_t n);
+void apply_geometry(Vertex_handle &i, Triangulation_3 *_p);
+class ApplyGeometricCalculation{
+  Vertex_handle *const my_current_vertex_handle;
+  Triangulation_3 *const p_DelTri;
+public:
+  void operator()(const tbb::blocked_range<size_t> &r) const;
+  ApplyGeometricCalculation( Vertex_handle a[], Triangulation_3 *_p): my_current_vertex_handle(a), p_DelTri(_p){};
+  
+};
 #endif
 
 #endif //#ifndef GEOM2_H
