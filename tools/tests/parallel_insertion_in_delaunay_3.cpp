@@ -7,6 +7,8 @@
 #include <fstream>
 #include <vector>
 
+const int NUM_INSERTED_POINTS = 10000;
+
 #ifdef CGAL_LINKED_WITH_TBB
   typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
   // Delaunay T3
@@ -51,6 +53,7 @@ void complicated_calculation(Triangulation::Vertex_handle vn)
     }
   }
 }
+
 class ApplyFoo {
     Triangulation::Vertex_handle *const my_a;
 public:
@@ -60,10 +63,9 @@ public:
         for( size_t i=r.begin(); i!=r.end(); ++i ) 
            complicated_calculation(a[i]);
     }
-    ApplyFoo( Triangulation::Vertex_handle a[] ) :
-        my_a(a)
-    {}
+    ApplyFoo( Triangulation::Vertex_handle a[] ):my_a(a){}
 };
+
 void ParallelApplyFoo( Triangulation::Vertex_handle a[], size_t n)
 {
   tbb::parallel_for(tbb::blocked_range<size_t>(0,n), ApplyFoo(a));
@@ -73,7 +75,16 @@ int main()
 {
 #ifdef CGAL_LINKED_WITH_TBB
   
-  const int NUM_INSERTED_POINTS = 15;
+  /* NUM_INSERTED_POINTS = 15 is still finishing but strange index output
+   * NUM_INSERTED_POINTS = 16 -> Segmentation fault
+   * gdb output:
+   * 0x0000555555644b6b in complicated_calculation (vn=...)
+   * at /home/usersHR/thierry/git_codes/VBL/tools/tests/parallel_insertion_in_delaunay_3.cpp:38
+   * 38	  std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
+   * ***
+   * vn->info() is not accessible
+   */
+  
   CGAL::Random_points_in_cube_3<Point> rnd(1.);
   // Construction from a vector of 1,000,000 points
   std::vector<std::pair<Point, unsigned>> V;
@@ -92,6 +103,7 @@ int main()
   // this works and is from the examples!
   Triangulation::Finite_vertices_iterator vit;
   CGAL::Compact_container<Triangulation::Vertex_handle> myContainer;
+  std::array<Triangulation::Vertex_handle, NUM_INSERTED_POINTS> myContainer2;
   for (vit = T.finite_vertices_begin(); vit != T.finite_vertices_end(); ++vit)
   {
     if( V[ vit->info() ].first != vit->point() )
@@ -100,9 +112,13 @@ int main()
       exit(EXIT_FAILURE);
     }
     myContainer.insert(vit);
-    //complicated_calculation(vit);
+    Triangulation::Vertex_handle vertex=vit;
+    
+    //myContainer2[vit->info()] = &vertex;
+    myContainer2[vit->info()] = vit;
+    //complicated_calculation(&vertex);
   }
-  tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer.size()), ApplyFoo(&myContainer[0]));
+  tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer2.size()), ApplyFoo(&myContainer2[0]));
   std::cout << "OK" << std::endl;
 #endif //CGAL_LINKED_WITH_TBB
   return 0;
