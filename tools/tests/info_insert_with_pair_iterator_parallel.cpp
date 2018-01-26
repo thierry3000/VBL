@@ -178,7 +178,6 @@ int main()
     }
   #endif
   //tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer2->size()), ApplyGeometricCalculation(&((*myContainer2)[0]),T));
-  
   tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer.size()), ApplyGeometricCalculation2(&myContainer[0],T));
   
   std::cout << "OK" << std::endl;

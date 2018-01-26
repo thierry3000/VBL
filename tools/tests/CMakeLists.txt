@@ -11,6 +11,8 @@ target_link_libraries(check_random boost_random)
 add_executable(test_delauny test_delauny.cpp)
 target_link_libraries(test_delauny ${myLibs})
 
+
+
 # add_executable(test_delauny_parallel test_delauny_parallel.cpp)
 # target_link_libraries(test_delauny_parallel gmp CGAL)
 
@@ -46,6 +48,9 @@ if( ACTIVATE_CONCURRENCY )
     target_link_libraries(info_insert_with_pair_iterator ${myLibs})
     #note: tbb is not used in this example but required since CGAL is linked against it
     target_link_libraries(info_insert_with_pair_iterator ${TBB_LIBRARIES})
+    add_executable(parallel_insertion_in_delaunay_3 parallel_insertion_in_delaunay_3.cpp)
+  target_link_libraries(parallel_insertion_in_delaunay_3 ${myLibs})
+  target_link_libraries(parallel_insertion_in_delaunay_3 ${TBB_LIBRARIES})
   endif()
 endif()
 
