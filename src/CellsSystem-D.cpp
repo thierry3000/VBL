@@ -125,12 +125,13 @@ void CellsSystem::Geometry()
 // loop over finite vertices (k is the name of current cell)
 // note: we do not now how many vertices are finite at this stage
 // therefore we need to do this in a single thread
-  const int MAX_NEIGHBOR = 15;
-  int MAX_NEIGH = 20;
+  // need this to resize vectors
+  std::vector<Vertex_handle> vn;
   //for (Finite_vertices_iterator vit = DelTri->finite_vertices_begin(); vit != DelTri->finite_vertices_end(); ++vit)
   for (All_vertices_iterator vit = DelTri->all_vertices_begin(); vit != DelTri->all_vertices_end(); ++vit)
   {
     k = vit->info();
+    DelTri->adjacent_vertices(vit, std::back_inserter(vn));
 //     arr_of_vn_pointers[k] = std::shared_ptr<std::vector<Vertex_handle>>(new std::vector<Vertex_handle>);
 //     DelTri->incident_vertices(vit, std::back_inserter(*arr_of_vn_pointers[k])); // list of neighbors
 //     

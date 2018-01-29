@@ -2,12 +2,17 @@
 #include <CGAL/Delaunay_triangulation_3.h>
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 #include <CGAL/point_generators_3.h>
+
+#include <CGAL/Compact_container.h>
+
 #include <cassert>
 #include <iostream>
 #include <fstream>
 #include <vector>
 
-const int NUM_INSERTED_POINTS = 10000;
+#include "tbb/concurrent_vector.h"
+
+const int NUM_INSERTED_POINTS = 1e6;
 
 #ifdef CGAL_LINKED_WITH_TBB
   typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -35,9 +40,11 @@ int binomialCoeff(int n, int k)
     return res;
 }
 
-void complicated_calculation(Triangulation::Vertex_handle vn)
+void complicated_calculation(Triangulation::Vertex_handle *vn)
 {
-  std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
+  unsigned long k = (*vn)->info();
+  unsigned long c = 2*k;
+  std::cout << " doing a complicated calculation on: " << (*vn)->info() << std::endl;
   int b=0;
   //sleep(20);
   const int zahl = 200;
@@ -53,22 +60,81 @@ void complicated_calculation(Triangulation::Vertex_handle vn)
     }
   }
 }
+void complicated_calculation2(Triangulation::Vertex_handle &vn)
+{
+  unsigned long k = vn->info();
+  unsigned long c = 2*k;
+  if( k < (unsigned long) NUM_INSERTED_POINTS)
+  {
+//     std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
+//     std::cout.flush();
+    printf(" doing a complicated calculation on: %i\n", vn->info());
+    int b=0;
+    //sleep(20);
+    const int zahl = 200;
+    for (int p=0;p<zahl;p++)
+    {
+      for(int t=0; t<zahl; t++)
+      {
+        for(int i=0;i< zahl; i++)
+        {
+          b=b+binomialCoeff(t,i);
+          //std::cout << b <<std::endl;
+        }
+      }
+    }
+  }
+}
 
 class ApplyFoo {
-    Triangulation::Vertex_handle *const my_a;
+    //Triangulation::Vertex_handle *const my_a;
+    CGAL::Compact_container<Triangulation::Vertex_handle> const *my_a;
 public:
     void operator()( const tbb::blocked_range<size_t>& r ) const 
     {
-        Triangulation::Vertex_handle *a = my_a;
-        for( size_t i=r.begin(); i!=r.end(); ++i ) 
-           complicated_calculation(a[i]);
+        for( size_t i=r.begin(); i!=r.end(); ++i )
+        {
+          Triangulation::Vertex_handle a = (*my_a)[i];
+           complicated_calculation2(a);
+        }
     }
-    ApplyFoo( Triangulation::Vertex_handle a[] ):my_a(a){}
+    void apply_complicated(int i)
+    {
+      Triangulation::Vertex_handle a = (*my_a)[i];
+      complicated_calculation2(a);
+    }
+    ApplyFoo( CGAL::Compact_container<Triangulation::Vertex_handle> *a ):my_a(a){}
 };
 
-void ParallelApplyFoo( Triangulation::Vertex_handle a[], size_t n)
+
+
+void ParallelApplyFoo( CGAL::Compact_container<Triangulation::Vertex_handle> *a)
 {
+  int n = a->size();
   tbb::parallel_for(tbb::blocked_range<size_t>(0,n), ApplyFoo(a));
+}
+// void ParallelApplyFoo2( CGAL::Compact_container<Triangulation::Vertex_handle> &a)
+// {
+//   int n = a.size();
+//   tbb::parallel_for(tbb::blocked_range<size_t>(0,n), ApplyFoo(a));
+// }
+
+// void SerialApplyFoo( CGAL::Compact_container<Triangulation::Vertex_handle*> *a)
+// {
+//   int n = a->size();
+//   for(int p=0; p<n; p++)
+//   {
+//     ApplyFoo(a).apply_complicated(p);
+//   }
+// }
+
+void SerialApplyFoo2( CGAL::Compact_container<Triangulation::Vertex_handle> *a)
+{
+  for(int p=0; p<a->size(); ++p)
+  {
+    std::cout << "p : " << p << std::endl;
+    complicated_calculation2( (*a)[p]);
+  }
 }
 
 int main()
@@ -104,6 +170,11 @@ int main()
   Triangulation::Finite_vertices_iterator vit;
   CGAL::Compact_container<Triangulation::Vertex_handle> myContainer;
   std::array<Triangulation::Vertex_handle, NUM_INSERTED_POINTS> myContainer2;
+  std::array<Triangulation::Vertex_handle*, NUM_INSERTED_POINTS> myContainer3;
+  tbb::concurrent_vector<Triangulation::Vertex_handle> *myContainer4 = new tbb::concurrent_vector<Triangulation::Vertex_handle>;
+  CGAL::Compact_container<Triangulation::Vertex_handle> *myContainer5 = new CGAL::Compact_container<Triangulation::Vertex_handle>();
+  
+  myContainer4->resize(NUM_INSERTED_POINTS);
   for (vit = T.finite_vertices_begin(); vit != T.finite_vertices_end(); ++vit)
   {
     if( V[ vit->info() ].first != vit->point() )
@@ -114,11 +185,21 @@ int main()
     myContainer.insert(vit);
     Triangulation::Vertex_handle vertex=vit;
     
-    //myContainer2[vit->info()] = &vertex;
+    myContainer3[vit->info()] = &vertex;
     myContainer2[vit->info()] = vit;
+    //myContainer4.push_back(&vertex);
+    //std::cout << vit->info() << std::endl;
+    myContainer4->at(vit->info()) = vertex;
+    myContainer5->insert(vit);
+    
     //complicated_calculation(&vertex);
   }
-  tbb::parallel_for(tbb::blocked_range<size_t>(0,myContainer2.size()), ApplyFoo(&myContainer2[0]));
+  Triangulation::Vertex_handle bla = *myContainer3[42];
+  unsigned long q = bla->info();
+  //std::cout << bla->info() << std::endl;
+  ParallelApplyFoo(myContainer5);
+  //SerialApplyFoo2(myContainer5);
+  
   std::cout << "OK" << std::endl;
 #endif //CGAL_LINKED_WITH_TBB
   return 0;
