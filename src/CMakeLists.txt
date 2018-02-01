@@ -1,6 +1,7 @@
 
 
-add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp CellsSystem-A.cpp CellsSystem-B.cpp CellsSystem-C.cpp CellsSystem-D.cpp CellsSystem-E.cpp CellsSystem-F.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
+#add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp CellsSystem-A.cpp CellsSystem-B.cpp CellsSystem-C.cpp CellsSystem-D.cpp CellsSystem-E.cpp CellsSystem-F.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
+add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
 set_target_properties(vbl PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(vbl PROPERTIES SOVERSION 1)
 

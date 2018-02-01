@@ -8,20 +8,7 @@
  *  added TBB support --> use prallel_do()
  *
  */
-#include "../vbl.h"
 
-#include "sim.h"
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "BloodVessel.h"
-#include "Utilities.h"
-#include "geometry.h"
-
-#include "CellsSystem.h"
-
-using namespace vbl;
 
 #ifndef useSerialApproach
 

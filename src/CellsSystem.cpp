@@ -7,16 +7,20 @@
  *
  */
 
-#include "sim.h"
-#include "InputFromFile.h"
-#include "CellType.h"
-#include "Environment.h"
-#include "EnvironmentalSignals.h"
-#include "BloodVessel.h"
-#include "Utilities.h"
-//#include "geometry.h"
+// #include "sim.h"
+// #include "InputFromFile.h"
+// #include "CellType.h"
+// #include "Environment.h"
+// #include "EnvironmentalSignals.h"
+// #include "BloodVessel.h"
+// #include "Utilities.h"
+// #include "geometry.h"
+// 
+// #include "CellsSystem.h"
 
-#include "CellsSystem.h"
+#include "../include/vbl.h"
+
+
 using namespace vbl;
 
 #include <chrono>
@@ -1721,4 +1725,10 @@ double CellsSystem::Timing( bool reset )
 
 }
 
+#include "CellsSystem-A.cpp"
+#include "CellsSystem-B.cpp"
+#include "CellsSystem-C.cpp"
+#include "CellsSystem-D.cpp"
+#include "CellsSystem-E.cpp"
+#include "CellsSystem-F.cpp"
 
