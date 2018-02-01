@@ -53,7 +53,6 @@ void apply_geometry(const Triangulation_3::Vertex_handle a)
     double rk = (p_to_current_CellsSystem->Get_type(k_mt)->Get_extension_coeff())*p_to_current_CellsSystem->Get_r(k_mt);
 #ifndef NDEBUG
     printf("neigh[k_mt]: %i, ncells: %i\n", p_to_current_CellsSystem->Get_neigh(k_mt), p_to_current_CellsSystem->Get_ncells());
-    assert(p_to_current_CellsSystem->Get_neigh(k_mt)<= p_to_current_CellsSystem->Get_ncells());
 #endif
     // in this loop we prepare the list of neighbors and we compute contact areas
     
@@ -269,11 +268,6 @@ void CellsSystem::Geometry()
     isonCH[k]=true;
   }
 
-#ifndef NDEBUG
-  std::cout << "starting geometry in parallel" << std::endl;
-  std::cout.flush();
-#endif
-
 #ifdef useSerialApproach
   /**
    * this was the OLD way!
@@ -367,8 +361,8 @@ void CellsSystem::Geometry()
     g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// fattore geometrico verso l'ambiente
 
     // *** fine del calcolo del fattore geometrico con l'ambiente
+    vn_per_thread.clear();
   }//end for( k = 0;k<ncells; ++k) end PARALLEL
-  vn_per_thread.clear();
 }//omp parallel
 #else
 
