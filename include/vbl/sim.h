@@ -185,7 +185,12 @@ const double A_ENV = 0.4e-3;           // pg*micron^-3 concentrazione altri nutr
 const double A_CELL = 1.e-6;           // pg quantita' iniziale degli altri nutrienti nelle cellule
 const double AcL_ENV = 0.;             // pg*micron^-3 concentrazione esterna dell'acido lattico
 const double STOCK_MAX = 0.018;		// pg contenuto massimo dello stock di glucosio per cellula
-const double BufCapEnv = 0.19953e-3;   // buffering capacity dell'ambiente (pg/micron^3)
+
+// T.F. revised in agreement with Roberto and Edoardo
+//const double BufCapEnv = 0.19953e-3;   // buffering capacity dell'ambiente (pg/micron^3)
+
+const double BufCapEnv = 0.584e-3;     // buffering capacity dell'ambiente (pg/micron^3)
+
 const double DOSERATE_ENV = 0;         // radiazione ambientale (Gy/s)
 
 const double VISCOSITY_ENV = 2.e11;     // pg/(micron s) viscosita' dell'ambiente (test di viscosità ambientale molto elevata, uguale a quella cellulare)

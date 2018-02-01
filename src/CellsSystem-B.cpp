@@ -10,7 +10,17 @@
 
 // se questo parametro e' true allora vengono stampati anche messaggi d'errore aggiuntivi
 #define	EXTENDED_ERRORLOG	false
+#include "sim.h"
+#include "InputFromFile.h"
+#include "CellType.h"
+#include "Environment.h"
+#include "EnvironmentalSignals.h"
+#include "BloodVessel.h"
+#include "Utilities.h"
+//#include "geometry.h"
+
 #include "CellsSystem.h"
+
 using namespace vbl;
 // scommentare il seguente statement per includere anche i messaggi d'errore per il metodo della secante
 // #define SECANT_IN_ERRORLOG

@@ -49,10 +49,14 @@ if( ACTIVATE_CONCURRENCY )
     #note: tbb is not used in this example but required since CGAL is linked against it
     target_link_libraries(info_insert_with_pair_iterator ${TBB_LIBRARIES})
     add_executable(parallel_insertion_in_delaunay_3 parallel_insertion_in_delaunay_3.cpp)
-  target_link_libraries(parallel_insertion_in_delaunay_3 ${myLibs})
-  target_link_libraries(parallel_insertion_in_delaunay_3 ${TBB_LIBRARIES})
+    target_link_libraries(parallel_insertion_in_delaunay_3 ${myLibs})
+    target_link_libraries(parallel_insertion_in_delaunay_3 ${TBB_LIBRARIES})
+    add_executable(parallel_insertion_in_delaunay_3b parallel_insertion_in_delaunay_3b.cpp)
+    target_link_libraries(parallel_insertion_in_delaunay_3b ${myLibs})
+    target_link_libraries(parallel_insertion_in_delaunay_3b ${TBB_LIBRARIES})
   endif()
 endif()
 
 
 add_subdirectory(slurm)
+add_subdirectory(tbb)

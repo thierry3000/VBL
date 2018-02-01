@@ -16,15 +16,15 @@
 
 #include <boost/optional.hpp>
 #include <sys/utsname.h>	// header per i metodi di identificazione della macchina
-#include "sim.h"
 
+#include "sim.h"
 #include "InputFromFile.h"
 #include "CellType.h"
 #include "Environment.h"
 #include "EnvironmentalSignals.h"
 #include "BloodVessel.h"
 #include "Utilities.h"
-#include "geometry.h"
+//#include "geometry.h"
 
 #ifdef _parallel
   #include <tbb/tbb.h>
@@ -47,6 +47,9 @@ namespace vbl{
 //   // means debugging
 //   #define W_timing
 // #endif
+//class CellsSystem;//forward declaration
+
+
 struct ReadInParameters
 {
   /* imulation with dispersed cells (0) or full 3D (1) */
@@ -82,9 +85,7 @@ struct Timing
 
 class CellsSystem
 {
-
 private:
-
 // output file
 std::string output_filename;
 std::ofstream output_file;
@@ -565,7 +566,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 
 public:
-
+friend class ApplyGeometricCalculation;
 //****************************************************************************************************
 
 // *** Methods for managing the system ***
@@ -680,6 +681,8 @@ void Set_nconfiguration( unsigned long newnconfiguration ) { nconfiguration = ne
 void Step_nconfiguration() { nconfiguration++; };
 void Set_eps( double neweps ) { eps = neweps; };
 void Set_delta_vmax( double newdelta_vmax ) { delta_vmax = newdelta_vmax; };
+
+
 
 // inizializzazione del run da terminale
 void InitializeCellsSystem( bool terminal );
@@ -891,6 +894,13 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_vcsurf( const int k, double* vcsurfin ) { vcsurf[k].clear(); vcsurf[k].insert( vcsurf[k].begin(), vcsurfin, vcsurfin+neigh[k]); };
 	void Set_gnk( const int k, double* newgnk ) { gnk[k].clear(); gnk[k].insert( gnk[k].begin(), newgnk, newgnk+neigh[k]); };
 	// fine della parte dei setters non standard
+  
+  // use this one if we already know, that it is safe!
+  void Set_vneigh_quick( const int k, const int kk, unsigned long vneighin ) { vneigh[k][kk]= vneighin; };
+	void Set_vdist_quick( const int k,const int kk, double vdistin ) { vdist[k][kk]= vdistin; };
+	void Set_vcsurf_quick( const int k,const int kk, double vcsurfin ) { vcsurf[k][kk] = vcsurfin; };
+	void Set_gnk_quick( const int k,const int kk, double newgnk ) { gnk[k][kk]= newgnk; };
+	// fine della parte dei setters non standard
 
 	
 	
@@ -898,7 +908,10 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_contact_surf( const int k, const double newcontact_surf ) { contact_surf[k] = newcontact_surf; };
 
 	void Set_isonCH( const std::vector<bool>& isonCHnow ) { isonCH = isonCHnow; };
-	void Set_isonCH( const int k, const bool isonCHnow ) { isonCH[k] = isonCHnow; };
+	void Set_isonCH( const int k, const bool isonCHnow ) 
+  { 
+    isonCH[k] = isonCHnow; 
+  };
 
 	void Set_isonAS( const std::vector<bool>& isonASnow ) { isonAS = isonASnow; };
 	void Set_isonAS( const int k, const bool isonASnow ) { isonAS[k] = isonASnow; };
@@ -1513,9 +1526,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 
 // *** fine dei metodi per la gestione della parte biofisica *** 
 
-
 };
-
 
 // distanza tra la cellula con indice j e la cellula con indice k
 //
@@ -1523,7 +1534,8 @@ inline double CellsSystem::Distance(const int j, const int k)
 {
 	return sqrt( SQR(x[j]-x[k]) + SQR(y[j]-y[k]) + SQR(z[j]-z[k]) );
 }
-
+  //CellsSystem CellsSystem;
 }//namespace vbl{
+
 #endif //#ifndef CELLSSYSTEM_H
 

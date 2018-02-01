@@ -1,0 +1,15 @@
+run 31.01.18 on dema3 
+memory exceeded! only 16GB RAM 
+3400 cells
+
+run 01.02.18 on dema3
+ 500 cell 	  500MB
+ 800		  740
+1300		 1500
+1529		 2000
+2110		 5700 about 1h
+2322		 6910
+2525		 9000
+2593		10000
+
+
