@@ -9,18 +9,23 @@
  *
  */
 
+#include <cassert>
+#include <tbb/parallel_do.h>
 
+
+Triangulation_3 *DelTri;
 #ifndef useSerialApproach
 
-void ApplyGeometricCalculation::operator()(const Triangulation_3::Vertex_handle &item) const
+void ApplyGeometricCalculation::operator()(const Triangulation_3::Vertex &item) const
 {
   apply_geometry(item);
 }
 
 
-void apply_geometry(const Triangulation_3::Vertex_handle a)
+void apply_geometry(const Triangulation_3::Vertex &iter)
 {
-  if(!DelTri->is_infinite(a))
+  Triangulation_3::Vertex_handle a = DelTri->insert(iter.point());
+  //if(!DelTri->is_infinite(a))
   {
     unsigned long k_mt = a->info();
     std::vector<Triangulation_3::Vertex_handle> vn_per_thread;
@@ -33,7 +38,7 @@ void apply_geometry(const Triangulation_3::Vertex_handle a)
 #endif
     //default of isonCH is true!!!
     p_to_current_CellsSystem->Set_isonCH(k_mt, false);      // bool true if ON convex hull
-    p_to_current_CellsSystem->Set_env_surf(k_mt, 0.);       // contact area with environment
+    //p_to_current_CellsSystem->Set_env_surf(k_mt, 0.);       // contact area with environment
     p_to_current_CellsSystem->Set_g_env(k_mt, 0.);          // geom factor with environment
     p_to_current_CellsSystem->Set_contact_surf(k_mt, 0.0);  // init total contact area
     // weighted radius of current cell
@@ -107,9 +112,9 @@ void apply_geometry(const Triangulation_3::Vertex_handle a)
   }
 }
 
-void ParallelApplyGeometricCalculation( const CGAL::Concurrent_compact_container<Triangulation_3::Vertex_handle> &list)
+void ParallelApply()
 {
-  parallel_do(list.begin(), list.end(), ApplyGeometricCalculation());
+  tbb::parallel_do(DelTri->finite_vertices_begin(), DelTri->finite_vertices_end(), ApplyGeometricCalculation());
 }
 
 #endif
@@ -122,6 +127,7 @@ void ParallelApplyGeometricCalculation( const CGAL::Concurrent_compact_container
 void CellsSystem::Geometry()
 {
   unsigned long k;
+  
   /* I use a pointer now
    * this allows to either use the parallel code (tbb) or the serial variant.
    * I is important to have both. parallel version works only with a minimum of 5 cells
@@ -143,8 +149,6 @@ void CellsSystem::Geometry()
   // CellsSystem.cpp
 
   v.clear(); // vector of all points
-  //arr_of_vn_pointers.clear();
-  //arr_of_vn_pointers.resize(ncells);
 
 //Delaunay triangulation
   
@@ -201,8 +205,6 @@ void CellsSystem::Geometry()
 #endif
     Triangulation_3::Lock_data_structure locking_ds(CGAL::Bbox_3(min_x, min_y, min_z, max_x, max_y, max_z), 20);
     DelTri = new Triangulation_3( v.begin(),v.end(), &locking_ds );
-    //DelTri = std::make_shared<Triangulation_3>( v.begin(),v.end(), &locking_ds );
-    //DelTri = boost::shared_ptr<Triangulation_3>(new Triangulation_3( v.begin(),v.end(), &locking_ds ));
   }
   else
   {
@@ -211,49 +213,35 @@ void CellsSystem::Geometry()
       v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
     }
     DelTri = new Triangulation_3( v.begin(),v.end() );
-    //DelTri = std::make_shared<Triangulation_3>( v.begin(),v.end() );
-    //DelTri = boost::shared_ptr<Triangulation_3>(new Triangulation_3( v.begin(),v.end() ));
   }
   
 #else  // in the serial case, we do no need a Lock_data_structure
 
+  //std::cout << "found " << ncells << " in the system" << std::endl;
   for(k=0; k<ncells; k++)
   {
+#ifndef NDEBUG
+    //printf("push back point: %f, %f, %f, %i\n", x[k], y[k], z[k], k);
+#endif
     v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
   }
   DelTri = new Triangulation_3( v.begin(),v.end() );
 #endif
   
-#ifdef useSerialApproach
-  CGAL::Compact_container<Vertex_handle> myContainer;
-#else
-  CGAL::Concurrent_compact_container<Vertex_handle> myContainer;
-#endif
-//#define myDebugComments
-// loop over ALL vertices finite and infinite!
-// note: we do not now how many vertices are finite at this stage
-// therefore we need to do this in a single thread
-// need this to resize vectors
-  std::vector<Vertex_handle> vn;
-  for (All_vertices_iterator vit = DelTri->all_vertices_begin(); vit != DelTri->all_vertices_end(); ++vit)
+  //prepare neighborhood and initialize
+  for(int i=0; i< ncells; i++)
   {
-    k = vit->info();
-    // T.F.
-    // I think this is a rather expensive call -> DelTri has du iterate through whole triangulation to find these indeces
-    DelTri->adjacent_vertices(vit, std::back_inserter(vn));
-    myContainer.insert(vit);
-    int no_current_neighbors = vn.size();
-    /* these are the not thread safe operations!
-     * so we do them here -> estimates memory required memory
-     * in practice it is lower, but we cannot resize in the parallel part
-     */
-    neigh[k] = no_current_neighbors;          // number of all neighbors finit+ infinite
-    vneigh[k].resize(no_current_neighbors);		// init names of neighbors
-    vcsurf[k].resize(no_current_neighbors);		// init contact areas
-    vdist[k].resize(no_current_neighbors);		// allocate distance vect
-    gnk[k].resize(no_current_neighbors);			// allocate geom factors
-    isonCH[k]=true;
+    int no_current_neighbors = 25;
+    neigh[i] = no_current_neighbors;          // number of all neighbors finit+ infinite
+    vneigh[i].resize(no_current_neighbors);		// init names of neighbors
+    vcsurf[i].resize(no_current_neighbors);		// init contact areas
+    vdist[i].resize(no_current_neighbors);		// allocate distance vect
+    gnk[i].resize(no_current_neighbors);			// allocate geom factors
+    isonCH[i]=true;       // by default we assume the cell is on the convex hull, we change that if we detect that it is not!
+    isonAS[i] = false;    // by default we are not on the alph shape
+    g_env[k]=0.;
   }
+
 
 #ifdef useSerialApproach
   /**
@@ -265,18 +253,17 @@ void CellsSystem::Geometry()
    */
 {
   std::vector<Triangulation_3::Vertex_handle> vn_per_thread;
-  for( unsigned long cnter = 0; cnter <myContainer.size(); ++cnter)
+  for (Finite_vertices_iterator vit = DelTri->finite_vertices_begin(); vit != DelTri->finite_vertices_end(); ++vit)
   {
-    int k_mt = myContainer[cnter]->info();
+    int k_mt = vit->info();
+    DelTri->finite_adjacent_vertices(vit, std::back_inserter(vn_per_thread));
     
-    DelTri->finite_incident_vertices(myContainer[cnter], std::back_inserter(vn_per_thread));
-    
-    //reset to finite value!
-    neigh[k_mt] = vn_per_thread.size();
-    
-    bool current_finite = !DelTri->is_infinite(myContainer[cnter]);
-    if( current_finite )
+
     {
+      //reset to finite value!
+      //k_mt could have nasty values in case of infinite
+      neigh[k_mt] = vn_per_thread.size();
+    
       isonCH[k_mt]=false;				// bool true if ON convex hull
       env_surf[k_mt] = 0.;				// contact area with environment
       g_env[k_mt] = 0.;				// geom factor with environment
@@ -341,11 +328,9 @@ void CellsSystem::Geometry()
           vcsurf[k_mt][kk] = 0.;
         }
       }
+      env_surf[k_mt] = surface[k_mt]/(neigh[k_mt]+1);			// qui si calcola la superficie esposta all'ambiente
+      g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// fattore geometrico verso l'ambiente
     }
-    
-    env_surf[k_mt] = surface[k_mt]/(neigh[k_mt]+1);			// qui si calcola la superficie esposta all'ambiente
-
-    g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// fattore geometrico verso l'ambiente
 
     // *** fine del calcolo del fattore geometrico con l'ambiente
     vn_per_thread.clear();
@@ -353,43 +338,43 @@ void CellsSystem::Geometry()
 }//omp parallel
 #else
 
-  ParallelApplyGeometricCalculation(myContainer);
-
+  ParallelApply();
+  
 #endif
 
-  myContainer.clear();
-  delete DelTri;
   // compute fixed alpha shape with ALPHAVALUE defined in sim.h
-  if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
+  
+  // we know apriori, that there are more than 5 cells, otherwise Geometry is
+  // not called, see CellsSystem.cpp
+//   if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
+//   {
+//     for(k=0; k<ncells; k++)
+//     {
+//       isonAS[k] = true;
+//     }
+//   }
+//   else 
+  
+  //Fixed_alpha_shape_3 as(v.begin(),v.end(),ALPHAVALUE); // this is not so fast, since we traverse v again!
+  Fixed_alpha_shape_3 as((*DelTri),ALPHAVALUE);
+  std::vector<Vertex_handle> vertices_on_alpha_shape;
+  as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
+  as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
+
+  // set boolean true for vertices on alpha shape
+  for(k=0; k<vertices_on_alpha_shape.size(); k++)
   {
-    for(k=0; k<ncells; k++)
-    {
-      isonAS[k] = true;
-    }
+    isonAS[vertices_on_alpha_shape[k]->info()] = true;
   }
-  else 
-  {
-    Fixed_alpha_shape_3 as(v.begin(),v.end(),ALPHAVALUE);
-    std::vector<Vertex_handle> vertices_on_alpha_shape;
-    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
-    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
-    // cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
-    // initialize boolean indicator variable
-    for(k=0; k<ncells; k++)
-    {
-	  isonAS[k] = false;
-    }
-    // set boolean true for vertices on alpha shape
-    for(k=0; k<vertices_on_alpha_shape.size(); k++)
-    {
-      isonAS[vertices_on_alpha_shape[k]->info()] = true;
-    }
-  }
+  
+  delete DelTri;
+  
   // questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
-  for(k=0; k<ncells; k++)
-  {
-    if( !isonAS[k] ) g_env[k]=0.;
-  }
+//   for(k=0; k<ncells; k++)
+//   {
+//     if( !isonAS[k] ) 
+//       g_env[k]=0.;
+//   }
     
   // the following loop identifies those cells that are in contact with blood vessels
 #pragma omp parallel
@@ -412,11 +397,11 @@ void CellsSystem::Geometry()
       double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
       if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k_mt] ) // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
       {
-	isonBV[k] = nvessel+1;		// note the shift, which is done to use the value 0 as false and otherwise use the true value to store the blood vessel position in the blood vessel vector
-	bv_surf[k_mt] = surface[k_mt];
-	g_bv[k_mt] = bv_surf[k_mt]/r[k_mt]; // this are bold statements; here we assume that the cell behaves like a disk (not a sphere), and that half of the surface area faces the blood vessel
-	// the last approximation should probably be mitigated with the inclusion of a surface-modulating parameter or even better by an improved geometrical modelling
-	break;	// blood vessel found, we jump out of the blood vessel loop	
+        isonBV[k] = nvessel+1;		// note the shift, which is done to use the value 0 as false and otherwise use the true value to store the blood vessel position in the blood vessel vector
+        bv_surf[k_mt] = surface[k_mt];
+        g_bv[k_mt] = bv_surf[k_mt]/r[k_mt]; // this are bold statements; here we assume that the cell behaves like a disk (not a sphere), and that half of the surface area faces the blood vessel
+        // the last approximation should probably be mitigated with the inclusion of a surface-modulating parameter or even better by an improved geometrical modelling
+        break;	// blood vessel found, we jump out of the blood vessel loop	
       }
     }
     // g_bv[k] = 0; // **** TEMPORARY, used only to eliminate blood vessels from calculations !!!   
@@ -427,7 +412,6 @@ void CellsSystem::Geometry()
 // calcoli minimi nel caso di cellule disperse
 void CellsSystem::NoGeometry()
 {
-
   for(unsigned long k=0; k<ncells; k++)
   {
     env_surf[k] = surface[k];				// qui si calcola la superficie esposta all'ambiente
@@ -435,6 +419,4 @@ void CellsSystem::NoGeometry()
     contact_surf[k] = 0;					// la sup. di contatto con le altre cellule e' nulla nel caso di cellule disperse
     g_bv[k] = 0;							// no contact with blood vessels
   }
-
-
 }

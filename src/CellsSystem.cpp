@@ -222,7 +222,8 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 #ifdef W_timing
     begin = std::chrono::steady_clock::now();
 #endif
-    bool mitosis = CellEvents( );		// Cellular events
+    //bool mitosis = CellEvents( );		// Cellular events
+    int no_mitosis = CellEvents( );		// Cellular events
 #ifdef W_timing
     end= std::chrono::steady_clock::now();
     myTiming.time_diff = end-begin;
@@ -241,7 +242,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
        * since the last call to CGAL
        * The triangulation calculation is done every time if the timestep is bigger than 10 s
        */
-      if( mitosis || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
+      if( no_mitosis>0 || (Get_maxdr() > 0.5e-6) || Get_time_from_CGAL() > 250. || Get_dt() > 10.) 
       {
         //the geometry part assumes that there are at least 5 cells!
         if(Get_ncells() > 10)
@@ -263,7 +264,8 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
         }
         else 
         {
-          Geometry( );
+          CleanCellsSystem();
+          NoGeometry( );
         }
       // CellsSystem.Print2logfile("Cellule dopo una chiamata a Geometry");
       }// end mitosis

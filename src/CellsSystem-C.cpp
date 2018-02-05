@@ -16,36 +16,35 @@
 //
 // The method returns the number of mitoses that occurred during the step
 // 
-bool CellsSystem::CellEvents( )
+//bool CellsSystem::CellEvents( )
+int CellsSystem::CellEvents( )
 {
 
-	bool mitosis_flag = false;				// flag logica che dice se e' avvenuta almeno una mitosi
-	n_mitoses = 0;							// numero di mitosi in questo passo
+	bool mitosis_flag = false;				// logical flag that says if at least one mitosis has occurred
+	n_mitoses = 0;							// number of mitosis in this passage
 
-	unsigned long ncells_now = ncells;		// qui si immagazzina il numero iniziale di cellule
+	unsigned long ncells_now = ncells;		// here the initial number of cells is stored
 
-	alive = 0;								// si azzera il contatore delle cellule vive
+	alive = 0;								// the live cell counter is zeroed
 	
 	
-	for(unsigned long n=0; n<ncells_now; n++)	// il loop va fino al numero iniziale di cellule				
-		{
-		
-		// incremento dell'eta' cellulare
+	for(unsigned long n=0; n<ncells_now; n++)	// the loop goes up to the initial number of cells
+  {
+		// increase in cellular age
 		age[n] += (float)dt;
 		phase_age[n] += (float)dt;
 
 		
-	// ***** cambiamenti di fase *****
+	// ***** phase changes *****
 				
 		double ConcAcL = AcL[n]/volume[n];
 		
-		// condizioni istantanee di morte cellulare (transizione irreversibile alla fase dead)
+		// instantaneous conditions of cell death (irreversible transition to the dead phase)
 		if( (ready2start) && (phase[n] != dead) )
-			{
+    {
+			death_condition[n] = 0;											// indicator of the state of death
 			
-			death_condition[n] = 0;											// indicatore dello stato di morte
-			
-			double dose = dose_rateSignal.SignalIntegral(treal-dt,treal);	// dose di radiazione integrata durante il passo
+			double dose = dose_rateSignal.SignalIntegral(treal-dt,treal);	// radiation dose integrated during the step
 			
 			//if( ATPp[n] < ATPmin[n] )
 			//	death_condition[n] += 1;
@@ -57,123 +56,121 @@ bool CellsSystem::CellEvents( )
 				death_condition[n] += 4;
 
 			if( death_condition[n] != 0 )
-				{
+      {
 				phase[n] = dead;
 				phase_age[n] = 0.;
-				}
-				
 			}
+				
+    }
 
 
-	// qui si vede se ci sono cambiamenti di fase per cellule vive
+	// here we see if there are phase changes for living cells
 	
 	// transizione G1m-G1p
 		if(phase[n] == G1m_phase && ConcS[n] < (type[n]->Get_Thresh_S_start())*(type[n]->Get_ConcS_0()) ) 		
-			{
-			
-			// test di possibile morte cellulare all'inizio della fase G1p
+    {
+			// test of possible cell death at the beginning of the G1p phase
 			if( ATPp[n] < ATPmin[n] )
-				{
+      {
 				phase[n] = dead;
 				death_condition[n] += 8;
 				phase_age[n] = 0.;
-				}
-			// se la cellula e' vitale allora cambia fase
+			}
+			// if the cell is vital then it changes phase
 			else
-				{
+      {
 				phase[n] = G1p_phase;
 				phase_age[n] = 0.;
-				}
-			}
+      }
+    }
 	// transizione G1p-S
 		else if(phase[n] == G1p_phase && ConcS[n] < (type[n]->Get_Thresh_S_stop())*(type[n]->Get_ConcS_0()) )	
-			{
-			// test di possibile morte cellulare all'inizio della fase S
+    {
+			// test of possible cell death at the beginning of the S phase
 			if( ATPp[n] < ATPmin[n] )
-				{
+      {
 				phase[n] = dead;
 				death_condition[n] += 16;
 				phase_age[n] = 0.;
-				}
-			// se la cellula e' vitale allora cambia fase
+			}
+			// if the cell is vital then it changes phase
 			else
-				{
+      {
 				phase[n] = S_phase;
 				phase_age[n] = 0.;
 				cyclinD[n] = 0.;
 				cyclinE[n] = 0.;
-				}
-			}
+      }
+    }
 	// transizione S-G2
 		else if(phase[n] == S_phase && DNA[n] >= 1 )											
-			{
+    {
 			// test di possibile morte cellulare all'inizio della fase G2
 			if( ATPp[n] < ATPmin[n] )
-				{
+      {
 				phase[n] = dead;
 				death_condition[n] += 32;
 				phase_age[n] = 0.;
-				}
+      }
 			// se la cellula e' vitale allora cambia fase
 			else
-				{
+      {
 				phase[n] = G2_phase;
 				phase_age[n] = 0.;
-				}
-			}
+      }
+    }
 	// transizione G2-M
 		else if(phase[n] == G2_phase && cyclinX[n] > type[n]->Get_CycXThr() )						
-			{
+    {
 			// test di possibile morte cellulare all'inizio della fase M
 			if( ATPp[n] < ATPmin[n] )
-				{
+      {
 				phase[n] = dead;
 				death_condition[n] += 64;
 				phase_age[n] = 0.;
-				}
+      }
 			// se la cellula e' vitale allora cambia fase
 			else
-				{
+      {
 				phase[n] = M_phase;
 				phase_age[n] = 0.;
-				}
-			}
+      }
+    }
 
-	// ***** inizio MITOSI! *****
+	// ***** MITOSIS start! *****
 		else if( phase[n] == M_phase && phase_age[n] > M_T[n] )								
-			{
-                
-			// si segnala all'esterno che e' avvenuta una mitosi ... 
+    {
+			// it is pointed out to the outside that there has been a mitosis
 			mitosis_flag = true;
 			n_mitoses++;
 			
-		// *** memorizzazione di alcuni valori importanti
+		// *** memorization of some important values
 			
-			// eta' della madre
+			// age of the mother
 			age_mother[n] = age[n];
 			
-			// qui si memorizzano i parametri della cellula madre che servono al calcolo della suddivisione
+			// here the parameters of the mother cell that are used for the calculation of the subdivision are memorized
 			double old_volume = volume[n];
 			double old_M = M[n];
 			double old_r = r[n];											
 			
-			double ConcG_extra = G_extra[n]/volume_extra[n];		// concentrazioni nello spazio extracellulare
+			double ConcG_extra = G_extra[n]/volume_extra[n];		// concentrations in the extracellular space
 			double ConcA_extra = A_extra[n]/volume_extra[n];
 			double ConcAcL_extra = AcL_extra[n]/volume_extra[n];
 
-			double old_x = x[n];		// vecchie coordinate del centro
+			double old_x = x[n];		// old center coordinates
 			double old_y = y[n];
 			double old_z = z[n];
 				
 			
-		// *** prima parte dell'update della cellula (variabili comuni alle due figlie)
+		// *** first part of the cell's update (variables common to the two daughters)
 			
-			// reset della fase e dell'eta'
+			// phase and age reset
 			phase[n] = G1m_phase;
 			age[n] = 0.;
 			phase_age[n] = 0.;
 			
-			// update del numero di mitosi
+			// update of the number of mitosis
 			n_mitosis[n]++;
 			
 			// reset delle cicline
@@ -188,34 +185,41 @@ bool CellsSystem::CellEvents( )
 			ConcS[n] = type[n]->Get_ConcS_0();			
 
 
-		// *** si copia la struttura della cellula madre nella nuova cellula (che va in fondo alla lista)
-		// P.S. questa istruzione aumenta automaticamente il numero di instances di type
+		// *** copy the structure of the mother cell into the new cell (which goes to the bottom of the list)
+		// P.S. this instruction automatically increases the number of type instances
 			if(treal < EventTime || (ran2() > pAlt || pAlt < 2 ))
-                ReplicateCell( n );
-            else
-                {
-                ReplicateCell( n, &CellTypeVector[1] );
-                if(pAlt == 2) pAlt = 0;
-		}
+      {
+        ReplicateCell( n );
+      }
+      else
+      {
+        ReplicateCell( n, &CellTypeVector[1] );
+        if(pAlt == 2) 
+          pAlt = 0;
+      }
 		
 
-		// a questo punto ncells e' stato incrementato di 1, e la cellula appena inserita si trova in posizione ncells-1
+      // at this point ncells has been increased by 1, and the newly inserted cell is in the ncells-1 position
 		
 		
-		// *** seconda parte dell'update della cellula (variabili diverse per le due figlie)
+      // *** second part of the cell update (different variables for the two daughters)
 			
-			// questa parte del programma serve ad modellizzare la stocasticita' prodotta dalla ripartizione ineguale dei mitocondri
-			// clusters_M e' il numero di clusters in cui si riuniscono i mitocondri: ad esempio se ci sono 170 mitocondri, con un ClusteringFactor = 15 
-			// (ClusteringFactor e' il numero medio di mitocondri per cluster) si ottiene clusters_M = 11, rest_M = 5; 
+			// this part of the program serves to model the stochasticity produced by the unequal distribution of mitochondria
+			// clusters_M is the number of clusters in which mitochondria gather: for example, if there are 170 mitochondria, with a ClusteringFactor = 15 
+			// (ClusteringFactor is the average number of mitochondria per cluster) we obtain clusters_M = 11, rest_M = 5; 
 
 			int ClusteringFactor = type[n]->Get_ClusteringFactor();
 			
 			int clusters_M = (int)floor(old_M/ClusteringFactor);
 			int rest_M = (int)(old_M - clusters_M * ClusteringFactor);
 			
-			// dopo aver definito i clusters, quello che segue suddivide i cluster in modo binomiale, quindi trova il numero di mitocondri che vanno nella cellula n-esima e 
-			// quelli che vanno in newcell. Il resto e' assegnato casualmente. Ad esempio se l'if e' vero si assegnano i resti alla cellula n-esima, altrimenti no; in questo secondo 
-			// caso l'assegnazione a newcell e' automatica, perche' newcell contiene tutto quello che la cellula n-esima non contiene
+			/**
+       * after having defined the clusters, the following one divides the clusters in a binomial way,
+       * then find the number of mitochondria going into the n-th cell and those going into newcell.
+       * The rest is assigned randomly. For example, if the if is true, the remains are assigned to the n-th cell,
+       * otherwise no; in this second case the assignment to newcell is automatic,
+       * because newcell contains everything that the n-th cell does not contain
+       */ 
 			
 			double Mit = bnldev(0.5, clusters_M, idum) * ClusteringFactor;	// distribuzione binomiale
 			if(ran2() > 0.5) Mit += rest_M;
@@ -224,15 +228,15 @@ bool CellsSystem::CellEvents( )
 			M[ncells-1] = old_M - Mit;
 			
 			
-			// calcoli relativi al volume
+			// calculations related to the volume
 			double Vmin = type[n]->Get_Vmin();
 			double C2 = type[n]->Get_C2();
-			// qui si definisce il volume citoplasmatico sulla base della suddivisione del numero di mitocondri
-			// si noti che al momento della suddivisione ci sono 2 nuclei e quindi il volume citoplasmatico totale è old_volume-2*Vmin
+			// here the cytoplasmic volume is defined on the basis of the subdivision of the number of mitochondria
+      // note that at the time of the subdivision there are 2 nuclei and therefore the total cytoplasmic volume is old_volume-2 * Vmin
 			double volume_C = (old_volume-2.*Vmin-C2*old_M) * Mit/old_M;
 			double volume_C2 = (old_volume-2.*Vmin-C2*old_M) * (old_M-Mit)/old_M;
 						
-			// volumi totali e quantità associate (in questo calcolo si assume DNA = 0 visto che le cellule sono in fase G1m)
+			// total volumes and associated quantities (in this calculation we assume DNA = 0 since the cells are in phase G1m)
 			volume[n] =  Vmin + C2*M[n] + volume_C;
 			r[n] = pow(3.*volume[n]/(4.*PI), (double)1./3.); 
 			surface[n] = 4.*PI*r[n]*r[n]; 
@@ -249,13 +253,13 @@ bool CellsSystem::CellEvents( )
 			ATPp[ncells-1] = (volume[ncells-1] - type[ncells-1]->C2 * M[ncells-1] - type[ncells-1]->Vmin)/type[ncells-1]->C1;
 			ATPmin[ncells-1] = (type[ncells-1]->fATPmin)*(type[ncells-1]->C2 * M[ncells-1])/type[ncells-1]->C1;
 			
-			// rapporto dei volumi
+			// ratio of volumes
 			double volume_ratio = volume[n]/old_volume;
 			double volume_ratio2 = volume[ncells-1]/old_volume;
 			
-			// la concentrazione delle sostanze che diffondono negli spazi extracellulari e' la stessa di quella della cellula madre
-			// (si noti che questo non conserva la quantita' di sostanza, in altre parole si assume che la diffusione sia sufficientemente
-			// veloce da poter fare questa assunzione)
+			// the concentration of the substances that spread in the extracellular spaces is the same as that of the mother cell
+			// (note that this does not preserve the amount of substance, in other words it is assumed that the diffusion is sufficient
+      // fast to make this assumption)
 			G_extra[n] = ConcG_extra*volume_extra[n];
 			A_extra[n] = ConcA_extra*volume_extra[n];
 			AcL_extra[n] = ConcAcL_extra*volume_extra[n];
@@ -264,8 +268,8 @@ bool CellsSystem::CellEvents( )
 			A_extra[ncells-1] = ConcA_extra*volume_extra[ncells-1];
 			AcL_extra[ncells-1] = ConcAcL_extra*volume_extra[ncells-1];
 			
-			// setup delle variabili metaboliche ereditate dalla cellula madre
-			// (inizialmente i valori sono uguali nelle due cellule e quindi vengono presi solo da CellVector[n] )
+			// setup of the metabolic variables inherited from the mother cell
+      // (initially the values ​​are equal in the two cells and therefore are taken only by CellVector [n])
 			
 			double Gnow = G[n];								// glucosio
 			G[n] = Gnow*volume_ratio;
@@ -307,12 +311,12 @@ bool CellsSystem::CellEvents( )
 			// CellVector[n].Set_CO2( CO2*volume_ratio );
 			// newcell.Set_CO2( CO2*volume_ratio2 );
 
-			// si assume le proteine siano diffuse in tutta la cellula, compreso il nucleo, e quindi lo splitting come per le altre sostanze
+			// assume proteins are widespread throughout the cell, including the nucleus, and therefore splitting as for other substances
 			double proteinnow = protein[n];
 			protein[n] = proteinnow*volume_ratio;
 			protein[ncells-1] = proteinnow*volume_ratio2;
 
-			// l'algoritmo di splitting della pRb e' basato sull'idea che si appiccichi alla matrice nucleare
+			// the splitting algorithm of the pRb is based on the idea that it sticks to the nuclear matrix
 			double splitting_fraction = (double) bnldev(0.5, type[n]->Get_NUCLEAR_OBJ(), idum); // distribuzione binomiale
 			double splitting_ratio = splitting_fraction / type[n]->Get_NUCLEAR_OBJ();
 			double splitting_ratio2 = 1.-splitting_ratio;
@@ -330,7 +334,7 @@ bool CellsSystem::CellEvents( )
 			M_T[ncells-1] = type[ncells-1]->Get_M_T_MEAN() * (1.+ type[ncells-1]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
 			
 
-			// le cellule sono temporanemente create isolate
+			// cells are temporally created isolated
 			isonCH[n] = true;
 			isonAS[n] = true;
 			neigh[n] = 0 ;
@@ -346,25 +350,24 @@ bool CellsSystem::CellEvents( )
 			g_env[ncells-1] = env_surf[ncells-1]/r[ncells-1];
 						
 
-		// *** se la simulazione e' pronta allora si calcolano le nuove coordinate
+		// *** if the simulation is ready then the new coordinates are calculated
 			if( ready2start )
-				{
-				
+      {
 				// geometria della mitosi (solo nel caso di simulazione Full3D)
 				if( sim_type == Full3D ) 
-					{
+        {
 					double xr = 1.-2.*ran2(); 
 					double yr = 1.-2.*ran2(); 
 					double zr = 1.-2.*ran2(); 
 					double len = sqrt(xr*xr + yr*yr + zr*zr);
 					xr /= len;
 					yr /= len;
-					zr /= len;	// a questo punto {xr, yr, zr} e' un versore casuale
+					zr /= len;	// at this point {xr, yr, zr} is a random vector
 
-					double r_1 = r[n];							// i nuovi valori del raggio che vengono dalla routine del metabolismo
+					double r_1 = r[n];							// the new values ​​of the ray coming from the metabolism routine
 					double r_2 = r[ncells-1];
 					
-					double x_1 = old_x + xr*(old_r - r_1);		// calcolo delle nuove coordinate dei centri delle cellule
+					double x_1 = old_x + xr*(old_r - r_1);		// calculation of the new coordinates of the cell centers
 					double y_1 = old_y + yr*(old_r - r_1);
 					double z_1 = old_z + zr*(old_r - r_1);
 					
@@ -372,7 +375,7 @@ bool CellsSystem::CellEvents( )
 					double y_2 = old_y - yr*(old_r - r_2);
 					double z_2 = old_z - zr*(old_r - r_2);
 					
-					x[n] = x_1;										// qui si immagazzinano le posizioni dei centri
+					x[n] = x_1;										//Here the positions of the centers are stored
 					y[n] = y_1;
 					z[n] = z_1;
 
@@ -380,24 +383,22 @@ bool CellsSystem::CellEvents( )
 					y[ncells-1] = y_2;
 					z[ncells-1] = z_2;
 					
-					vx[ncells-1] = vx[n];	// la velocita' del centro della nuova cellula è inizialmente uguale a quella della cellula madre
+					vx[ncells-1] = vx[n];	// the velocity of the center of the new cell is initially the same as that of the mother cell
 					vy[ncells-1] = vy[n];
 					vz[ncells-1] = vz[n];
 					}
 				}
 
 
-			// nel caso di startup o conf. fissa, si dimentica l'ultima cellula ... altrimenti si aggiorna il contatore delle cellule vive			
+			// in the case of startup or conf. fixed, we forget the last cell ... otherwise the live cell counter is updated
 			if( !ready2start || sim_type == FixedConfig )
-				{
+      {
 				ncells--;						// decremento del numero di cellule, si torna al valore precedente, l'ultima cellula viene dimenticata
 				type[n]->Delete_instance();		// cancellazione dell'instance di type che era stato aggiunto da ReplicateCell
-				}
+			}
 			else 
 				alive++;
-
-			
-			} // fine del trattamento della mitosi
+    } // fine del trattamento della mitosi
 
 /* TF
  * comment out because of multithread errros on snowden
@@ -410,14 +411,11 @@ bool CellsSystem::CellEvents( )
 // 			}
 
 	
-		if(phase[n] != dead) alive++;								// se la cellula non e' morta, allora e' viva ...	
-
-		
-		} // fine del loop sulle cellule
-	
-
-	return mitosis_flag;
-
+		if(phase[n] != dead) 
+      alive++;								// if the cell is not dead, then it's alive ...
+  } // fine del loop sulle cellule
+	//return mitosis_flag;
+  return n_mitoses;
 }
 
 

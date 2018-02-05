@@ -25,7 +25,7 @@ double myRandom()
   return uni_f(gen);
 }
 
-const int NUM_INSERTED_POINTS = 50;
+const int NUM_INSERTED_POINTS = 10;
 
 #ifdef CGAL_LINKED_WITH_TBB
   typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -39,7 +39,34 @@ const int NUM_INSERTED_POINTS = 50;
 
 #endif
 
+Triangulation *T;
 
+
+void Foo2(const Triangulation::Vertex &iter)
+{
+  //Triangulation::Vertex_handle h = &iter;
+  std::vector<Triangulation::Vertex_handle> vn;
+  Triangulation::Vertex_handle h = T->insert(iter.point());
+  T->finite_adjacent_vertices(h, std::back_inserter(vn));
+  unsigned long k = iter.info();
+  unsigned long c = 2*k;
+//     std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
+//     std::cout.flush();
+  printf(" doing a complicated new calculation on: %i\n", iter.info());
+  for( auto bla: vn)
+  {
+    printf("%i has neighbor %i\n", iter.info(), bla->info());
+  }
+  const int zahl = 2e6 ;
+  std::vector<double> vec_of_rand;
+  int i=0;
+  for (int p=0;p<zahl;p++)
+  {
+    double ran = myRandom();
+    vec_of_rand.push_back(ran);
+  }
+  std::sort(vec_of_rand.begin(), vec_of_rand.end());
+}
 void Foo(const Triangulation::Vertex_handle a)
 {
   //Triangulation::Vertex_handle a = (*my_a)[i];
@@ -48,7 +75,7 @@ void Foo(const Triangulation::Vertex_handle a)
 //     std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
 //     std::cout.flush();
   printf(" doing a complicated new calculation on: %i\n", a->info());
-  const int zahl = 2e5 ;
+  const int zahl = 2e6 ;
   std::vector<double> vec_of_rand;
   int i=0;
   for (int p=0;p<zahl;p++)
@@ -58,24 +85,24 @@ void Foo(const Triangulation::Vertex_handle a)
   }
   std::sort(vec_of_rand.begin(), vec_of_rand.end());
 }
-void Foo(const Triangulation::Vertex a)
-{
-  //Triangulation::Vertex_handle a = (*my_a)[i];
-  unsigned long k = a.info();
-  unsigned long c = 2*k;
-//     std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
-//     std::cout.flush();
-  printf(" doing a complicated new calculation on: %i\n", a.info());
-  const int zahl = 2e5 ;
-  std::vector<double> vec_of_rand;
-  int i=0;
-  for (int p=0;p<zahl;p++)
-  {
-    double ran = myRandom();
-    vec_of_rand.push_back(ran);
-  }
-  std::sort(vec_of_rand.begin(), vec_of_rand.end());
-}
+// void Foo(const Triangulation::Vertex a)
+// {
+//   //Triangulation::Vertex_handle a = (*my_a)[i];
+//   unsigned long k = a.info();
+//   unsigned long c = 2*k;
+// //     std::cout << " doing a complicated calculation on: " << vn->info() << std::endl;
+// //     std::cout.flush();
+//   printf(" doing a complicated new calculation on: %i\n", a.info());
+//   const int zahl = 2e5 ;
+//   std::vector<double> vec_of_rand;
+//   int i=0;
+//   for (int p=0;p<zahl;p++)
+//   {
+//     double ran = myRandom();
+//     vec_of_rand.push_back(ran);
+//   }
+//   std::sort(vec_of_rand.begin(), vec_of_rand.end());
+// }
 
 class ApplyFoo {
 public:
@@ -92,6 +119,22 @@ void ParallelApplyToConcurrent(const CGAL::Concurrent_compact_container<Triangul
 {
   printf("starting ParallelApplyToConcurrent\n");
   tbb::parallel_do(a.begin(), a.end(), ApplyFoo());
+}
+
+class ApplyFoo2 {
+public:
+    void operator()( const Triangulation::Vertex &iter ) const;
+    
+    ApplyFoo2( ){};
+};
+void ApplyFoo2::operator()( const Triangulation::Vertex &iter) const 
+{
+  Foo2(iter);
+}
+void ParallelApply()
+{
+  printf("starting ParallelApply\n");
+  tbb::parallel_do(T->finite_vertices_begin(), T->finite_vertices_end(), ApplyFoo2());
 }
 
 #if 0
@@ -118,6 +161,13 @@ void SerialApplyFoo( const CGAL::Concurrent_compact_container<Triangulation::Ver
   for(auto b:a)
   {
     Foo(b);
+  }
+}
+void SerialApplyFoo2( )
+{
+  for(auto vit=T->finite_vertices_begin(); vit!=T->finite_vertices_end(); ++vit)
+  {
+    Foo(vit);
   }
 }
 void cgal_concurrent_container_test()
@@ -158,8 +208,8 @@ int main()
   Triangulation::Lock_data_structure locking_ds(
     CGAL::Bbox_3(-1., -1., -1., 1., 1., 1.), 50);
   // Construct the triangulation in parallel
-  Triangulation T(V.begin(), V.end(), &locking_ds);
-  assert(T.is_valid());
+  T = new Triangulation(V.begin(), V.end(), &locking_ds);
+  assert(T->is_valid());
   
   // Triangulation structure is filled, now traverse it
   // this works and is from the examples!
@@ -173,7 +223,7 @@ int main()
   CGAL::Concurrent_compact_container<Triangulation::Vertex_handle> myContainer7;
   
   myContainer4->resize(NUM_INSERTED_POINTS);
-  for (auto vit = T.finite_vertices_begin(); vit != T.finite_vertices_end(); ++vit)
+  for (auto vit = T->finite_vertices_begin(); vit != T->finite_vertices_end(); ++vit)
   {
     if( V[ vit->info() ].first != vit->point() )
     {
@@ -194,10 +244,10 @@ int main()
     
     //complicated_calculation(&vertex);
   }
-  Triangulation::Vertex_handle bla = *myContainer3[42];
+  Triangulation::Vertex_handle bla = *myContainer3[0];
   unsigned long q = bla->info();
   
-  auto abc = T.finite_vertices_begin();
+  auto abc = T->finite_vertices_begin();
   std::cout << abc->info() << std::endl;
 #if 0
   tbb::parallel_do(T.finite_vertices_begin(), T.finite_vertices_end(), ApplyFoo());
@@ -205,10 +255,17 @@ int main()
 #if 0
   SerialApplyFoo(myContainer7);
 #endif
-#if 1
+#if 0
   //result of sizeof is 48 which means 48 byte
   std::cout << "size of vertex handle: " << sizeof(*((*myContainer5)[0])) << std::endl;
   ParallelApplyToConcurrent(myContainer7);
+#endif
+  
+#if 1
+  ParallelApply();
+#endif
+#if 0
+  SerialApplyFoo2();
 #endif
   
 #if 0

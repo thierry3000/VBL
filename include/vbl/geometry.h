@@ -43,19 +43,17 @@ typedef Triangulation_3::All_vertices_iterator			All_vertices_iterator;
 std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 
 
-
-Triangulation_3 *DelTri;
-
 #ifndef useSerialApproach
 class ApplyGeometricCalculation{
 public:
   friend class CellsSystem;
-  void operator()(const Triangulation_3::Vertex_handle &item) const;
+  void operator()(const Triangulation_3::Vertex &item) const;
   ApplyGeometricCalculation( ){};
 };
 
-void apply_geometry(const Triangulation_3::Vertex_handle item);
-void ParallelApplyGeometricCalculation( const CGAL::Concurrent_compact_container<Triangulation_3::Vertex_handle> &list);
+void apply_geometry(const Triangulation_3::Vertex &item);
+//void ParallelApplyGeometricCalculation( const CGAL::Concurrent_compact_container<Triangulation_3::Vertex_handle> &list);
+void ParallelApply();
 #endif
 
 

@@ -691,7 +691,8 @@ void InitializeCellsSystem( bool terminal );
 void InitializeCellsSystem( const std::string filename );
 
 // metodo per gli eventi cellulari (crescita, mitosi, etc.; restituisce una flag che indica se c'e' stata almeno una mitosi nel sistema di cellule)
-bool CellEvents( );
+//bool CellEvents( );
+int CellEvents( );
 
 // metodo per la pulizia della memoria (al momento usa operazioni non molto efficienti)
 void CleanCellsSystem( );
