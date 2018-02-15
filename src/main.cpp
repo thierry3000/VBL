@@ -196,7 +196,7 @@ int main( int argc, char* argv[] )
   cout << "Final configuration written on file" << endl;
   
   p_to_current_CellsSystem->CloseOutputFiles();						// Closing output files
-      
+  delete p_to_current_CellsSystem;
 
   return 0;
       

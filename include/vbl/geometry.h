@@ -17,7 +17,7 @@
 #include <tbb/mutex.h>
 
 //#define myDebugComments
-//#define useSerialApproach
+#define useSerialApproach
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel     	K;
 

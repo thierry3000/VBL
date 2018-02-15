@@ -231,17 +231,21 @@ void CellsSystem::Geometry()
   //prepare neighborhood and initialize
   for(int i=0; i< ncells; i++)
   {
-    int no_current_neighbors = 25;
-    neigh[i] = no_current_neighbors;          // number of all neighbors finit+ infinite
-    vneigh[i].resize(no_current_neighbors);		// init names of neighbors
-    vcsurf[i].resize(no_current_neighbors);		// init contact areas
-    vdist[i].resize(no_current_neighbors);		// allocate distance vect
-    gnk[i].resize(no_current_neighbors);			// allocate geom factors
+    //int no_current_neighbors = 25;
+    //neigh[i] = no_current_neighbors;          // number of all neighbors finit+ infinite
+    //vneigh[i].resize(no_current_neighbors);		// init names of neighbors
+    //vcsurf[i].resize(no_current_neighbors);		// init contact areas
+    //vdist[i].resize(no_current_neighbors);		// allocate distance vect
+    //gnk[i].resize(no_current_neighbors);			// allocate geom factors
     isonCH[i]=true;       // by default we assume the cell is on the convex hull, we change that if we detect that it is not!
     isonAS[i] = false;    // by default we are not on the alph shape
     g_env[k]=0.;
   }
 
+#ifdef W_timing
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    //begin neighborhood timing
+#endif
 
 #ifdef useSerialApproach
   /**
@@ -258,79 +262,75 @@ void CellsSystem::Geometry()
     int k_mt = vit->info();
     DelTri->finite_adjacent_vertices(vit, std::back_inserter(vn_per_thread));
     
+    //reset to finite value!
+    //k_mt could have nasty values in case of infinite
+    neigh[k_mt] = vn_per_thread.size();
+  
+    isonCH[k_mt]=false;				// bool true if ON convex hull
 
-    {
-      //reset to finite value!
-      //k_mt could have nasty values in case of infinite
-      neigh[k_mt] = vn_per_thread.size();
+    // weighted radius of current cell
+    double rk = (type[k_mt]->Get_extension_coeff())*r[k_mt];
+
+    contact_surf[k_mt] = 0.;			// init total contact area
     
-      isonCH[k_mt]=false;				// bool true if ON convex hull
-      env_surf[k_mt] = 0.;				// contact area with environment
-      g_env[k_mt] = 0.;				// geom factor with environment
+    // in this loop we prepare the list of neighbors and we compute contact areas
+    for(int kk=0; kk < neigh[k_mt] ; kk++)					
+    {
+#ifdef myDebugComments
+      std::cout << "starting second for loop" << std::endl;
+#endif
 
-      // weighted radius of current cell
-      double rk = (type[k_mt]->Get_extension_coeff())*r[k_mt];
-
-      contact_surf[k_mt] = 0.;			// init total contact area
+#ifdef myDebugComments
+      printf(" kk: %i, neigh[k]: %i, vn_per_thread.size(): %i\n", kk, neigh[k_mt],vn_per_thread.size());
+#endif
+      Triangulation_3::Vertex_handle a = vn_per_thread.at(kk);
+      unsigned long neighbor_id = a->info();
       
-      // in this loop we prepare the list of neighbors and we compute contact areas
-      for(int kk=0; kk < vn_per_thread.size() ; kk++)					
-      {
-  #ifdef myDebugComments
-        std::cout << "starting second for loop" << std::endl;
-  #endif
-
-#ifdef myDebugComments
-        printf(" kk: %i, neigh[k]: %i, vn_per_thread.size(): %i\n", kk, neigh[k_mt],vn_per_thread.size());
-#endif
-        Triangulation_3::Vertex_handle a = vn_per_thread.at(kk);
-        unsigned long neighbor_id = a->info();
-        
 #ifndef NDEBUG
-  assert(neighbor_id < ncells);
+assert(neighbor_id < ncells);
 #endif
 #ifdef myDebugComments
-  printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, vneigh.size());
-        std::cout << "neighbor: " << neighbor_id << std::endl;
+printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, vneigh.size());
+      std::cout << "neighbor: " << neighbor_id << std::endl;
 #endif
-        vneigh[k_mt][kk] = neighbor_id; 				// store name of neighbor
-        //***
-        // weighted radius of neighboring cell
-        double rkk = (type[neighbor_id]->Get_extension_coeff())*r[neighbor_id];	
-        double dd = Distance( k_mt,neighbor_id ); 			// distance between current cell and neigbor
-        // *********** check for debugging
-      #ifndef NDEBUG // this check is only performed in the Debug build, other wise it is not present which saves time
-        if(dd != dd || dd <= 0)
-        {
-          std::cout << k_mt << "-th cell, neighbor " << neighbor_id << ", undefined distance " << dd << std::endl;
-        }
-      #endif
-        // *********** end check for debugging
-        vdist[k_mt][kk] = dd;
-        double sqr_dd = SQR(dd);
+      vneigh[k_mt][kk] = neighbor_id; 				// store name of neighbor
+      //***
+      // weighted radius of neighboring cell
+      double rkk = (type[neighbor_id]->Get_extension_coeff())*r[neighbor_id];	
+      double dd = Distance( k_mt,neighbor_id ); 			// distance between current cell and neigbor
+      // *********** check for debugging
+    #ifndef NDEBUG // this check is only performed in the Debug build, other wise it is not present which saves time
+      if(dd != dd || dd <= 0)
+      {
+        std::cout << k_mt << "-th cell, neighbor " << neighbor_id << ", undefined distance " << dd << std::endl;
+      }
+    #endif
+      // *********** end check for debugging
+      vdist[k_mt][kk] = dd;
+      double sqr_dd = SQR(dd);
 
-        if( dd < (rk+rkk) ) // here we compute the contact area
+      if( dd < (rk+rkk) ) // here we compute the contact area
+      {
+        vcsurf[k_mt][kk] = -PI*(sqr_dd-SQR(rk-rkk))*(sqr_dd-SQR(rk+rkk))/(4*sqr_dd);
+        if( vcsurf[k_mt][kk] < 0 )
         {
-          vcsurf[k_mt][kk] = -PI*(sqr_dd-SQR(rk-rkk))*(sqr_dd-SQR(rk+rkk))/(4*sqr_dd);
-          if( vcsurf[k_mt][kk] < 0 )
-          {
-            vcsurf[k_mt][kk] = 0;
-            gnk[k_mt][kk] = 0;
-          }
-          else
-          {
-            gnk[k_mt][kk] = vcsurf[k_mt][kk]/dd;
-          }
-          contact_surf[k_mt] += vcsurf[k_mt][kk];
+          vcsurf[k_mt][kk] = 0;
+          gnk[k_mt][kk] = 0;
         }
         else
         {
-          vcsurf[k_mt][kk] = 0.;
+          gnk[k_mt][kk] = vcsurf[k_mt][kk]/dd;
         }
+        contact_surf[k_mt] += vcsurf[k_mt][kk];
       }
-      env_surf[k_mt] = surface[k_mt]/(neigh[k_mt]+1);			// qui si calcola la superficie esposta all'ambiente
-      g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// fattore geometrico verso l'ambiente
+      else
+      {
+        vcsurf[k_mt][kk] = 0.;
+      }
     }
+    env_surf[k_mt] = surface[k_mt]/(neigh[k_mt]+1);			// contact area with environment
+    g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// geom factor with environment
+    
 
     // *** fine del calcolo del fattore geometrico con l'ambiente
     vn_per_thread.clear();
@@ -340,6 +340,12 @@ void CellsSystem::Geometry()
 
   ParallelApply();
   
+#endif
+  
+#ifdef W_timing
+    std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+    myTiming.time_geometry_neighborhood = end-begin;
+    myTiming.geometry_neighborhood = myTiming.time_geometry_neighborhood.count();
 #endif
 
   // compute fixed alpha shape with ALPHAVALUE defined in sim.h
