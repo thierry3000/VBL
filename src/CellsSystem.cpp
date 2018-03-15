@@ -1701,7 +1701,8 @@ void CellsSystem::Add_BloodVesselVector(BloodVessel NewBV)
 void CellsSystem::clean_BloodVesselVector()
 {
   this->nbv=0;
-  std::fill(std::begin(BloodVesselVector),std::end(BloodVesselVector), BloodVessel());
+  //std::fill(std::begin(BloodVesselVector),std::end(BloodVesselVector), BloodVessel());
+  //BloodVesselVector.resize(Get_ncells());
 }
 //  ******************** Timing ********************
 //

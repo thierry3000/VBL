@@ -19,10 +19,11 @@
 
 #include "vbl/geometry.h"
 
-namespace vbl
-{
-  vbl::CellsSystem *p_to_current_CellsSystem = NULL;
-}
+// namespace vbl
+// {
+//   vbl::CellsSystem *p_to_current_CellsSystem = NULL;
+// }
+
 //this pointer is necessary to keep track of the cells CellsSystem
 // note: you need to initialize that when dealing with other software e.g. tumorcode!
 #endif // header guard

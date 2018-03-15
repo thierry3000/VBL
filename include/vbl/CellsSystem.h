@@ -649,10 +649,22 @@ double Get_O2Flow() { return O2Flow; };
 double Get_AcLFlow() { return AcLFlow; };
 
 // setters
-void Set_Commands( const std::string newcommandFile ) { commandFile = newcommandFile; };
-void Set_CellTypeFile( std::string newCellTypeFile ) { CellTypeFile = newCellTypeFile; };
-void Set_CellTypeFileAlt( std::string newCellTypeFile ) { CellTypeFileAlt = newCellTypeFile; };
-void Set_EnvironmentFile( std::string newEnvironmentFile ) { EnvironmentFile = newEnvironmentFile; };
+void Set_Commands( const std::string newcommandFile ) 
+{ 
+  commandFile = newcommandFile; 
+};
+void Set_CellTypeFile( std::string newCellTypeFile ) 
+{ 
+  CellTypeFile = newCellTypeFile; 
+};
+void Set_CellTypeFileAlt( std::string newCellTypeFile ) 
+{ 
+  CellTypeFileAlt = newCellTypeFile; 
+};
+void Set_EnvironmentFile( std::string newEnvironmentFile ) 
+{ 
+  EnvironmentFile = newEnvironmentFile; 
+};
 void Set_idum ( int newidum ) { idum = newidum; };
 void Set_dt( double newdt ) { dt = newdt; };
 void Set_time_from_CGAL( double newtime_from_CGAL ) { time_from_CGAL = newtime_from_CGAL; };
