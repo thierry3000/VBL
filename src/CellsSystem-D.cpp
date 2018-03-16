@@ -10,6 +10,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 #include <tbb/parallel_do.h>
 
 
@@ -158,11 +159,11 @@ void CellsSystem::Geometry()
     for(k=0; k<ncells; k++)
     {
 #ifndef NDEBUG
-      if(isnan( x[k]))
+      if(std::isnan( x[k]))
         printf("x is nan at %i\n", k);
-      if(isnan( y[k]))
+      if(std::isnan( y[k]))
         printf("y is nan at %i\n", k);
-      if(isnan( z[k]))
+      if(std::isnan( z[k]))
         printf("z is nan at %i\n", k);
       std::cout.flush();
 #endif
@@ -197,7 +198,7 @@ void CellsSystem::Geometry()
 #ifndef NDEBUG
     min_x=min_y=min_z=-10.0;
     max_x=max_y=max_z=10.0;
-    if(isnan(min_x) or isnan(min_y) or isnan(min_z) or isnan(max_x) or isnan(max_y) or isnan(max_z))
+    if(std::isnan(min_x) or std::isnan(min_y) or std::isnan(min_z) or std::isnan(max_x) or std::isnan(max_y) or std::isnan(max_z))
     {
       printf("found nan in bounding box\n");
       std::cout.flush();
