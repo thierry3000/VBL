@@ -61,6 +61,7 @@ struct Timing
   T diff = 0;
   T dynamics =0;
   T geometry = 0;
+  T geometry_neighborhood = 0;
   T cellEvents = 0;
   T writeToFile = 0;
   T diff_loop_1 = 0;
@@ -70,6 +71,7 @@ struct Timing
   std::chrono::duration<T> time_diff;
   std::chrono::duration<T> time_diff_loop;
   std::chrono::duration<T> time_run_bico;
+  std::chrono::duration<T> time_geometry_neighborhood;
   void reset()
   {
     diff=0;
@@ -80,6 +82,7 @@ struct Timing
     dynamics=0;
     geometry=0;
     cellEvents=0;
+    geometry_neighborhood = 0;
   };
 };
 
@@ -330,12 +333,13 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	static const int MAX_NCELLS = 1e2;
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
-#ifdef _parallel
+
+	static const int MAX_N_NEIGH =25;
 	std::vector<int> neigh;					// numero di vicini
-	std::vector< std::vector<int> > vneigh;		// vettore dei vicini
-	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
-	std::vector< std::vector<double> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
-	std::vector< std::vector<double> > gnk;		// vettore dei fattori geometrici
+	std::vector< std::array<unsigned long, MAX_N_NEIGH> > vneigh;		// vettore dei vicini
+	std::vector< std::array<double, MAX_N_NEIGH> > vdist;     // vettore delle distanze dai vicini
+	std::vector< std::array<double, MAX_N_NEIGH> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
+	std::vector< std::array<double, MAX_N_NEIGH> > gnk;		// vettore dei fattori geometrici
 	std::vector<double> contact_surf;		// area totale della superficie di contatto con le cellule adiacenti
 	
 	std::vector<bool> isonCH;				// label che indica se la cellula si trova sul convex hull
@@ -353,31 +357,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
 	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
-#else
-	static const int MAX_N_NEIGH =10;
-	std::vector<int> neigh;					// numero di vicini
-	std::vector< std::vector<unsigned long> > vneigh;		// vettore dei vicini
-	std::vector< std::vector<double> > vdist;     // vettore delle distanze dai vicini
-	std::vector< std::vector<double> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
-	std::vector< std::vector<double> > gnk;		// vettore dei fattori geometrici
-	std::vector<double> contact_surf;		// area totale della superficie di contatto con le cellule adiacenti
-	
-	std::vector<bool> isonCH;				// label che indica se la cellula si trova sul convex hull
-	std::vector<bool> isonAS;				// label che indica se la cellula si trova sull'alpha shape
-	std::vector<int> isonBV;					// this label is true if the cell is in contact
-										// with a blood vessel
-										// if a cell is not in contact with blood vessel, 
-										// then isonBV[n] = 0, else isonBV[n] = position 
-										// of vessel in BloodVesselVector + 1
-										// this shift is done so that isonBV can also be 
-										// used as a boolean variable 
-										
-	std::vector<double> env_surf;			// superficie di contatto con l'ambiente
-	std::vector<double> g_env;				// fattore geometrico relativo al contatto con l'ambiente
 
-	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
-	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
-#endif
 	std::vector<double> M;					// numero di mitocondri 
 
 	// lista delle variabili metaboliche all'interno della cellula
@@ -669,10 +649,22 @@ double Get_O2Flow() { return O2Flow; };
 double Get_AcLFlow() { return AcLFlow; };
 
 // setters
-void Set_Commands( const std::string newcommandFile ) { commandFile = newcommandFile; };
-void Set_CellTypeFile( std::string newCellTypeFile ) { CellTypeFile = newCellTypeFile; };
-void Set_CellTypeFileAlt( std::string newCellTypeFile ) { CellTypeFileAlt = newCellTypeFile; };
-void Set_EnvironmentFile( std::string newEnvironmentFile ) { EnvironmentFile = newEnvironmentFile; };
+void Set_Commands( const std::string newcommandFile ) 
+{ 
+  commandFile = newcommandFile; 
+};
+void Set_CellTypeFile( std::string newCellTypeFile ) 
+{ 
+  CellTypeFile = newCellTypeFile; 
+};
+void Set_CellTypeFileAlt( std::string newCellTypeFile ) 
+{ 
+  CellTypeFileAlt = newCellTypeFile; 
+};
+void Set_EnvironmentFile( std::string newEnvironmentFile ) 
+{ 
+  EnvironmentFile = newEnvironmentFile; 
+};
 void Set_idum ( int newidum ) { idum = newidum; };
 void Set_dt( double newdt ) { dt = newdt; };
 void Set_time_from_CGAL( double newtime_from_CGAL ) { time_from_CGAL = newtime_from_CGAL; };
@@ -890,10 +882,10 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_neigh( const int k, const int neighin ) { neigh[k] = neighin; };
 
 	// questi setters esistono solo nella forma per singole cellule (inseriscono vettori di lunghezza variabile)
-	void Set_vneigh( const int k, int* vneighin ) { vneigh[k].clear(); vneigh[k].insert( vneigh[k].begin(), vneighin, vneighin+neigh[k]); };
-	void Set_vdist( const int k, double* vdistin ) { vdist[k].clear(); vdist[k].insert( vdist[k].begin(), vdistin, vdistin+neigh[k]); };
-	void Set_vcsurf( const int k, double* vcsurfin ) { vcsurf[k].clear(); vcsurf[k].insert( vcsurf[k].begin(), vcsurfin, vcsurfin+neigh[k]); };
-	void Set_gnk( const int k, double* newgnk ) { gnk[k].clear(); gnk[k].insert( gnk[k].begin(), newgnk, newgnk+neigh[k]); };
+// 	void Set_vneigh( const int k, int* vneighin ) { vneigh[k].clear(); vneigh[k].insert( vneigh[k].begin(), vneighin, vneighin+neigh[k]); };
+// 	void Set_vdist( const int k, double* vdistin ) { vdist[k].clear(); vdist[k].insert( vdist[k].begin(), vdistin, vdistin+neigh[k]); };
+// 	void Set_vcsurf( const int k, double* vcsurfin ) { vcsurf[k].clear(); vcsurf[k].insert( vcsurf[k].begin(), vcsurfin, vcsurfin+neigh[k]); };
+// 	void Set_gnk( const int k, double* newgnk ) { gnk[k].clear(); gnk[k].insert( gnk[k].begin(), newgnk, newgnk+neigh[k]); };
 	// fine della parte dei setters non standard
   
   // use this one if we already know, that it is safe!
@@ -1159,10 +1151,10 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	int Get_neigh( const unsigned long int k ) { return neigh[k]; };
 
 	// questi getters esistono solo nella forma per singole cellule (restituiscono vettori di lunghezza variabile)
-	//std::vector<int> Get_vneigh( const unsigned long int k ) { return vneigh[k]; };
-	std::vector<double> Get_vdist( const unsigned long int k ) { return vdist[k]; };
-	std::vector<double> Get_vcsurf( const unsigned long int k ) { return vcsurf[k]; };
-	std::vector<double> Get_gnk( const unsigned long int k ) { return gnk[k]; };
+// 	std::vector<int> Get_vneigh( const unsigned long int k ) { return vneigh[k]; };
+// 	std::vector<double> Get_vdist( const unsigned long int k ) { return vdist[k]; };
+// 	std::vector<double> Get_vcsurf( const unsigned long int k ) { return vcsurf[k]; };
+// 	std::vector<double> Get_gnk( const unsigned long int k ) { return gnk[k]; };
 	// fine della parte dei getters non standard
 
 	std::vector<double> Get_contact_surf() { return contact_surf; };

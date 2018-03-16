@@ -75,15 +75,42 @@ public:
     std::array<double,3> GetBloodVesselb() { return b; };
     std::array<double,3> GetBloodVesselva() { return va; };
     std::array<double,3> GetBloodVesselvb() { return vb; };
-    double GetBloodVesselR() { return R; };
-    double GetBloodVesselvR() { return vR; };
-    double GetBloodVesselO2start() { return O2start; };
-    double GetBloodVesselO2end() { return O2end; };
-    double GetBloodVesselCO2start() { return CO2start; };
-    double GetBloodVesselCO2end() { return CO2end; };
-    double GetBloodVesselG() { return G; };
-    double GetBloodVesselA() { return A; };
-    double GetBloodVesselAcL() { return AcL; };
+    double GetBloodVesselR() 
+    { 
+      return R; 
+    };
+    double GetBloodVesselvR() 
+    { 
+      return vR; 
+    };
+    double GetBloodVesselO2start() 
+    { 
+      return O2start; 
+    };
+    double GetBloodVesselO2end() 
+    { 
+      return O2end; 
+    };
+    double GetBloodVesselCO2start() 
+    { 
+      return CO2start; 
+    };
+    double GetBloodVesselCO2end() 
+    { 
+      return CO2end; 
+    };
+    double GetBloodVesselG() 
+    { 
+      return G; 
+    };
+    double GetBloodVesselA() 
+    { 
+      return A; 
+    };
+    double GetBloodVesselAcL() 
+    { 
+      return AcL; 
+    };
     
     
     // altri metodi

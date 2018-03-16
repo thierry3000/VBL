@@ -31,6 +31,7 @@ int main( int argc, char* argv[] )
   string run_name;
   //CellsSystem bla = CellsSystem();
   //p_to_current_CellsSystem = std::make_shared<CellsSystem>();
+  vbl::CellsSystem *p_to_current_CellsSystem = NULL;
   p_to_current_CellsSystem = new CellsSystem();
   p_to_current_CellsSystem->Set_BV_reserve(RESERVE_BV);
   printf("alive cells: %i\n", p_to_current_CellsSystem->Get_alive());
@@ -196,7 +197,7 @@ int main( int argc, char* argv[] )
   cout << "Final configuration written on file" << endl;
   
   p_to_current_CellsSystem->CloseOutputFiles();						// Closing output files
-      
+  delete p_to_current_CellsSystem;
 
   return 0;
       

@@ -35,68 +35,97 @@ void CellsSystem::Dynamics( )
 // Calculating force between cells in the current configuration
 void CellsSystem::GetForces()
 {
-	// ridimensionamento dei vettori
+	// resizing vectors
 	fx.resize(ncells);
 	fy.resize(ncells);
 	fz.resize(ncells);
 	
-	// inizializzazione dei vettori
+	// initialize vectors with zeros
 	fx.assign(ncells,0);
 	fy.assign(ncells,0);
 	fz.assign(ncells,0);
 		
-	// la forza cellula-cellula si calcola solo se ci sono almeno due cellule
+	// the cell-cell force is calculated only if there are at least two cells
 	if(ncells>1)
   {
 #pragma omp parallel for
 		for(unsigned long n=0; n<ncells; n++)
     {
 			
-			// parametri relativi alla cellula n-esima
-			double rn = (type[n]->Get_packing_factor())*r[n];					// raggio della cellula pesato con il packing factor
-			double yn = (type[n]->Get_YoungMod());								// modulo di Young della cellula
-			double pn = (type[n]->Get_PoissonRatio());							// PoissonRatio della cellula
+			// parameters related to the n-th cell
+			double rn = (type[n]->Get_packing_factor())*r[n];			// beam of the weighed cell with the packing factor
+			double yn = (type[n]->Get_YoungMod());								// modulo di Young della cellula, NOTE fixed value -> no divide by zero here
+			double pn = (type[n]->Get_PoissonRatio());						// PoissonRatio della cellula
 			
-			double arn = (type[n]->Get_adhesion_range());	// range di adesione del tipo della cellula n-esima
-			double adn = (type[n]->Get_adhesion_decay());	// decay rate dell'adesione della cellula k-esima
+			double arn = (type[n]->Get_adhesion_range());	        // adhesion range of the n-th cell type
+			double adn = (type[n]->Get_adhesion_decay());	        // decay rate of k-th cell adhesion
 
-			int nneigh = neigh[n];				// numero di cellule adiacenti alla cellula n-esima
+			int nneigh = neigh[n];				                        // number of cells adjacent to the n-th cell
 			
 			// loop on cells adjacent to the n-th cell (it is calculated only if there is at least one cell nearby)
 			if(nneigh > 0)
       {
 				for( int k=0; k< nneigh; k++)					
         {
-					int neighbor = vneigh[n][k];	// nome della k-esima cellula adiacente
-					double dd = Distance(n,neighbor);	// distanza tra cellula n-esima e la k-esima cellula vicina
+          /* NOTE T.F.
+           * I had some strange SIGFPE on GetForces, so I try to check the requriremts here
+           * 
+           * 1) ((1-pn*pn)/yn+(1-pk*pk)/yk)) == 0 ?
+           * if I calculted correctly with p_n ==p_k and y_k==y_n this could only happen when p_n*p_n == 1 which never happens
+           * 
+           * 2) (rn+rk) == 0?
+           * 
+           * 3) dd == 0?
+           */
+					int neighbor = vneigh[n][k];	                                  // name of the k-th adjacent cell
+					double dd = Distance(n,neighbor);	                              // distance between the n-th cell and the k-th nearest cell
 
-					// parametri relativi alla vicina k-esima
-					double rk = (type[neighbor]->Get_packing_factor())*r[neighbor];	// raggio della vicina k-esima pesato
-					double yk = (type[neighbor]->Get_YoungMod());			// modulo di Young della cellula
-					double pk = (type[neighbor]->Get_PoissonRatio());		// PoissonRatio della cellula
+					// parameters related to the near k-esima
+					double rk = (type[neighbor]->Get_packing_factor())*r[neighbor];	// radius of the nearest k-th weighed
+					double yk = (type[neighbor]->Get_YoungMod());			              // modulo di Young della cellula NOTE fixed value -> no divide by zero here
+					double pk = (type[neighbor]->Get_PoissonRatio());		            // PoissonRatio della cellula
 
-					double ark = (type[neighbor]->Get_adhesion_range());	// range di adesione del tipo della vicina k-esima
-					double adk = (type[neighbor]->Get_adhesion_decay());	// decay rate dell'adesione della vicina k-esima
+					double ark = (type[neighbor]->Get_adhesion_range());	          // range di adesione del tipo della vicina k-esima
+					double adk = (type[neighbor]->Get_adhesion_decay());	          // decay rate dell'adesione della vicina k-esima
 
-					double kC = sqrt(rn*rk)*(rn+rk)/(0.75*((1-pn*pn)/yn+(1-pk*pk)/yk));	// calcolo della "costante elastica" derivata dal modello di Hertz
+					double kC = sqrt(rn*rk)*(rn+rk)/(0.75*((1-pn*pn)/yn+(1-pk*pk)/yk));	// calculation of the "elastic constant" derived from the Hertz model
 					
-					// qui si calcola la forza, che pero' quando e' repulsiva satura ad un valore max. Qui si sceglie di definire il valore max sulla base 
-					// delle caratteristiche cellulari. Una scelta alternativa potrebbe essere quella di definire a priori il valore max per tutte le cellule. 
-					// Qual e' la scelta giusta? Qui prendo la prima, arbitrariamente. 
+          /*
+           * Here the force is calculated, but when it is repulsive saturated to a max.
+           * Here you choose to define the max value on the base of cellular characteristics.
+           * An alternative choice could be to define a priori the max value for all cells.
+           * What is the right choice? Here I take the first, arbitrarily.
+           */
+					const double saturation_distance = 0.25;                       // saturation distance of the repulsive force (micron)
+					// const double saturation_distance = 0.03;							       // saturation distance of the repulsive force
 					
-					const double saturation_distance = 0.25;                               // distanza di saturazione della forza repulsiva (micron)
-					// const double saturation_distance = 0.03;							// distanza di saturazione della forza repulsiva
-					double fm = kC * pow(fabs((rn+rk-dd)/(rn+rk)),(double)1.5);		// modulo della forza
+					//checks
+					if(rn+rk == 0.)
+          {
+            std::cout << "very problematic: rn+rk == 0" << std::endl;
+          }
+          if( dd == 0.)
+          {
+            std::cout << "very problematic: dd == 0" << std::endl;
+          }
+					
+					double fm = kC * pow(fabs((rn+rk-dd)/(rn+rk)),(double)1.5);		 // force form
 					if(rn+rk-dd > saturation_distance) 
-						fm = kC * pow( saturation_distance/(rn+rk), (double)1.5);			// la forza repulsiva satura ad un valore abbastanza piccolo ... 
+						fm = kC * pow( saturation_distance/(rn+rk), (double)1.5);		 // the repulsive force saturated at a rather small value ...
 					
-					if( dd > (rn+rk) )													// nel caso in cui la distanza sia maggiore della somma dei raggi la forza e' attrattiva
-						fm *= -0.5*( 1. - tanh( 0.5*(adn+adk)*( dd/(rn+rk)-(1.+0.5*(arn+ark)) ) ) );	// la forza cambia segno e viene modulata
-						
-					fx[n] += fm*(x[n]-x[neighbor])/dd;								// si somma la proiezione di fm a ciascuna delle componenti della forza totale
+          // in the case where the distance is greater than the sum of the rays, the force is attractive
+					if( dd > (rn+rk) )
+						fm *= -0.5*( 1. - tanh( 0.5*(adn+adk)*( dd/(rn+rk)-(1.+0.5*(arn+ark)) ) ) );	// the force changes sign and is modulated
+          
+          /* NOTE T.F.
+           * this looks rather thread safe, but what if dd is zero here?
+           */
+					fx[n] += fm*(x[n]-x[neighbor])/dd;								// the projection of fm is added to each of the components of the total force
 					fy[n] += fm*(y[n]-y[neighbor])/dd;
 					fz[n] += fm*(z[n]-z[neighbor])/dd;
 
+          
+          
 		// sezione per il dump diagnostico, scommentare se serve
 		/*
 					cout << "\n*************************\n" << endl;
