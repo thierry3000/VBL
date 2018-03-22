@@ -13,14 +13,17 @@ typedef CGAL::Delaunay_triangulation_3<K, Tds, CGAL::Fast_location> Delaunay;
 typedef Delaunay::Point                                             Point;
 int main()
 {
-  const int NUM_INSERTED_POINTS = 2;
+  const int NUM_INSERTED_POINTS = 3;
   CGAL::Random_points_in_cube_3<Point> rnd(1.);
   // Construction from a vector of 1,000,000 points
-  //std::vector<Point> V;
+  
   std::vector<std::pair<Point, unsigned>> V;
   V.reserve(NUM_INSERTED_POINTS);
-  for (int i = 0; i != NUM_INSERTED_POINTS; ++i)
-    V.push_back(std::make_pair(*rnd++, (unsigned)i));
+  for (unsigned i = 0; i != NUM_INSERTED_POINTS; ++i)
+  {
+    V.push_back(std::make_pair(*rnd++, i));
+    std::cout << "added point with index: " << i << std::endl;
+  }
   
   Delaunay T( V.begin(),V.end() );
   assert(T.is_valid());
@@ -38,6 +41,25 @@ int main()
       exit(EXIT_FAILURE);
     }
   }
+  std::cout << "iterate over neighbours:" << std::endl;
+  
+  std::vector<Delaunay::Vertex_handle> neighbour_handles;
+  for ( vit = T.finite_vertices_begin(); vit != T.finite_vertices_end(); ++vit)
+  {
+    unsigned k_mt = vit->info();
+    std::cout << "consider vertex: " << k_mt << std::endl;
+    T.finite_adjacent_vertices(vit, std::back_inserter(neighbour_handles));
+    std::cout << "neighbours: ";
+    for( auto element: neighbour_handles)
+    {
+      std::cout << element->info() << ", ";
+    }
+    std::cout << std::endl;
+    neighbour_handles.clear();
+  }
   std::cout << "OK" << std::endl;
+  /** result:
+   * indices do not appear twice!
+   */
   return 0;
 }
