@@ -56,6 +56,8 @@ inline double SQR(const double x) { return x*x; }
 inline long int SQR(const long int x) { return x*x; }
 // quadrato di un int
 inline long int SQR(const int x) { return x*x; }
+// unsigned
+inline unsigned long SQR(const unsigned long x) { return x*x; }
 
 
 // **********************************************************************************

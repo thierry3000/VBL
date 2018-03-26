@@ -30,22 +30,23 @@ void CellsSystem::Diff()
 
 	// assegnazioni preliminari fondamentali per il loop del calcolo di diffusione e metabolismo (vengono fatte comunque, anche per le cellule morte)
 
-/* TF
+/* T.F.
  * I hope we do not do error ;-)
  * anyway this broke often when running in large number of threads.
  * Therefore I comment it out.
  */
-// #pragma omp parallel for
-// 	for(unsigned long n=0; n<ncells; n++)						
-//   {
-// 		
-// 		// controllo preliminare di consistenza
-// 		if( phase[n] != dead ) 
-// 		{
-// 			int code = CheckMVA(n);
-// 			if(code < 0) errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-// 		}
-// 	}
+#pragma omp parallel for
+	for(unsigned long n=0; n<ncells; n++)						
+  {
+		
+		// controllo preliminare di consistenza
+		if( phase[n] != dead ) 
+		{
+			int code = CheckMVA(n);
+			if(code < 0) 
+        errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+		}
+	}
 
 	// volume
 	volumeOld = volumeNew = volume;
@@ -487,7 +488,7 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << endl;
         errorlog_file << scientific << "mGinOld["<< n << "] = " << mGinOld[n] << "; mGinNew["<< n << "] = " << mGinNew[n] << "\n" <<std::endl;
   #endif
-        // TF. I think this is not necessary
+        // T.F. I think this is not necessary
 //       }
 //       if( mGinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
 //       {
@@ -1332,12 +1333,12 @@ void CellsSystem::Diff()
 /* TF
  * see above
  */
-		// controllo finale di consistenza
-// 		if( phase[n] != dead ) 
-//     {
-// 			int code = CheckMVA(n);
-// 			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-//     }
+		//controllo finale di consistenza
+		if( phase[n] != dead ) 
+    {
+			int code = CheckMVA(n);
+			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+    }
   }
 }
 

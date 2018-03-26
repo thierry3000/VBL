@@ -16,10 +16,34 @@ using namespace vbl;
 // **********************************************************************************
 //
 
-int myblablablub;
+/** 
+ * automatic print of stacktrace when error signal
+ */
+#include <stdio.h>
+#include <execinfo.h> //backtrace()
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+//https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-gcc-c-program-crashes
+void handler(int sig) {
+  void *array[42];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 42);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(sig);
+}
 
 int main( int argc, char* argv[] )
 {
+  /** installs automatic error handling
+   */
+  signal(SIGSEGV, handler);
+  signal(SIGFPE, handler);
   int run_type = 0;	// tipo di run 
 			// 0 = run iniziale, input da terminale
 			// 1 = run iniziale, input da command file
@@ -188,7 +212,11 @@ int main( int argc, char* argv[] )
 
   // **************************** fine loop principale ******************************
 
-
+  if(returnValue>0)
+  {
+    cout<<" there was a problem in runMainLoop!"<<endl;
+    exit(EXIT_FAILURE);
+  }
   cout << "\nFinishing run" << endl;
   
   p_to_current_CellsSystem->Print2logfile("Cells at the end of the run");
