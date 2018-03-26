@@ -13,21 +13,32 @@ typedef CGAL::Delaunay_triangulation_3<K, Tds, CGAL::Fast_location> Delaunay;
 typedef Delaunay::Point                                             Point;
 int main()
 {
-  const int NUM_INSERTED_POINTS = 3;
+  const int NUM_INSERTED_POINTS = 4;
   CGAL::Random_points_in_cube_3<Point> rnd(1.);
   // Construction from a vector of 1,000,000 points
   
   std::vector<std::pair<Point, unsigned>> V;
   V.reserve(NUM_INSERTED_POINTS);
-  for (unsigned i = 0; i != NUM_INSERTED_POINTS; ++i)
+  for (unsigned i = 0; i != 3; ++i)
   {
     V.push_back(std::make_pair(*rnd++, i));
     std::cout << "added point with index: " << i << std::endl;
   }
+  std::cout << "manually added point with index: 3"  << std::endl;
+  //add first point a second time
+  
+  double change = 0.0000000000000001;//still accepts 4 points
+  /** 
+   * point 0 and point 4 are treated as the same point!!!
+   * assert fails
+   */
+  //double change = 0.000000000000000001;
+  
+  V.push_back(std::make_pair(Point(change+V[0].first[0],change+V[0].first[1],change+V[0].first[2]), 3));
   
   Delaunay T( V.begin(),V.end() );
   assert(T.is_valid());
-  CGAL_assertion( T.number_of_vertices() == NUM_INSERTED_POINTS );
+  CGAL_assertion( T.number_of_vertices() == NUM_INSERTED_POINTS);
   // check that the info was correctly set.
   Delaunay::Finite_vertices_iterator vit;
   std::vector<Vb::Vertex_handle> vn;
