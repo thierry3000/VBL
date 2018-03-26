@@ -1,0 +1,2 @@
+add_executable(check_random check_random.cpp)
+target_link_libraries(check_random boost_random)
