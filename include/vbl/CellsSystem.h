@@ -55,6 +55,11 @@ struct ReadInParameters
   /* imulation with dispersed cells (0) or full 3D (1) */
   int sim_type;
 };
+
+/** @brief 
+ * Structure to log some timings.
+ * This helps to analyze the runtimes
+ */
 template <class T>
 struct Timing
 {
@@ -330,12 +335,10 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fy;
 	std::vector<double> fz;
 
-	static const int MAX_NCELLS = 1e2;
-
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
 
-	static const int MAX_N_NEIGH =25;
-	std::vector<int> neigh;					// numero di vicini
+	static const int MAX_N_NEIGH = 42;
+	std::vector<unsigned long> neigh;					// numero di vicini
 	std::vector< std::array<unsigned long, MAX_N_NEIGH> > vneigh;		// vettore dei vicini
 	std::vector< std::array<double, MAX_N_NEIGH> > vdist;     // vettore delle distanze dai vicini
 	std::vector< std::array<double, MAX_N_NEIGH> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
@@ -555,6 +558,8 @@ friend class ApplyGeometricCalculation;
 void Set_reserve(const int reserve); // cell vectors
 void Set_BV_reserve(const int reserve); // blood vessel vector
 
+int checkNeighbourhood_consistency(std::string atPlace);
+
 // builder that builds a cell array of no length, but assigns a dynamic reserve to carriers
 // Note that the creation of the CellsSystem also resets cell counts, types, blood vessels
 //CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); Set_BV_reserve(reserve_bv); };
@@ -741,7 +746,10 @@ void CPU_timer( timer_button button );
 double Timing( bool reset );
 
 // distanza tra cellule con indici j e k
-double Distance(const int j, const int k);
+inline double Distance(const int j, const int k)
+{
+  return sqrt( SQR(x[j]-x[k]) + SQR(y[j]-y[k]) + SQR(z[j]-z[k]) );
+};
 
 // printout dell'header di una singola configurazione
 void PrintHeader(bool isBinary);
@@ -878,7 +886,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	void Set_volume_extra( const int k, const double newvolume_extra ) { volume_extra[k] = newvolume_extra; };
 
 
-	void Set_neigh( const std::vector<int>& neighin ) { neigh = neighin; };
+	//void Set_neigh( const std::vector<int>& neighin ) {    neigh = neighin; };
 	void Set_neigh( const int k, const int neighin ) { neigh[k] = neighin; };
 
 	// questi setters esistono solo nella forma per singole cellule (inseriscono vettori di lunghezza variabile)
@@ -1147,7 +1155,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 
 
 
-	std::vector<int> Get_neigh() { return neigh; };
+	std::vector<unsigned long> Get_neigh() { return neigh; };
 	int Get_neigh( const unsigned long int k ) { return neigh[k]; };
 
 	// questi getters esistono solo nella forma per singole cellule (restituiscono vettori di lunghezza variabile)
@@ -1478,7 +1486,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
             }
         if( fabs( ATPmin[k] - ((type[k]->fATPmin)*((type[k]->C2) * M[k])/(type[k]->C1)) ) > (std::numeric_limits<double>::epsilon( )) )
             {
-              /* T. F.
+              /* T.F.
                * this often broke when running on the cluster
                */
             std::cout << "Inconsistent value of ATPmin in the cell " << name[k] << ": ATPmin=" << ATPmin[k] << std::endl;
@@ -1521,12 +1529,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 
 };
 
-// distanza tra la cellula con indice j e la cellula con indice k
-//
-inline double CellsSystem::Distance(const int j, const int k)
-{
-	return sqrt( SQR(x[j]-x[k]) + SQR(y[j]-y[k]) + SQR(z[j]-z[k]) );
-}
+
   //CellsSystem CellsSystem;
 }//namespace vbl{
 

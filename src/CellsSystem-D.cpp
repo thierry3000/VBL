@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cmath>
 #include <tbb/parallel_do.h>
+#include <stdexcept>
 
 
 Triangulation_3 *DelTri;
@@ -127,6 +128,9 @@ void ParallelApply()
 //
 void CellsSystem::Geometry()
 {
+#ifdef useSerialApproach
+#pragma message(" useSerialApproach defined")
+#endif
   unsigned long k;
   
   /* I use a pointer now
@@ -226,7 +230,10 @@ void CellsSystem::Geometry()
 #endif
     v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
   }
+  #pragma message(" I am freaking out")
   DelTri = new Triangulation_3( v.begin(),v.end() );
+  CGAL_assertion( DelTri->number_of_vertices() == ncells );
+  assert(DelTri->is_valid());
 #endif
   
   //prepare neighborhood and initialize
@@ -256,7 +263,6 @@ void CellsSystem::Geometry()
    * and marches throught the container. 
    * Getting the neighbor for every entry of the container
    */
-{
   std::vector<Triangulation_3::Vertex_handle> vn_per_thread;
   for (Finite_vertices_iterator vit = DelTri->finite_vertices_begin(); vit != DelTri->finite_vertices_end(); ++vit)
   {
@@ -265,7 +271,14 @@ void CellsSystem::Geometry()
     
     //reset to finite value!
     //k_mt could have nasty values in case of infinite
-    neigh[k_mt] = vn_per_thread.size();
+    int current_nneigh = vn_per_thread.size();
+    if(current_nneigh > MAX_N_NEIGH-1)
+    {
+      std::cout << "current_nneigh: " << current_nneigh << std::endl;
+      std::cout << "Error: only " << MAX_N_NEIGH << " neigbors are supported by the array" << std::endl;
+      throw std::runtime_error("more neighbours than supported!!!");
+    }
+    neigh[k_mt] = current_nneigh;
   
     isonCH[k_mt]=false;				// bool true if ON convex hull
 
@@ -275,7 +288,7 @@ void CellsSystem::Geometry()
     contact_surf[k_mt] = 0.;			// init total contact area
     
     // in this loop we prepare the list of neighbors and we compute contact areas
-    for(int kk=0; kk < neigh[k_mt] ; kk++)					
+    for(int kk=0; kk < current_nneigh ; kk++)					
     {
 #ifdef myDebugComments
       std::cout << "starting second for loop" << std::endl;
@@ -284,7 +297,7 @@ void CellsSystem::Geometry()
 #ifdef myDebugComments
       printf(" kk: %i, neigh[k]: %i, vn_per_thread.size(): %i\n", kk, neigh[k_mt],vn_per_thread.size());
 #endif
-      Triangulation_3::Vertex_handle a = vn_per_thread.at(kk);
+      Triangulation_3::Vertex_handle a = vn_per_thread[kk];
       unsigned long neighbor_id = a->info();
       
 #ifndef NDEBUG
@@ -300,13 +313,15 @@ printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, 
       double rkk = (type[neighbor_id]->Get_extension_coeff())*r[neighbor_id];	
       double dd = Distance( k_mt,neighbor_id ); 			// distance between current cell and neigbor
       // *********** check for debugging
-    #ifndef NDEBUG // this check is only performed in the Debug build, other wise it is not present which saves time
-      if(dd != dd || dd <= 0)
+      
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
+      if(dd != dd || dd <= 0 || k_mt == neighbor_id)
       {
         std::cout << k_mt << "-th cell, neighbor " << neighbor_id << ", undefined distance " << dd << std::endl;
       }
-    #endif
+#endif
       // *********** end check for debugging
+      
       vdist[k_mt][kk] = dd;
       double sqr_dd = SQR(dd);
 
@@ -335,8 +350,8 @@ printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, 
 
     // *** fine del calcolo del fattore geometrico con l'ambiente
     vn_per_thread.clear();
-  }//end for( k = 0;k<ncells; ++k) end PARALLEL
-}//omp parallel
+  }//end for( k = 0;k<ncells; ++k) 
+
 #else
 
   ParallelApply();
@@ -426,4 +441,27 @@ void CellsSystem::NoGeometry()
     contact_surf[k] = 0;					// la sup. di contatto con le altre cellule e' nulla nel caso di cellule disperse
     g_bv[k] = 0;							// no contact with blood vessels
   }
+}
+
+int CellsSystem::checkNeighbourhood_consistency(std::string atPlace)
+{
+  for(int i = 0; i<ncells; ++i)
+  {
+    for(int k =0; k<neigh[i]; ++k)
+    {
+      if( neigh[i] > ncells )
+      {
+	std::cout << "checking consistency at: " << atPlace << std::endl;
+	std::cout << "non plausible neigh: " << neigh[i] << " ncells: " << ncells << std::endl;
+	return 1;
+      }
+      if( i == vneigh[i][k] )
+      {
+	std::cout << "checking consistency at: " << atPlace << std::endl;
+	std::cout<< "checkNeighbourhood_consistency faild for cell: " << i << " and neigh #"<< k << " which is: " << vneigh[i][k] << std::endl;
+	return 1;
+      }
+    }
+  }
+  return 0;
 }

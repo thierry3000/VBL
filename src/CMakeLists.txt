@@ -11,24 +11,13 @@ message("linking to: ${myLibs}")
 #target_link_libraries(vbl "${myLibs}")
 
 target_link_libraries(vbl "${myLibs}")
-set_target_properties(vbl PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+#set_target_properties(vbl PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_executable(vbl-v3.2 main.cpp )
 target_include_directories(vbl-v3.2 PRIVATE ../include)
 target_link_libraries(vbl-v3.2 vbl)
-set_target_properties(vbl-v3.2 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-find_package(CGAL REQUIRED)
-if( ACTIVATE_CONCURRENCY )
-  find_package( TBB REQUIRED )
-  message("TBB_LIBRARIES: ${TBB_LIBRARIES}") # variable used by CGAL
-  if( TBB_FOUND )
-    message("tbb found!")
-    include(${TBB_USE_FILE})
-    target_link_libraries(vbl ${TBB_LIBRARIES})
-    target_link_libraries(vbl-v3.2 ${TBB_LIBRARIES})
-  endif()
-endif()
+#set_target_properties(vbl-v3.2 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+target_link_libraries(vbl-v3.2 "${myLibs}")
 
 install(TARGETS vbl-v3.2 DESTINATION bin)
 

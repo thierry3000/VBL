@@ -34,8 +34,9 @@ int CellsSystem::CellEvents( )
 		age[n] += (float)dt;
 		phase_age[n] += (float)dt;
 
-		
-	// ***** phase changes *****
+		/*
+     * **** PHASE CHANGES *****
+     */
 				
 		double ConcAcL = AcL[n]/volume[n];
 		
@@ -356,24 +357,27 @@ int CellsSystem::CellEvents( )
 				// geometria della mitosi (solo nel caso di simulazione Full3D)
 				if( sim_type == Full3D ) 
         {
+          //number in [-1 1]
 					double xr = 1.-2.*ran2(); 
 					double yr = 1.-2.*ran2(); 
 					double zr = 1.-2.*ran2(); 
 					double len = sqrt(xr*xr + yr*yr + zr*zr);
 					xr /= len;
 					yr /= len;
-					zr /= len;	// at this point {xr, yr, zr} is a random vector
+					zr /= len;	// at this point {xr, yr, zr} is a random vector of the sphere
 
 					double r_1 = r[n];							// the new values ​​of the ray coming from the metabolism routine
 					double r_2 = r[ncells-1];
 					
-					double x_1 = old_x + xr*(old_r - r_1);		// calculation of the new coordinates of the cell centers
-					double y_1 = old_y + yr*(old_r - r_1);
-					double z_1 = old_z + zr*(old_r - r_1);
+          double moving_factor_1 = old_r -r_1;
+					double x_1 = old_x + xr*(moving_factor_1);		// calculation of the new coordinates of the cell centers
+					double y_1 = old_y + yr*(moving_factor_1);
+					double z_1 = old_z + zr*(moving_factor_1);
 					
-					double x_2 = old_x - xr*(old_r - r_2);
-					double y_2 = old_y - yr*(old_r - r_2);
-					double z_2 = old_z - zr*(old_r - r_2);
+          double moving_factor_2 = old_r -r_2;
+					double x_2 = old_x - xr*(moving_factor_2);
+					double y_2 = old_y - yr*(moving_factor_2);
+					double z_2 = old_z - zr*(moving_factor_2);
 					
 					x[n] = x_1;										//Here the positions of the centers are stored
 					y[n] = y_1;
@@ -400,15 +404,16 @@ int CellsSystem::CellEvents( )
 				alive++;
     } // fine del trattamento della mitosi
 
-/* TF
+/* T.F.
  * comment out because of multithread errros on snowden
  */
 // 		// controlli di consistenza di alcune variabili
-// 		if(phase[n] != dead) 
-// 			{
-// 			int code = CheckMVA( n );
-// 			if(code < 0) errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-// 			}
+		if(phase[n] != dead) 
+    {
+			int code = CheckMVA( n );
+			if(code < 0) 
+        errorlog_file << "Errore " << code << " alla fine di CellsSystem::CellEvents nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+		}
 
 	
 		if(phase[n] != dead) 

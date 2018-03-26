@@ -4,9 +4,9 @@ project(VBL LANGUAGES CXX VERSION 0.0.2)
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
 message("compiler identified: ${CMAKE_CXX_COMPILER_VERSION}")
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-4.9.2 -std=c++0x")
-endif()
+# if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-4.9.2 -std=c++0x")
+# endif()
 
 #### chose Release a default
 if( NOT CMAKE_BUILD_TYPE )
@@ -56,6 +56,11 @@ endif()
 option(ACTIVATE_CONCURRENCY
        "Enable concurrency"
        ON)
+       
+option(ENABLE_RELEASE_DEBUG_OUTPUT "Enables additional output in release mode" ON)
+if(ENABLE_RELEASE_DEBUG_OUTPUT)
+add_definitions(-DENABLE_RELEASE_DEBUG_OUTPUT)
+endif()
        
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
@@ -113,7 +118,12 @@ message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 ### last one is for ubuntu 16
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib/CGAL;/localdisk/thierry/local/lib64/CGAL;/usr/lib/x86_64-linux-gnu/cmake/CGAL")
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-### CGAL
+
+### CGAL and related
+
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/localdisk/thierry/local/lib64/CGAL;")
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 find_package(CGAL REQUIRED)
 if(CGAL_FOUND)
@@ -124,14 +134,18 @@ find_package(GMP REQUIRED)
 message("Found GMP_LIBRARIES: ${GMP_LIBRARIES})")
 set(myLibs "${myLibs};${GMP_LIBRARIES}" )
 
-### GMP
-### added FindGMP.cmake to this project!
-# message("CMAKE_ROOT: ${CMAKE_ROOT}")
-# message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-# set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/;")
-# message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-# find_package(GMP)#provides variables ${GMP_LIBRARIES} and ${GMPXX_LIBRARIES}
-# set(myLibs "${myLibs};${GMP_LIBRARIES};${GMPXX_LIBRARIES}")
+if( ACTIVATE_CONCURRENCY )
+  find_package( TBB REQUIRED )
+  message("TBB_LIBRARIES: ${TBB_LIBRARIES}") # variable used by CGAL
+  message("TBB_LIBRARY_RELEASE: ${TBB_RELEASE_LIBRARY}") 
+  message("TBB_MALLOC_RELEASE_LIBRARY: ${TBB_MALLOC_RELEASE_LIBRARY}")
+  if( TBB_FOUND )
+    message("tbb found!")
+    message("TBB_USE_FILE: ${TBB_USE_FILE}")
+    include(${TBB_USE_FILE})
+    set(myLibs "${myLibs};${TBB_RELEASE_LIBRARY};${TBB_MALLOC_RELEASE_LIBRARY}")
+  endif()
+endif()
 
 ### cmake debug output CMAKE_EXE_LINKER_FLAGS
 message("set content of mylib: ${myLibs}")

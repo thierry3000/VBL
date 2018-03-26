@@ -78,7 +78,12 @@ void CellsSystem::GetForces()
            * 3) dd == 0?
            */
 					int neighbor = vneigh[n][k];	                                  // name of the k-th adjacent cell
-					double dd = Distance(n,neighbor);	                              // distance between the n-th cell and the k-th nearest cell
+					
+					/* NOTE T.F.
+           * this was calculated before
+           */
+					//double dd = Distance(n,neighbor);	                              // distance between the n-th cell and the k-th nearest cell
+					double dd = vdist[n][k];
 
 					// parameters related to the near k-esima
 					double rk = (type[neighbor]->Get_packing_factor())*r[neighbor];	// radius of the nearest k-th weighed
@@ -100,6 +105,10 @@ void CellsSystem::GetForces()
 					// const double saturation_distance = 0.03;							       // saturation distance of the repulsive force
 					
 					//checks
+					if( n == neighbor )
+          {
+            std::cout << "very problematic: n: " << n <<", neighbor: " << neighbor << std::endl;
+          }
 					if(rn+rk == 0.)
           {
             std::cout << "very problematic: rn+rk == 0" << std::endl;
@@ -108,6 +117,7 @@ void CellsSystem::GetForces()
           {
             std::cout << "very problematic: dd == 0" << std::endl;
           }
+          std::cout.flush();
 					
 					double fm = kC * pow(fabs((rn+rk-dd)/(rn+rk)),(double)1.5);		 // force form
 					if(rn+rk-dd > saturation_distance) 
@@ -119,10 +129,14 @@ void CellsSystem::GetForces()
           
           /* NOTE T.F.
            * this looks rather thread safe, but what if dd is zero here?
+           * 22.03.18 --> it could get zero!!!!!
            */
-					fx[n] += fm*(x[n]-x[neighbor])/dd;								// the projection of fm is added to each of the components of the total force
-					fy[n] += fm*(y[n]-y[neighbor])/dd;
-					fz[n] += fm*(z[n]-z[neighbor])/dd;
+          if( dd > 0 )
+          {
+            fx[n] += fm*(x[n]-x[neighbor])/dd;								// the projection of fm is added to each of the components of the total force
+            fy[n] += fm*(y[n]-y[neighbor])/dd;
+            fz[n] += fm*(z[n]-z[neighbor])/dd;
+          }
 
           
           
@@ -205,16 +219,25 @@ void CellsSystem::NewPositionsAndVelocities( )
 										
 					double sp = vx[neighbor]*drx + vy[neighbor]*dry + vz[neighbor]*drz;
 					
-					bx += sp*drx/dd2;
-					by += sp*dry/dd2;
-					bz += sp*drz/dd2;
-					
-					axx += drx*drx/dd2;
-					axy += drx*dry/dd2;
-					axz += drx*drz/dd2;
-					ayy += dry*dry/dd2;
-					ayz += dry*drz/dd2;
-					azz += drz*drz/dd2;
+          //checks
+					if( n == neighbor )
+          {
+            std::cout << "very problematic in NewPositionsAndVelocities: " << std::endl;
+            std::cout << "n: " << n <<", neighbor: " << neighbor << std::endl;
+          }
+          else
+          {
+            bx += sp*drx/dd2;
+            by += sp*dry/dd2;
+            bz += sp*drz/dd2;
+            
+            axx += drx*drx/dd2;
+            axy += drx*dry/dd2;
+            axz += drx*drz/dd2;
+            ayy += dry*dry/dd2;
+            ayz += dry*drz/dd2;
+            azz += drz*drz/dd2;
+          }
         }//check, all used variables are local --> openMP compatible!
 				
 				bx = vx[n] + (gamma_int*bx + fx[n])*dt/mn;

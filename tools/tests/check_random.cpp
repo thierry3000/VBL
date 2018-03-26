@@ -15,7 +15,7 @@ boost::random::uniform_int_distribution<> six(1,6);
 
 int main(int argc, char *argv[])
 {
-  boost::random::random_device gen;
+  //boost::random::random_device gen;
   for( int i=0;i<100;i++)
   {
     
