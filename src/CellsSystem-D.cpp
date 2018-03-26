@@ -230,7 +230,7 @@ void CellsSystem::Geometry()
 #endif
     v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
   }
-  #pragma message(" I am freaking out")
+  
   DelTri = new Triangulation_3( v.begin(),v.end() );
   CGAL_assertion( DelTri->number_of_vertices() == ncells );
   assert(DelTri->is_valid());

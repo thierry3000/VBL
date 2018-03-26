@@ -337,7 +337,8 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
 
-	static const int MAX_N_NEIGH = 42;
+	//in random experiment max was 82
+	static const int MAX_N_NEIGH = 122;
 	std::vector<unsigned long> neigh;					// numero di vicini
 	std::vector< std::array<unsigned long, MAX_N_NEIGH> > vneigh;		// vettore dei vicini
 	std::vector< std::array<double, MAX_N_NEIGH> > vdist;     // vettore delle distanze dai vicini

@@ -104,6 +104,7 @@ void CellsSystem::GetForces()
 					const double saturation_distance = 0.25;                       // saturation distance of the repulsive force (micron)
 					// const double saturation_distance = 0.03;							       // saturation distance of the repulsive force
 					
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
 					//checks
 					if( n == neighbor )
           {
@@ -118,6 +119,7 @@ void CellsSystem::GetForces()
             std::cout << "very problematic: dd == 0" << std::endl;
           }
           std::cout.flush();
+#endif
 					
 					double fm = kC * pow(fabs((rn+rk-dd)/(rn+rk)),(double)1.5);		 // force form
 					if(rn+rk-dd > saturation_distance) 
@@ -130,13 +132,14 @@ void CellsSystem::GetForces()
           /* NOTE T.F.
            * this looks rather thread safe, but what if dd is zero here?
            * 22.03.18 --> it could get zero!!!!!
+	   * 26.03.18 --> probably messed up max number of allowed neighbors
            */
-          if( dd > 0 )
-          {
+//           if( dd > 0 )
+//           {
             fx[n] += fm*(x[n]-x[neighbor])/dd;								// the projection of fm is added to each of the components of the total force
             fy[n] += fm*(y[n]-y[neighbor])/dd;
             fz[n] += fm*(z[n]-z[neighbor])/dd;
-          }
+//           }
 
           
           
@@ -220,13 +223,15 @@ void CellsSystem::NewPositionsAndVelocities( )
 					double sp = vx[neighbor]*drx + vy[neighbor]*dry + vz[neighbor]*drz;
 					
           //checks
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
 					if( n == neighbor )
           {
             std::cout << "very problematic in NewPositionsAndVelocities: " << std::endl;
             std::cout << "n: " << n <<", neighbor: " << neighbor << std::endl;
           }
           else
-          {
+#endif
+//           {
             bx += sp*drx/dd2;
             by += sp*dry/dd2;
             bz += sp*drz/dd2;
@@ -237,7 +242,7 @@ void CellsSystem::NewPositionsAndVelocities( )
             ayy += dry*dry/dd2;
             ayz += dry*drz/dd2;
             azz += drz*drz/dd2;
-          }
+//           }
         }//check, all used variables are local --> openMP compatible!
 				
 				bx = vx[n] + (gamma_int*bx + fx[n])*dt/mn;
