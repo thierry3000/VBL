@@ -488,10 +488,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << endl;
         errorlog_file << scientific << "mGinOld["<< n << "] = " << mGinOld[n] << "; mGinNew["<< n << "] = " << mGinNew[n] << "\n" <<std::endl;
   #endif
-        // T.F. I think this is not necessary
-//       }
-//       if( mGinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mGinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mGinNew["<< n << "] = " << std::scientific << mGinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mGinNew[n] = mGinOld[n] = " << mGinOld[n] << "\n" << std::endl;
         
@@ -519,9 +518,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << endl;
         errorlog_file << scientific << "mGextOld["<< n << "] = " << mGextOld[n] << "; mGextNew["<< n << "] = " << mGextNew[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mGextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mGextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mGextNew["<< n << "] = " << std::scientific << mGextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mGextNew[n] = mGextOld[n] = " << mGextOld[n] << "\n" << std::endl;
         mGextNew[n] = mGextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -599,9 +598,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << endl;
         errorlog_file << scientific << "mO2Old["<< n << "] = " << mO2Old[n] << "; mO2New["<< n << "] = " << mO2New[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mO2New[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mO2New[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mO2New["<< n << "] = " << std::scientific << mO2New[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mO2New[n] = mO2Old[n] = " << mO2Old[n] << "\n" << std::endl;
         mO2New[n] = mO2Old[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -659,9 +658,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
         errorlog_file << scientific << "mAinOld["<< n << "] = " << mAinOld[n] << "; mAinNew["<< n << "] = " << mAinNew[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mAinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mAinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mAinNew["<< n << "] = " << std::scientific << mAinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAinNew[n] = mAinOld[n] = " << mAinOld[n] << "\n" << std::endl;
         mAinNew[n] = mAinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -689,9 +688,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
         errorlog_file << scientific << "mAextOld["<< n << "] = " << mAextOld[n] << "; mAextNew["<< n << "] = " << mAextNew[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mAextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mAextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mAextNew["<< n << "] = " << std::scientific << mAextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAextNew[n] = mAextOld[n] = " << mAextOld[n] << "\n" << std::endl;
         mAextNew[n] = mAextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -782,9 +781,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
         errorlog_file << std::scientific << "mAcLinOld["<< n << "] = " << mAcLinOld[n] << "; mAcLinNew["<< n << "] = " << mAcLinNew[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mAcLinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mAcLinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLinNew["<< n << "] = " << std::scientific << mAcLinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAcLinNew[n] = mAcLinOld[n] = " << mAcLinOld[n] << "\n" << std::endl;
         mAcLinNew[n] = mAcLinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -812,9 +811,9 @@ void CellsSystem::Diff()
         errorlog_file << " e' necessario passare al metodo della secante" << std::endl;
         errorlog_file << std::scientific << "mAcLextOld["<< n << "] = " << mAcLextOld[n] << "; mAcLextNew["<< n << "] = " << mAcLextNew[n] << "\n" <<std::endl;
   #endif
-//       }
-//       if( mAcLextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//       {
+      }
+      if( mAcLextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+      {
         errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLextNew["<< n << "] = " << std::scientific << mAcLextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAcLextNew[n] = mAcLextOld[n] = " << mAcLextOld[n] << "\n" << std::endl;
         mAcLextNew[n] = mAcLextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -863,9 +862,9 @@ void CellsSystem::Diff()
           errorlog_file << " e' necessario passare al metodo della secante" << endl;
           errorlog_file << std::scientific << "ATPpOld["<< n << "] = " << ATPpOld[n] << "; ATPpNew["<< n << "] = " << ATPpNew[n] << "\n" <<std::endl;
   #endif
-//         }
-//         if( ATPpNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
-//         {
+        }
+        if( ATPpNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
+        {
           errorlog_file << "ATTENZIONE: al passo " << nstep << " ATPpNew["<< n << "] = " << std::scientific << ATPpNew[n] << " < 0" << std::endl;
           errorlog_file << "in questa iterazione si mantiene ATPpNew[n] = ATPpOld[n] = " << ATPpOld[n] << "\n" << std::endl;
           errorlog_file << "Altre informazioni sullo stato cellulare attuale: " << std::endl;
