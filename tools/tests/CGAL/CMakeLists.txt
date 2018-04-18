@@ -17,9 +17,11 @@ target_link_libraries(test_delauny "${myLibs}")
 add_executable(test_delauny_parallel test_delauny_parallel.cpp)
 target_link_libraries(test_delauny_parallel "${myLibs}")
 
-
+if(CGAL_MINOR_VERSION VERSION_GREATER "11")
 add_executable(test_regular_parallel test_regular_triangulation_parallel.cpp)
 target_link_libraries(test_regular_parallel ${myLibs})
+endif()
+
 add_executable(info_insert_with_pair_iterator_parallel info_insert_with_pair_iterator_parallel.cpp)
 target_link_libraries(info_insert_with_pair_iterator_parallel ${myLibs})
 
