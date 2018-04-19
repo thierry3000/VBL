@@ -2569,6 +2569,19 @@ void CellsSystem::PrintVar(bool isBinary)
 			configuration_file << " " << phase_age[k];
 		}
 	if( !isBinary ) configuration_file << std::endl;
+
+	//*************************** new for O2 rate ******* april 2018	
+	// O2 consumption rate 
+	for(unsigned long k=0; k<ncells; k++)
+		{
+		double O2Ratepr = (double)O2Rate[k];
+		if( isBinary )
+			configuration_b_file.write( (char*)(&O2Ratepr), sizeof( double) );
+		else
+			configuration_file << " " << O2Ratepr;
+		}
+	if( !isBinary ) configuration_file << std::endl;
+	
 	
 
 /*

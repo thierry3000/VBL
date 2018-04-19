@@ -40,3 +40,6 @@ target_link_libraries(max_neighbor ${myLibs})
 
 add_executable(linear_interpolation linear_interpolation.cpp)
 target_link_libraries(linear_interpolation ${myLibs})
+
+include(CTest)
+add_test(Interpolation linear_interpolation)

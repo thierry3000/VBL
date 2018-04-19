@@ -575,7 +575,9 @@ void CellsSystem::Diff()
         M_O2now_0 = 0.;
       }
         
-      O2Flow += M_O2now;
+      // update O2 flow and store O2 consumption
+	O2Flow += M_O2now;
+	O2Rate[n] = M_O2now; //*************************** new for O2 rate ******* april 2018
         
       // calcolo del nuovo valore
       double cO2 = O2[n] + dt*Diff_ES_O2*sO2 + dt*Diff_Env_O2*(mO2_envOld/volume_envOld)*g_env[n] + dt*Diff_BV_O2*rhoO2_bv*g_bv[n];	// calcolo della parte fissa

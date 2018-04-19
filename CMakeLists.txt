@@ -1,6 +1,33 @@
 cmake_minimum_required(VERSION 3.1)
 #project(VBL LANGUAGES CXX VERSION 0.0.2 DESCRIPTION "virtual biology lab")
-project(VBL LANGUAGES CXX VERSION 0.0.2)
+project(VBL LANGUAGES CXX)
+
+# I try to follow the tutorial at:
+# https://cmake.org/cmake-tutorial/
+set(VBL_VERSION_MAJOR 4)
+set(VBL_VERSION_MINOR 0)
+# link against tumorcode?
+option(USE_TUMORCODE
+       "Enable oxygen interaction with tumorcode"
+       ON)
+if(USE_TUMORCODE)
+  set(VBL_USE_TUMORCODE 1)
+  #add_definitions(-D VBL_USE_TUMORCODE=1)
+else()
+  set(VBL_USE_TUMORCODE 0)
+  #add_definitions(-D VBL_USE_TUMORCODE=0)
+endif()
+
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/include/vbl.h.in"
+  "${PROJECT_BINARY_DIR}/include/vbl.h"
+  )
+ 
+# add the binary tree to the search path for include files
+# so that we will find TutorialConfig.h
+include_directories("${PROJECT_BINARY_DIR}")
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)
 message("compiler identified: ${CMAKE_CXX_COMPILER_VERSION}")
@@ -57,6 +84,7 @@ option(ACTIVATE_CONCURRENCY
        "Enable concurrency"
        ON)
        
+
 option(ENABLE_RELEASE_DEBUG_OUTPUT "Enables additional output in release mode" ON)
 if(ENABLE_RELEASE_DEBUG_OUTPUT)
 add_definitions(-DENABLE_RELEASE_DEBUG_OUTPUT)
@@ -152,8 +180,12 @@ message("set content of mylib: ${myLibs}")
 message("set comiler flags: ${CMAKE_CXX_FLAGS}")
 message("CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 
-include_directories(include/vbl)
-include_directories(include)
+message("PROJECT_BINARY_DIR ${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/include")
+include_directories("${PROJECT_SOURCE_DIR}/include/vbl")
+
+#set(myLibs "${myLibs};/localdisk/thierry/tc_install/lib/libkrebs_d.so")
 add_subdirectory(src)
 add_subdirectory(tools)
-install(DIRECTORY include DESTINATION . FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "include/vbl" DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(FILES "${PROJECT_BINARY_DIR}/include/vbl.h" DESTINATION include)

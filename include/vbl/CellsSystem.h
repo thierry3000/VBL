@@ -39,6 +39,12 @@
   #include <omp.h>
 #endif
 
+#if VBL_USE_TUMORCODE
+  #include <mwlib/helpers-vec.h>
+  #include "common/hdfio.h"
+  #include "mwlib/lattice-data.h"
+#endif
+
 #define W_timing
 //#define serial
 
@@ -394,6 +400,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> StoreConsRate;		// rate di consumo dello store
 	std::vector<double> AcLRate;				// rate di produzione dell'acido lattico
 	std::vector<double> AcLOutRate;			// rate di trasporto all'esterno dell'acido lattico
+	std::vector<double> O2Rate;				// O2 concentration rate of change (latest computed value)  //*************************** new for O2 rate ******* april 2018
 
 	// calcolo dell'ATP (richiede parecchie variabili ausiliarie che hanno significato biologico)
 	
@@ -542,7 +549,9 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
     std::vector<BloodVessel> BloodVesselVector;  // vettore dei vasi sanguigni
     //BloodVessel BloodVesselVector;
     //boost::unordered_map<uint, vbl::BloodVessel> bloodVesselMap;
-    
+#if VBL_USE_TUMORCODE
+    LatticeDataQuad3d field_ld;
+#endif
 // *** fine dei dati associati a vasi sanguigni
 
 
@@ -806,7 +815,9 @@ void StepStat( bool reset_stat );
 
 unsigned int runMainLoop( boost::optional<double> endtime);
 //unsigned int runMainLoop( );
-
+#if VBL_USE_TUMORCODE
+  void Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld);
+#endif
 // *** metodi per la gestione della parte biofisica *** 
 
 	
@@ -1032,6 +1043,7 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 
 	void Set_AcLOutRate( const std::vector<double>& newAcLOutRate ) { AcLOutRate = newAcLOutRate; };
 	void Set_AcLOutRate( const int k, const double newAcLOutRate ) { AcLOutRate[k] = newAcLOutRate; };
+	void Set_O2Rate( const std::vector<double>& newO2Rate ) { O2Rate = newO2Rate; }; //*************************** new for O2 rate ******* april 2018
 
 
 	void Set_ATP_Ox( const std::vector<double>& newATP_Ox ) { ATP_Ox = newATP_Ox; };
@@ -1247,6 +1259,9 @@ unsigned int runMainLoop( boost::optional<double> endtime);
 	std::vector<double> Get_AcLOutRate() { return AcLOutRate; };
 	double Get_AcLOutRate( const unsigned long int k ) { return AcLOutRate[k]; };
 
+	//*************************** new for O2 rate ******* april 2018
+	std::vector<double> Get_O2Rate() { return O2Rate; }; 
+	double Get_O2Rate( const unsigned long int k ) { return O2Rate[k]; };
 
 	std::vector<double> Get_ATP_St() { return ATP_St; };
 	double Get_ATP_St( const unsigned long int k ) { return ATP_St[k]; };

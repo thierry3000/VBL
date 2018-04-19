@@ -14,6 +14,18 @@
 #include <tbb/parallel_do.h>
 #include <stdexcept>
 
+#if VBL_USE_TUMORCODE
+  #include <mwlib/helpers-vec.h>
+  #include <common/hdfio.h>
+  #include <mwlib/lattice-data.h>
+#endif
+
+#if VBL_USE_TUMORCODE
+void CellsSystem::Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld)
+{
+  field_ld = field_ld;
+}
+#endif
 
 Triangulation_3 *DelTri;
 #ifndef useSerialApproach

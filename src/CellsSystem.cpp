@@ -8,7 +8,7 @@
  */
 
 
-#include "../include/vbl.h"
+#include "vbl.h"
 
 
 using namespace vbl;
@@ -330,6 +330,7 @@ void CellsSystem::Set_reserve(const int reserve)
 	StoreConsRate.reserve(reserve);
 	AcLRate.reserve(reserve);
 	AcLOutRate.reserve(reserve);
+	O2Rate.reserve(reserve); //*************************** new for O2 rate ******* april 2018
 	
 	ATP_St.reserve(reserve);
 	ATP_Ox.reserve(reserve);
@@ -515,6 +516,7 @@ void CellsSystem::AddCells( const int newcells )
 	StoreConsRate.resize(ncells);
 	AcLRate.resize(ncells);
 	AcLOutRate.resize(ncells);
+	O2Rate.resize(ncells); //*************************** new for O2 rate ******* april 2018
 	
 	ATP_St.resize(ncells);
 	ATP_Ox.resize(ncells);
@@ -674,6 +676,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	StoreConsRate[k] = 0.;
 	AcLRate[k] = 0.;
 	AcLOutRate[k] = 0.;
+	O2Rate[k] = 0.;
 	
 
 	ATP_St[k] = 0.;
@@ -821,6 +824,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
 		StoreConsRate[kk] = StoreConsRate[k];
 		AcLRate[kk] = AcLRate[k];
 		AcLOutRate[kk] = AcLOutRate[k];
+		O2Rate[kk] = O2Rate[k];
 		
 		ATP_St[kk] = ATP_St[k];
 		ATP_Ox[kk] = ATP_Ox[k];
@@ -951,6 +955,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
         StoreConsRate[kk] = StoreConsRate[k];
         AcLRate[kk] = AcLRate[k];
         AcLOutRate[kk] = AcLOutRate[k];
+        O2Rate[kk] = O2Rate[k];
         
         ATP_St[kk] = ATP_St[k];
         ATP_Ox[kk] = ATP_Ox[k];
@@ -1250,6 +1255,7 @@ void CellsSystem::PrintCellData( const unsigned long int k, std::ofstream& strea
 			<< "StoreConsRate \t" \
 			<< "AcLRate \t" \
 			<< "AcLOutRate \t" \
+			<< "O2Rate \t" \
 			<< "ATP_St \t" \
 			<< "ATP_Ox \t" \
 			<< "ATP_NOx \t" \
@@ -1348,6 +1354,7 @@ righe temporanemente eliminate
 			<< StoreConsRate[k] << "\t" \
 			<< AcLRate[k] << "\t" \
 			<< AcLOutRate[k] << "\t" \
+			<< O2Rate[k] << "\t" \
 			<< ATP_St[k] << "\t" \
 			<< ATP_Ox[k] << "\t" \
 			<< ATP_NOx[k] << "\t" \
@@ -1479,6 +1486,7 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	StoreConsRate.erase(StoreConsRate.begin()+n);
 	AcLRate.erase(AcLRate.begin()+n);
 	AcLOutRate.erase(AcLOutRate.begin()+n);
+	O2Rate.erase(O2Rate.begin()+n); //*************************** new for O2 rate ******* april 2018
 	
 	ATP_St.erase(ATP_St.begin()+n);
 	ATP_Ox.erase(ATP_Ox.begin()+n);
