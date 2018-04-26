@@ -19,15 +19,161 @@
   #include <common/hdfio.h>
   #include <mwlib/lattice-data.h>
 #endif
+#include <CGAL/natural_neighbor_coordinates_3.h>
+#include <chrono>
+
+Triangulation_3 *DelTri;
 
 #if VBL_USE_TUMORCODE
-void CellsSystem::Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld)
+// void CellsSystem::Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld)
+// {
+//   field_ld = field_ld;
+// }
+// void CellsSystem::Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake *o2_uptake_model)
+// {
+//   o2_uptake_model = o2_uptake_model;
+// }
+
+void CellsSystem::interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
 {
-  field_ld = field_ld;
+  auto t1 = std::chrono::high_resolution_clock::now();
+  float n_cells = (float) Get_ncells();
+  std::vector<double> x = Get_x();
+  std::vector<double> y = Get_y();
+  std::vector<double> z = Get_z();
+  #pragma omp parallel
+  {
+    BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
+    {
+      for(int i=0; i<x.size();++i)
+      {
+        float offset = 1020.0;
+        Float3 pos(x[i]+offset,y[i]+offset,z[i]+offset);
+        //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pos, (float)O2Rates[i]);
+      }
+    }
+  }
+  auto t2 = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+  std::cout << "interpolation took: " << duration << " ms." << std::endl;
+}
+
+void interpolate_O2_uptake_to_tumorcode(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
+{
+  typedef std::vector< std::pair< Triangulation_3::Vertex_handle, K::FT  > >                                                      Vertex_handle_vector;
+  
+  
+#define inter_parallel
+  
+#if 0
+  Vertex_handle_vector coords;
+  double norm_coeff;
+  Int3 p(3,3,3);
+  Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing(), p[1]*o2_uptake_model.grid->Spacing(), p[2]*o2_uptake_model.grid->Spacing());
+  CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
+#endif
+  /** this actually worked!!!!
+   * but this way I only find the 4 cells next to single grid point,
+   * which neglects all the other cells
+   * I think this approximation is too rude
+   */
+  
+  //Float3 offset = o2_uptake_model.grid->ld.GetOriginPosition();
+  Float3 offset(-980.,-1020.0, -880.0);
+  float scale = 40.0;
+  //printf("offset 1: %f, offset 2: %f, offset 3: %f\n", offset[0], offset[1], offset[2]);
+#ifdef inter_parallel
+  #pragma omp parallel
+  {
+#endif
+    BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
+    {
+      FOR_BBOX3(p, bbox)
+      {
+        Vertex_handle_vector coords;
+        double norm_coeff;
+        //Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing()-offset[0], p[1]*o2_uptake_model.grid->Spacing()-offset[1], p[2]*o2_uptake_model.grid->Spacing()-offset[2]);
+        Point current_lattice_point_in_cell_coordinates = Point(p[0]*scale+offset[0], p[1]*scale+offset[1], p[2]*scale+offset[2]);
+
+        Float3 pospos(current_lattice_point_in_cell_coordinates[0],current_lattice_point_in_cell_coordinates[1],current_lattice_point_in_cell_coordinates[2]);
+        //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pospos, (float) 42.);
+        
+#if 0 // proper interpolation takes for ages, I try the average nearest neighbor
+        /**
+        * execute sibson_natural neighbors coordinates
+        */
+        CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
+        if(!result.third)
+        {
+          //std::cout << "The coordinate computation was not successful." << std::endl;
+          //std::cout << "The point (" <<current_lattice_point_in_world_coordinates << ") lies outside the convex hull."<< std::endl;
+          o2_uptake_model.fieldLastSources(p) = 0;
+        }
+        else
+        {
+          K::FT interpolated_value(0);
+          for(auto vertexAndFTPair : coords )
+          {
+            auto cellId = vertexAndFTPair.first->info();
+            float o2_consumption_at_cell = O2Rates[cellId];
+            interpolated_value+= o2_consumption_at_cell * vertexAndFTPair.second;
+          }
+          o2_uptake_model.fieldLastSources(p) = interpolated_value / norm_coeff;
+        }
+#endif
+        //locate cell with grid point in it
+        Triangulation_3::Cell_handle c = DelTri->locate(current_lattice_point_in_cell_coordinates);
+        float localOxygenConsumption= 0.0;
+        if(! DelTri->is_infinite(c) )
+        {
+          for(int i=0;i<4;++i)
+          {
+            localOxygenConsumption += O2Rates[c->vertex(i)->info()];
+          }
+          //localOxygenConsumption = localOxygenConsumption/4.;
+          localOxygenConsumption = 4000.;
+          //std::cout << "oxygen: " << localOxygenConsumption << std::endl;
+        }
+        //o2_uptake_model.o2_consumption_field(p) = localOxygenConsumption;
+        //o2_uptake_model.o2_consumption_field(p) = 42.0;
+        
+        //Int3 ip; Float3 q;
+        //boost::tie(ip, q) = o2_uptake_model.grid->ld.WorldToFractionalCoordinate(pos);
+//           float last = fieldLastSources(p);
+//           float src = sources(p);
+//           float diff = src-last;
+//           if(std::abs(diff)>1.0e-2)
+//           {
+//             {
+//               _conv_addfunc f; f.s = diff;
+//               array_apply_offset3d<float, float,_conv_addfunc>(
+//                 gffield,
+//                 gf_lut,
+//                 f,
+//                 p-(gf_lut.size()/2),
+//                 0
+//               );
+//             }
+//             fieldLastSources(p) = src;
+//           }
+        //std::cout << current_lattice_point_in_world_coordinates << std::endl;
+      }
+    }
+#ifdef inter_parallel
+  }
+#endif
+  
+  //I want to check with the center
+//   std::cout << "interpolate here" << std::endl;
+//   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
+//   std::cout << "change" << std::endl;
+//   o2_uptake_model.fieldLastSources(0,0,0) = 42;
+//   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
+
 }
 #endif
 
-Triangulation_3 *DelTri;
+
 #ifndef useSerialApproach
 
 void ApplyGeometricCalculation::operator()(const Triangulation_3::Vertex &item) const
@@ -376,6 +522,12 @@ printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, 
     myTiming.geometry_neighborhood = myTiming.time_geometry_neighborhood.count();
 #endif
 
+  //this needs improvement, but interpolate_O2_uptake_to_tumorcode
+  // in not in the global space
+  auto o2Rates = Get_O2Rate();
+  //interpolate_O2_uptake_to_tumorcode(o2_uptake_model, o2Rates);
+  //interpolate_O2_uptake_to_tumorcode_2(o2_uptake_model, o2Rates);
+  
   // compute fixed alpha shape with ALPHAVALUE defined in sim.h
   
   // we know apriori, that there are more than 5 cells, otherwise Geometry is

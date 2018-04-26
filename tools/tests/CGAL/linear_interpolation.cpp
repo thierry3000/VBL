@@ -86,5 +86,19 @@ int main()
   }
   std::cout << "value at p: " << value_at_p/norm_coeff << std::endl;
   
+  //determine cell where arbitrary point lies in
+  Delaunay::Locate_type lt;
+  int li, lj;
+  Delaunay::Point qp(9,9,9);
+  Delaunay::Cell_handle c = dt.locate(qp, lt, li, lj);
+  
+  if( ! dt.is_infinite(c))
+  {
+    for(int i=0; i<4; ++i)
+    {
+      std::cout << c->vertex(i)->info() << std::endl;
+    }
+  }
+  
   return 0; 
 }

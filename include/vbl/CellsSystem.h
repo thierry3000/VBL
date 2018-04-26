@@ -40,9 +40,10 @@
 #endif
 
 #if VBL_USE_TUMORCODE
-  #include <mwlib/helpers-vec.h>
-  #include "common/hdfio.h"
-  #include "mwlib/lattice-data.h"
+  //#include <mwlib/helpers-vec.h>
+  //#include "common/hdfio.h"
+  //#include "mwlib/lattice-data.h"
+  #include "common/cell_based_oxygen_update_model.h"
 #endif
 
 #define W_timing
@@ -550,7 +551,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
     //BloodVessel BloodVesselVector;
     //boost::unordered_map<uint, vbl::BloodVessel> bloodVesselMap;
 #if VBL_USE_TUMORCODE
-    LatticeDataQuad3d field_ld;
+    CellBasedO2Uptake o2_uptake_model;
 #endif
 // *** fine dei dati associati a vasi sanguigni
 
@@ -816,7 +817,15 @@ void StepStat( bool reset_stat );
 unsigned int runMainLoop( boost::optional<double> endtime);
 //unsigned int runMainLoop( );
 #if VBL_USE_TUMORCODE
-  void Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld);
+  //void Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld);
+void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
+{
+  std::cout << "setting to " << &p_o2_uptake_model << std::endl;
+  o2_uptake_model = p_o2_uptake_model;
+  std::cout << "after setting to " << &o2_uptake_model << std::endl;
+}
+
+void interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates);
 #endif
 // *** metodi per la gestione della parte biofisica *** 
 
