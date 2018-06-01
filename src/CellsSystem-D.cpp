@@ -405,7 +405,7 @@ void CellsSystem::Geometry()
     //gnk[i].resize(no_current_neighbors);			// allocate geom factors
     isonCH[i]=true;       // by default we assume the cell is on the convex hull, we change that if we detect that it is not!
     isonAS[i] = false;    // by default we are not on the alph shape
-    g_env[k]=0.;
+    g_env[i]=0.;
   }
 
 #ifdef W_timing
