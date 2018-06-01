@@ -38,8 +38,8 @@ target_link_libraries(parallel_insertion_in_delaunay_3b ${myLibs})
 add_executable(max_neighbor max_neighbor.cpp)
 target_link_libraries(max_neighbor ${myLibs})
 
-add_executable(linear_interpolation linear_interpolation.cpp)
-target_link_libraries(linear_interpolation ${myLibs})
+#add_executable(linear_interpolation linear_interpolation.cpp)
+#target_link_libraries(linear_interpolation ${myLibs})
 
-include(CTest)
-add_test(Interpolation linear_interpolation)
+#include(CTest)
+#add_test(Interpolation linear_interpolation)

@@ -189,7 +189,7 @@ const double AcL_ENV = 0.;             // pg*micron^-3 concentrazione esterna de
 const double STOCK_MAX = 0.018;		// pg contenuto massimo dello stock di glucosio per cellula
 
 // T.F. revised in agreement with Roberto and Edoardo
-//const double BufCapEnv = 0.19953e-3;   // buffering capacity dell'ambiente (pg/micron^3)
+//const double BufCapEnv = 0.19953e-3;   // buffering capacity dell'ambiente (pg/micron^3), new value 0.584e-3
 
 const double BufCapEnv = 0.584e-3;     // buffering capacity dell'ambiente (pg/micron^3)
 
