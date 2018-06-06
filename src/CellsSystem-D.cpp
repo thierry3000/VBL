@@ -25,544 +25,335 @@
 Triangulation_3 *DelTri;
 
 #if VBL_USE_TUMORCODE
-// void CellsSystem::Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld)
+
+
+// void CellsSystem::interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
 // {
-//   field_ld = field_ld;
-// }
-// void CellsSystem::Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake *o2_uptake_model)
-// {
-//   o2_uptake_model = o2_uptake_model;
-// }
-
-void CellsSystem::interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
-{
-  auto t1 = std::chrono::high_resolution_clock::now();
-  float n_cells = (float) Get_ncells();
-  std::vector<double> x = Get_x();
-  std::vector<double> y = Get_y();
-  std::vector<double> z = Get_z();
-  #pragma omp parallel
-  {
-    BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
-    {
-      for(int i=0; i<x.size();++i)
-      {
-        float offset = 1020.0;
-        Float3 pos(x[i]+offset,y[i]+offset,z[i]+offset);
-        //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pos, (float)O2Rates[i]);
-      }
-    }
-  }
-  auto t2 = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-  std::cout << "interpolation took: " << duration << " ms." << std::endl;
-}
-
-void interpolate_O2_uptake_to_tumorcode(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
-{
-  typedef std::vector< std::pair< Triangulation_3::Vertex_handle, K::FT  > >                                                      Vertex_handle_vector;
-  
-  
-#define inter_parallel
-  
-#if 0
-  Vertex_handle_vector coords;
-  double norm_coeff;
-  Int3 p(3,3,3);
-  Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing(), p[1]*o2_uptake_model.grid->Spacing(), p[2]*o2_uptake_model.grid->Spacing());
-  CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
-#endif
-  /** this actually worked!!!!
-   * but this way I only find the 4 cells next to single grid point,
-   * which neglects all the other cells
-   * I think this approximation is too rude
-   */
-  
-  //Float3 offset = o2_uptake_model.grid->ld.GetOriginPosition();
-  Float3 offset(-980.,-1020.0, -880.0);
-  float scale = 40.0;
-  //printf("offset 1: %f, offset 2: %f, offset 3: %f\n", offset[0], offset[1], offset[2]);
-#ifdef inter_parallel
-  #pragma omp parallel
-  {
-#endif
-    BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
-    {
-      FOR_BBOX3(p, bbox)
-      {
-        Vertex_handle_vector coords;
-        double norm_coeff;
-        //Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing()-offset[0], p[1]*o2_uptake_model.grid->Spacing()-offset[1], p[2]*o2_uptake_model.grid->Spacing()-offset[2]);
-        Point current_lattice_point_in_cell_coordinates = Point(p[0]*scale+offset[0], p[1]*scale+offset[1], p[2]*scale+offset[2]);
-
-        Float3 pospos(current_lattice_point_in_cell_coordinates[0],current_lattice_point_in_cell_coordinates[1],current_lattice_point_in_cell_coordinates[2]);
-        //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pospos, (float) 42.);
-        
-#if 0 // proper interpolation takes for ages, I try the average nearest neighbor
-        /**
-        * execute sibson_natural neighbors coordinates
-        */
-        CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
-        if(!result.third)
-        {
-          //std::cout << "The coordinate computation was not successful." << std::endl;
-          //std::cout << "The point (" <<current_lattice_point_in_world_coordinates << ") lies outside the convex hull."<< std::endl;
-          o2_uptake_model.fieldLastSources(p) = 0;
-        }
-        else
-        {
-          K::FT interpolated_value(0);
-          for(auto vertexAndFTPair : coords )
-          {
-            auto cellId = vertexAndFTPair.first->info();
-            float o2_consumption_at_cell = O2Rates[cellId];
-            interpolated_value+= o2_consumption_at_cell * vertexAndFTPair.second;
-          }
-          o2_uptake_model.fieldLastSources(p) = interpolated_value / norm_coeff;
-        }
-#endif
-        //locate cell with grid point in it
-        Triangulation_3::Cell_handle c = DelTri->locate(current_lattice_point_in_cell_coordinates);
-        float localOxygenConsumption= 0.0;
-        if(! DelTri->is_infinite(c) )
-        {
-          for(int i=0;i<4;++i)
-          {
-            localOxygenConsumption += O2Rates[c->vertex(i)->info()];
-          }
-          //localOxygenConsumption = localOxygenConsumption/4.;
-          localOxygenConsumption = 4000.;
-          //std::cout << "oxygen: " << localOxygenConsumption << std::endl;
-        }
-        //o2_uptake_model.o2_consumption_field(p) = localOxygenConsumption;
-        //o2_uptake_model.o2_consumption_field(p) = 42.0;
-        
-        //Int3 ip; Float3 q;
-        //boost::tie(ip, q) = o2_uptake_model.grid->ld.WorldToFractionalCoordinate(pos);
-//           float last = fieldLastSources(p);
-//           float src = sources(p);
-//           float diff = src-last;
-//           if(std::abs(diff)>1.0e-2)
-//           {
-//             {
-//               _conv_addfunc f; f.s = diff;
-//               array_apply_offset3d<float, float,_conv_addfunc>(
-//                 gffield,
-//                 gf_lut,
-//                 f,
-//                 p-(gf_lut.size()/2),
-//                 0
-//               );
-//             }
-//             fieldLastSources(p) = src;
-//           }
-        //std::cout << current_lattice_point_in_world_coordinates << std::endl;
-      }
-    }
-#ifdef inter_parallel
-  }
-#endif
-  
-  //I want to check with the center
-//   std::cout << "interpolate here" << std::endl;
-//   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
-//   std::cout << "change" << std::endl;
-//   o2_uptake_model.fieldLastSources(0,0,0) = 42;
-//   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
-
-}
-#endif
-
-
-#ifndef useSerialApproach
-
-void ApplyGeometricCalculation::operator()(const Triangulation_3::Vertex &item) const
-{
-  apply_geometry(item);
-}
-
-
-void apply_geometry(const Triangulation_3::Vertex &iter)
-{
-  Triangulation_3::Vertex_handle a = DelTri->insert(iter.point());
-  //if(!DelTri->is_infinite(a))
-  {
-    unsigned long k_mt = a->info();
-    std::vector<Triangulation_3::Vertex_handle> vn_per_thread;
-    DelTri->finite_adjacent_vertices(a, std::back_inserter(vn_per_thread));
-    //at this stage, the no. of neighbor includes the infinite parts
-    p_to_current_CellsSystem->Set_neigh(k_mt, vn_per_thread.size());
-    
-#ifndef NDEBUG
-    printf("I apply geometry calculations on vertex %i\n", a->info());
-#endif
-    //default of isonCH is true!!!
-    p_to_current_CellsSystem->Set_isonCH(k_mt, false);      // bool true if ON convex hull
-    //p_to_current_CellsSystem->Set_env_surf(k_mt, 0.);       // contact area with environment
-    p_to_current_CellsSystem->Set_g_env(k_mt, 0.);          // geom factor with environment
-    p_to_current_CellsSystem->Set_contact_surf(k_mt, 0.0);  // init total contact area
-    // weighted radius of current cell
-    double rk = (p_to_current_CellsSystem->Get_type(k_mt)->Get_extension_coeff())*p_to_current_CellsSystem->Get_r(k_mt);
-#ifndef NDEBUG
-    printf("neigh[k_mt]: %i, ncells: %i\n", p_to_current_CellsSystem->Get_neigh(k_mt), p_to_current_CellsSystem->Get_ncells());
-#endif
-    // in this loop we prepare the list of neighbors and we compute contact areas
-    
-    for(int kk=0; kk < p_to_current_CellsSystem->Get_neigh(k_mt) ; kk++)					
-    {
-      auto neighbor_id = vn_per_thread[kk]->info(); 	// id of neighbor
-      
-#ifndef NDEBUG
-      std::cout << "starting second for loop" << std::endl;
-      printf(" kk: %i, neigh[k]: %i\n", kk, p_to_current_CellsSystem->Get_neigh(k_mt));
-      assert(neighbor_id < p_to_current_CellsSystem->Get_ncells());
-      //printf("k_mt: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k_mt, neighbor_id, kk, vneigh.size());
-      std::cout << "neighbor: " << neighbor_id << std::endl;
-#endif
-
-      p_to_current_CellsSystem->Set_vneigh_quick(k_mt, kk, neighbor_id); // store name of neighbor
-      
-      //***
-      // weighted radius of neighboring cell
-      double rkk = (p_to_current_CellsSystem->Get_type(neighbor_id)->Get_extension_coeff())*p_to_current_CellsSystem->Get_r(neighbor_id);
-      double dd = p_to_current_CellsSystem->Distance( k_mt,neighbor_id ); 			// distance between current cell and neigbor
-      // *********** check for debugging
-#ifndef NDEBUG // this check is only performed in the Debug build, other wise it is not present which saves time
-      if(dd != dd || dd <= 0)
-      {
-        std::cout << k_mt << "-th cell, neighbor " << neighbor_id << ", undefined distance " << dd << std::endl;
-      }
-#endif
-      // *********** end check for debugging
-      p_to_current_CellsSystem->Set_vdist_quick(k_mt, kk, dd);
-      double sqr_dd = SQR(dd);
-
-      if( dd < (rk+rkk) ) // here we compute the contact area
-      {
-        double this_vc_surf= -PI*(sqr_dd-SQR(rk-rkk))*(sqr_dd-SQR(rk+rkk))/(4*sqr_dd);
-        p_to_current_CellsSystem->Set_vcsurf_quick(k_mt, kk, this_vc_surf );
-      
-        if( this_vc_surf < 0 )
-        {
-          p_to_current_CellsSystem->Set_vcsurf_quick(k_mt, kk, 0.0 );
-          p_to_current_CellsSystem->Set_gnk_quick(k_mt, kk, 0.0 );
-        }
-        else
-        {
-          p_to_current_CellsSystem->Set_gnk_quick(k_mt, kk, (this_vc_surf/dd) );
-        }
-        //contact_surf[k_mt] += vcsurf[k_mt][nFV];
-        double total_contact_surface = p_to_current_CellsSystem->Get_contact_surf(k_mt);
-        p_to_current_CellsSystem->Set_contact_surf(k_mt, (total_contact_surface + this_vc_surf));
-      }
-      else
-      {
-        p_to_current_CellsSystem->Set_vcsurf_quick(k_mt, kk, 0.0 );
-      }
-    }
-  
-    double this_env_surf = p_to_current_CellsSystem->Get_surface(k_mt)/(p_to_current_CellsSystem->Get_neigh(k_mt)+1);
-    p_to_current_CellsSystem->Set_env_surf(k_mt, this_env_surf);
-    double this_g_env = this_env_surf/p_to_current_CellsSystem->Get_r(k_mt);
-    p_to_current_CellsSystem->Set_g_env(k_mt, this_g_env);
-    //vn_per_thread.clear();
-#ifndef NDEBUG
-    printf("finished apply geometry\n");
-#endif
-  }
-}
-
-void ParallelApply()
-{
-  tbb::parallel_do(DelTri->finite_vertices_begin(), DelTri->finite_vertices_end(), ApplyGeometricCalculation());
-}
-
-#endif
-
-// ************ this section contains the interface to CGAL ************ //
-// 
-// REMARK: the CGAL methods are used ONLY in this part of the program, and are isolated 
-// from the rest of the code to avoid interferences.
-//
-void CellsSystem::Geometry()
-{
-#ifdef useSerialApproach
-#pragma message(" useSerialApproach defined")
-#endif
-  unsigned long k;
-  
-  /* I use a pointer now
-   * this allows to either use the parallel code (tbb) or the serial variant.
-   * I is important to have both. parallel version works only with a minimum of 5 cells
-   * (see tools/tests/info_insert_with_pair_iterator_parallel.cpp )
-   */
-  //Triangulation_3 *DelTri; // I use a pointer now
-  //
-  
-  double min_x = std::numeric_limits<double>::max();
-  double max_x = std::numeric_limits<double>::min();
-  double min_y = std::numeric_limits<double>::max();
-  double max_y = std::numeric_limits<double>::min();
-  double min_z = std::numeric_limits<double>::max();
-  double max_z = std::numeric_limits<double>::min();
-  // cout << "Triangulation OK" << endl;
-
-  // insertion of cells' centres into the vector of Point structures
-  // the vector of Points is defined in CellsSystem.h, and the initial reserve is set in 
-  // CellsSystem.cpp
-
-  v.clear(); // vector of all points
-
-//Delaunay triangulation
-  
-#ifndef useSerialApproach
-  if(ncells > 10)
-  {
-    for(k=0; k<ncells; k++)
-    {
-#ifndef NDEBUG
-      if(std::isnan( x[k]))
-        printf("x is nan at %i\n", k);
-      if(std::isnan( y[k]))
-        printf("y is nan at %i\n", k);
-      if(std::isnan( z[k]))
-        printf("z is nan at %i\n", k);
-      std::cout.flush();
-#endif
-      v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
-    
-      // find min, max to estimate lock data structure
-      if(x[k]<min_x)
-      {
-        min_x=x[k];
-      }
-      if(x[k]>max_x)
-      {
-        max_x=x[k];
-      }
-      if(y[k]<min_y)
-      {
-        min_y=y[k];
-      }
-      if(y[k]>max_y)
-      {
-        max_y=y[k];
-      }
-      if(z[k]<min_z)
-      {
-        min_z=z[k];
-      }
-      if(z[k]>max_z)
-      {
-        max_z=z[k];
-      }
-    }
-#ifndef NDEBUG
-    min_x=min_y=min_z=-10.0;
-    max_x=max_y=max_z=10.0;
-    if(std::isnan(min_x) or std::isnan(min_y) or std::isnan(min_z) or std::isnan(max_x) or std::isnan(max_y) or std::isnan(max_z))
-    {
-      printf("found nan in bounding box\n");
-      std::cout.flush();
-    }
-#endif
-    Triangulation_3::Lock_data_structure locking_ds(CGAL::Bbox_3(min_x, min_y, min_z, max_x, max_y, max_z), 20);
-    DelTri = new Triangulation_3( v.begin(),v.end(), &locking_ds );
-  }
-  else
-  {
-    for(k=0; k<ncells; k++)
-    {
-      v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
-    }
-    DelTri = new Triangulation_3( v.begin(),v.end() );
-  }
-  
-#else  // in the serial case, we do no need a Lock_data_structure
-
-  //std::cout << "found " << ncells << " in the system" << std::endl;
-  for(k=0; k<ncells; k++)
-  {
-#ifndef NDEBUG
-    //printf("push back point: %f, %f, %f, %i\n", x[k], y[k], z[k], k);
-#endif
-    v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) );
-  }
-  
-  DelTri = new Triangulation_3( v.begin(),v.end() );
-  CGAL_assertion( DelTri->number_of_vertices() == ncells );
-  assert(DelTri->is_valid());
-#endif
-  
-  //prepare neighborhood and initialize
-  for(int i=0; i< ncells; i++)
-  {
-    //int no_current_neighbors = 25;
-    //neigh[i] = no_current_neighbors;          // number of all neighbors finit+ infinite
-    //vneigh[i].resize(no_current_neighbors);		// init names of neighbors
-    //vcsurf[i].resize(no_current_neighbors);		// init contact areas
-    //vdist[i].resize(no_current_neighbors);		// allocate distance vect
-    //gnk[i].resize(no_current_neighbors);			// allocate geom factors
-    isonCH[i]=true;       // by default we assume the cell is on the convex hull, we change that if we detect that it is not!
-    isonAS[i] = false;    // by default we are not on the alph shape
-    g_env[i]=0.;
-  }
-
-#ifdef W_timing
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    //begin neighborhood timing
-#endif
-
-#ifdef useSerialApproach
-  /**
-   * this was the OLD way!
-   * serial access to the triangulation -> no memory problems
-   * this piece of code stores all Vertex_handles in a container 
-   * and marches throught the container. 
-   * Getting the neighbor for every entry of the container
-   */
-  std::vector<Triangulation_3::Vertex_handle> vn_per_thread;
-  for (Finite_vertices_iterator vit = DelTri->finite_vertices_begin(); vit != DelTri->finite_vertices_end(); ++vit)
-  {
-    int k_mt = vit->info();
-    DelTri->finite_adjacent_vertices(vit, std::back_inserter(vn_per_thread));
-    
-    //reset to finite value!
-    //k_mt could have nasty values in case of infinite
-    int current_nneigh = vn_per_thread.size();
-    if(current_nneigh > MAX_N_NEIGH-1)
-    {
-      std::cout << "current_nneigh: " << current_nneigh << std::endl;
-      std::cout << "Error: only " << MAX_N_NEIGH << " neigbors are supported by the array" << std::endl;
-      throw std::runtime_error("more neighbours than supported!!!");
-    }
-    neigh[k_mt] = current_nneigh;
-  
-    isonCH[k_mt]=false;				// bool true if ON convex hull
-
-    // weighted radius of current cell
-    double rk = (type[k_mt]->Get_extension_coeff())*r[k_mt];
-
-    contact_surf[k_mt] = 0.;			// init total contact area
-    
-    // in this loop we prepare the list of neighbors and we compute contact areas
-    for(int kk=0; kk < current_nneigh ; kk++)					
-    {
-#ifdef myDebugComments
-      std::cout << "starting second for loop" << std::endl;
-#endif
-
-#ifdef myDebugComments
-      printf(" kk: %i, neigh[k]: %i, vn_per_thread.size(): %i\n", kk, neigh[k_mt],vn_per_thread.size());
-#endif
-      Triangulation_3::Vertex_handle a = vn_per_thread[kk];
-      unsigned long neighbor_id = a->info();
-      
-#ifndef NDEBUG
-assert(neighbor_id < ncells);
-#endif
-#ifdef myDebugComments
-printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, vneigh.size());
-      std::cout << "neighbor: " << neighbor_id << std::endl;
-#endif
-      vneigh[k_mt][kk] = neighbor_id; 				// store name of neighbor
-      //***
-      // weighted radius of neighboring cell
-      double rkk = (type[neighbor_id]->Get_extension_coeff())*r[neighbor_id];	
-      double dd = Distance( k_mt,neighbor_id ); 			// distance between current cell and neigbor
-      // *********** check for debugging
-      
-#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
-      if(dd != dd || dd <= 0 || k_mt == neighbor_id)
-      {
-        std::cout << k_mt << "-th cell, neighbor " << neighbor_id << ", undefined distance " << dd << std::endl;
-      }
-#endif
-      // *********** end check for debugging
-      
-      vdist[k_mt][kk] = dd;
-      double sqr_dd = SQR(dd);
-
-      if( dd < (rk+rkk) ) // here we compute the contact area
-      {
-        vcsurf[k_mt][kk] = -PI*(sqr_dd-SQR(rk-rkk))*(sqr_dd-SQR(rk+rkk))/(4*sqr_dd);
-        if( vcsurf[k_mt][kk] < 0 )
-        {
-          vcsurf[k_mt][kk] = 0;
-          gnk[k_mt][kk] = 0;
-        }
-        else
-        {
-          gnk[k_mt][kk] = vcsurf[k_mt][kk]/dd;
-        }
-        contact_surf[k_mt] += vcsurf[k_mt][kk];
-      }
-      else
-      {
-        vcsurf[k_mt][kk] = 0.;
-      }
-    }
-    env_surf[k_mt] = surface[k_mt]/(neigh[k_mt]+1);			// contact area with environment
-    g_env[k_mt] = env_surf[k_mt]/r[k_mt];					// geom factor with environment
-    
-
-    // *** fine del calcolo del fattore geometrico con l'ambiente
-    vn_per_thread.clear();
-  }//end for( k = 0;k<ncells; ++k) 
-
-#else
-
-  ParallelApply();
-  
-#endif
-  
-#ifdef W_timing
-    std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-    myTiming.time_geometry_neighborhood = end-begin;
-    myTiming.geometry_neighborhood = myTiming.time_geometry_neighborhood.count();
-#endif
-
-  //this needs improvement, but interpolate_O2_uptake_to_tumorcode
-  // in not in the global space
-  auto o2Rates = Get_O2Rate();
-  //interpolate_O2_uptake_to_tumorcode(o2_uptake_model, o2Rates);
-  //interpolate_O2_uptake_to_tumorcode_2(o2_uptake_model, o2Rates);
-  
-  // compute fixed alpha shape with ALPHAVALUE defined in sim.h
-  
-  // we know apriori, that there are more than 5 cells, otherwise Geometry is
-  // not called, see CellsSystem.cpp
-//   if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
+//   auto t1 = std::chrono::high_resolution_clock::now();
+//   float n_cells = (float) Get_ncells();
+//   std::vector<double> x = Get_x();
+//   std::vector<double> y = Get_y();
+//   std::vector<double> z = Get_z();
+//   #pragma omp parallel
 //   {
-//     for(k=0; k<ncells; k++)
+//     BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
 //     {
-//       isonAS[k] = true;
+//       for(int i=0; i<x.size();++i)
+//       {
+//         float offset = 1020.0;
+//         Float3 pos(x[i]+offset,y[i]+offset,z[i]+offset);
+//         //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pos, (float)O2Rates[i]);
+//       }
 //     }
 //   }
-//   else 
-  
-  //Fixed_alpha_shape_3 as(v.begin(),v.end(),ALPHAVALUE); // this is not so fast, since we traverse v again!
-  Fixed_alpha_shape_3 as((*DelTri),ALPHAVALUE);
-  std::vector<Vertex_handle> vertices_on_alpha_shape;
-  as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
-  as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
-
-  // set boolean true for vertices on alpha shape
-  for(k=0; k<vertices_on_alpha_shape.size(); k++)
-  {
-    isonAS[vertices_on_alpha_shape[k]->info()] = true;
-  }
-  
-  delete DelTri;
-  
-  // questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
-//   for(k=0; k<ncells; k++)
+//   auto t2 = std::chrono::high_resolution_clock::now();
+//   auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+//   std::cout << "interpolation took: " << duration << " ms." << std::endl;
+// }
+// 
+// void interpolate_O2_uptake_to_tumorcode(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates)
+// {
+//   typedef std::vector< std::pair< Triangulation_3::Vertex_handle, K::FT  > >                                                      Vertex_handle_vector;
+//   
+//   
+// #define inter_parallel
+//   
+// #if 0
+//   Vertex_handle_vector coords;
+//   double norm_coeff;
+//   Int3 p(3,3,3);
+//   Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing(), p[1]*o2_uptake_model.grid->Spacing(), p[2]*o2_uptake_model.grid->Spacing());
+//   CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
+// #endif
+//   /** this actually worked!!!!
+//    * but this way I only find the 4 cells next to single grid point,
+//    * which neglects all the other cells
+//    * I think this approximation is too rude
+//    */
+//   
+//   //Float3 offset = o2_uptake_model.grid->ld.GetOriginPosition();
+//   Float3 offset(-980.,-1020.0, -880.0);
+//   float scale = 40.0;
+//   //printf("offset 1: %f, offset 2: %f, offset 3: %f\n", offset[0], offset[1], offset[2]);
+// #ifdef inter_parallel
+//   #pragma omp parallel
 //   {
-//     if( !isonAS[k] ) 
-//       g_env[k]=0.;
+// #endif
+//     BOOST_FOREACH(const BBox3 &bbox, o2_uptake_model.mtboxes->getCurrentThreadRange())
+//     {
+//       FOR_BBOX3(p, bbox)
+//       {
+//         Vertex_handle_vector coords;
+//         double norm_coeff;
+//         //Point current_lattice_point_in_world_coordinates = Point(p[0]*o2_uptake_model.grid->Spacing()-offset[0], p[1]*o2_uptake_model.grid->Spacing()-offset[1], p[2]*o2_uptake_model.grid->Spacing()-offset[2]);
+//         Point current_lattice_point_in_cell_coordinates = Point(p[0]*scale+offset[0], p[1]*scale+offset[1], p[2]*scale+offset[2]);
+// 
+//         Float3 pospos(current_lattice_point_in_cell_coordinates[0],current_lattice_point_in_cell_coordinates[1],current_lattice_point_in_cell_coordinates[2]);
+//         //AddSmoothDelta(o2_uptake_model.o2_consumption_field, bbox, o2_uptake_model.grid->ld, o2_uptake_model.grid->Dim(), pospos, (float) 42.);
+//         
+// #if 0 // proper interpolation takes for ages, I try the average nearest neighbor
+//         /**
+//         * execute sibson_natural neighbors coordinates
+//         */
+//         CGAL::Triple<std::back_insert_iterator<Vertex_handle_vector>,K::FT, bool> result = CGAL::sibson_natural_neighbor_coordinates_3(*DelTri, current_lattice_point_in_world_coordinates,std::back_inserter(coords),norm_coeff);
+//         if(!result.third)
+//         {
+//           //std::cout << "The coordinate computation was not successful." << std::endl;
+//           //std::cout << "The point (" <<current_lattice_point_in_world_coordinates << ") lies outside the convex hull."<< std::endl;
+//           o2_uptake_model.fieldLastSources(p) = 0;
+//         }
+//         else
+//         {
+//           K::FT interpolated_value(0);
+//           for(auto vertexAndFTPair : coords )
+//           {
+//             auto cellId = vertexAndFTPair.first->info();
+//             float o2_consumption_at_cell = O2Rates[cellId];
+//             interpolated_value+= o2_consumption_at_cell * vertexAndFTPair.second;
+//           }
+//           o2_uptake_model.fieldLastSources(p) = interpolated_value / norm_coeff;
+//         }
+// #endif
+//         //locate cell with grid point in it
+//         Triangulation_3::Cell_handle c = DelTri->locate(current_lattice_point_in_cell_coordinates);
+//         float localOxygenConsumption= 0.0;
+//         if(! DelTri->is_infinite(c) )
+//         {
+//           for(int i=0;i<4;++i)
+//           {
+//             localOxygenConsumption += O2Rates[c->vertex(i)->info()];
+//           }
+//           //localOxygenConsumption = localOxygenConsumption/4.;
+//           localOxygenConsumption = 4000.;
+//           //std::cout << "oxygen: " << localOxygenConsumption << std::endl;
+//         }
+//         //o2_uptake_model.o2_consumption_field(p) = localOxygenConsumption;
+//         //o2_uptake_model.o2_consumption_field(p) = 42.0;
+//         
+//         //Int3 ip; Float3 q;
+//         //boost::tie(ip, q) = o2_uptake_model.grid->ld.WorldToFractionalCoordinate(pos);
+// //           float last = fieldLastSources(p);
+// //           float src = sources(p);
+// //           float diff = src-last;
+// //           if(std::abs(diff)>1.0e-2)
+// //           {
+// //             {
+// //               _conv_addfunc f; f.s = diff;
+// //               array_apply_offset3d<float, float,_conv_addfunc>(
+// //                 gffield,
+// //                 gf_lut,
+// //                 f,
+// //                 p-(gf_lut.size()/2),
+// //                 0
+// //               );
+// //             }
+// //             fieldLastSources(p) = src;
+// //           }
+//         //std::cout << current_lattice_point_in_world_coordinates << std::endl;
+//       }
+//     }
+// #ifdef inter_parallel
 //   }
-    
-  // the following loop identifies those cells that are in contact with blood vessels
+// #endif
+//   
+//   //I want to check with the center
+// //   std::cout << "interpolate here" << std::endl;
+// //   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
+// //   std::cout << "change" << std::endl;
+// //   o2_uptake_model.fieldLastSources(0,0,0) = 42;
+// //   std::cout << o2_uptake_model.fieldLastSources(0,0,0) << std::endl;
+// 
+// }
+
+
+#endif
+
+
+void CellsSystem::Geometry()
+{
+
+	unsigned long k;
+	
+	// cout << "Triangulation OK" << endl;
+	
+// insertion of cells' centres into the vector of Point structures
+// the vector of Points is defined in CellsSystem.h, and the initial reserve is set in 
+// CellsSystem.cpp
+
+	v.clear();	
+
+// #pragma omp parallel for
+	for(k=0; k<ncells; k++)
+		v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) ); 
+	
+	// cout << "v size: " << v.size() << endl;
+
+	// cout << "Setup punti OK" << endl;
+	// cout << "Primo punto: {" << v[0] << "} = " << x[0] << ", " << y[0] << ", " << z[0] << endl;
+
+//Delaunay triangulation
+	Triangulation_3 DelTri( v.begin(),v.end() );
+
+// next we find the list of connections and we estimate contact areas
+
+	std::vector<Vertex_handle> vn; // vector of Vertex_handle's of neighbors
+
+// loop over finite vertices (k is the name of current cell)
+	for (Finite_vertices_iterator vit = DelTri.finite_vertices_begin(); vit != DelTri.finite_vertices_end(); ++vit)
+			{
+			
+			k = vit->info();
+			
+			DelTri.incident_vertices(vit, back_inserter(vn));	// list of neighbors
+			neigh[k] = vn.size();								// number of all neighbors
+			
+			//vneigh[k].resize(neigh[k]);							// init names of neighbors
+			//vcsurf[k].resize(neigh[k]);							// init contact areas
+			
+			//vdist[k].resize(neigh[k]);							// allocate distance vect
+			//gnk[k].resize(neigh[k]);							// allocate geom factors
+			isonCH[k]=false;									// bool true if ON convex 
+																// hull
+			env_surf[k] = 0.;									// contact area with 
+																// environment
+			g_env[k] = 0.;										// geom factor with 
+																// environment
+			
+			// weighted radius of current cell
+			double rk = (type[k]->Get_extension_coeff())*r[k];
+			
+			contact_surf[k] = 0.;								// init total contact area
+			
+			int nFV = 0;										// init number of finite 
+																// vertices
+
+// in this loop we prepare the list of neighbors and we compute contact areas 
+			if(neigh[k] > 0)
+			{
+			for(int kk=0; kk < neigh[k] ; kk++)					
+				{
+				
+				if(!DelTri.is_infinite(vn[kk]))	// if true, then there is a neighboring 
+												// finite vertex
+					{
+					
+					int neighbor = vn[kk]->info(); // name of neighbor
+					vneigh[k][nFV] = neighbor; // store name of neighbor
+					
+					//***
+
+					// weighted radius of neighboring cell
+					double rkk = (type[neighbor]->Get_extension_coeff())*r[neighbor];	
+					double dd = Distance( k,neighbor ); // distance between current cell 
+														// and neighbor
+					
+					// *********** check for debugging
+					if(dd != dd || dd <= 0)
+						{
+						cout << k << "-th cell, neighbor " << neighbor << ", undefined distance " << dd << endl;
+						}
+					// *********** end check for debugging
+					
+					vdist[k][nFV] = dd;
+					
+					if( dd < (rk+rkk) ) // here we compute the contact area
+						{
+						vcsurf[k][nFV] = -PI*(SQR(dd)-SQR(rk-rkk))*(SQR(dd)-SQR(rk+rkk))/(4*SQR(dd));
+						if( vcsurf[k][nFV] < 0 ) vcsurf[k][nFV] = 0;
+						contact_surf[k] += vcsurf[k][nFV];
+						}
+					else
+						vcsurf[k][nFV] = 0.;
+
+					if(vcsurf[k][nFV] > 0)						// geometric factor
+						gnk[k][nFV] = vcsurf[k][nFV]/dd;
+					else
+						gnk[k][nFV] = 0;
+
+					//***
+
+					nFV++;	// here we increase the counter of finite vertices
+					}
+				else
+					isonCH[k]=true;	// if any one of the adjacent vertices is infinite 
+									// then cell is on convex hull
+				}
+			}
+
+
+			if( nFV != neigh[k] )	// qui si controlla il numero di vertici finiti e se questo e' diverso dal numero totale di vertici
+									// si fa un resize dei vettori
+				{
+				neigh[k] = nFV;
+				//vneigh[k].resize(neigh[k]);						// resizing del vettore dei nomi dei vicini
+				//vcsurf[k].resize(neigh[k]);						// resizing del vettore delle aree delle superfici di contatto
+				//vdist[k].resize(neigh[k]);						// resizing del vettore delle distanze
+				//gnk[k].resize(neigh[k]);						// resizing del vettore dei fattori geometrici
+				}
+			
+		// *** inizio calcolo fattore geometrico ambientale
+			// calcolo della superficie di contatto con l'ambiente: si assume che tutta la superficie della cellula che non e' a
+			// contatto con le cellule adiacenti sia in contatto con l'ambiente: questo calcolo viene fatto comunque, ma il 
+			// contatto con l'ambiente c'e' in realta' solo le la cellula sta sull'alpha shape
+			
+			env_surf[k] = 0.;								// normalmente la sup. di contatto con l'ambiente e' nulla
+			g_env[k] = 0.;									// e naturalmente anche il fattore geometrico associato e' nullo
+			
+			
+//			env_surf[k] = surface[k] - contact_surf[k];		// qui si calcola la superficie esposta all'ambiente
+//			if( env_surf[k] < 0 )
+//				env_surf[k] = 0.;							// in linea di principio (causa algoritmo approssimato) questa superficie esposta 
+															// puo' essere negativa, e in questo caso la si annulla
+
+
+// nuovo calcolo della superficie esposta all'ambiente: si calcola il numero di vicini + l'ambiente e si assume che la superficie surface[k]
+// sia equamente suddivisa tra vicini e ambiente
+			env_surf[k] = surface[k]/(neigh[k]+1);			// qui si calcola la superficie esposta all'ambiente
+
+			g_env[k] = env_surf[k]/r[k];					// fattore geometrico verso l'ambiente
+			
+		// *** fine del calcolo del fattore geometrico con l'ambiente
+			
+			
+			vn.clear();											// si ripulisce la lista dei vicini in preparazione del prossimo vertice
+
+			}
+	
+	// compute fixed alpha shape with ALPHAVALUE defined in sim.h
+
+	if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
+		{
+		for(k=0; k<ncells; k++)
+			isonAS[k] = true;
+		}
+	else 
+		{
+      auto o2Rates = Get_O2Rate();
+		Fixed_alpha_shape_3 as(v.begin(),v.end(),ALPHAVALUE);
+		
+		std::vector<Vertex_handle> vertices_on_alpha_shape;
+		
+as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
+
+as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
+	
+		// cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
+
+		// initialize boolean indicator variable
+		for(k=0; k<ncells; k++)
+			isonAS[k] = false;
+		
+		// set boolean true for vertices on alpha shape
+		for(k=0; k<vertices_on_alpha_shape.size(); k++)
+			isonAS[vertices_on_alpha_shape[k]->info()] = true;
+		
+		}
+	
+	// questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
+	for(k=0; k<ncells; k++)
+		if( !isonAS[k] ) g_env[k]=0.;
+		
+	// the following loop identifies those cells that are in contact with blood vessels
 #pragma omp parallel
 {
   std::array<double,3> cellpos; // store the cell coordinates in a 3-vector
@@ -593,6 +384,8 @@ printf("k: %i, neighbor: %i, kk: %i, vneigh.size(): %i \n", k, neighbor_id, kk, 
     // g_bv[k] = 0; // **** TEMPORARY, used only to eliminate blood vessels from calculations !!!   
   }
 }// #pragma omp parallel
+	
+
 }
 
 // calcoli minimi nel caso di cellule disperse

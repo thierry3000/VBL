@@ -825,7 +825,7 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
   std::cout << "after setting to " << &o2_uptake_model << std::endl;
 }
 
-void interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates);
+//void interpolate_O2_uptake_to_tumorcode_2(CellBasedO2Uptake &o2_uptake_model, std::vector<double> &O2Rates);
 #endif
 // *** metodi per la gestione della parte biofisica *** 
 
