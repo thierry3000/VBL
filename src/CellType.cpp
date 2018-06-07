@@ -9,6 +9,7 @@
 #include "InputFromFile.h"
 
 #include "CellType.h"
+#include <cstdlib>
 using namespace vbl;
 
 
@@ -130,7 +131,7 @@ CellType::CellType(const std::string filename)
 	if( !ParameterFile ) 
 		{
 		std::cout << "CellType::CellType: errore nell'apertura del file dei parametri " << filename << std::endl;
-		exit(-1);
+		std::exit(-1);
 		}
 
 	name = 0;			// questo parametro viene assegnato dal programma

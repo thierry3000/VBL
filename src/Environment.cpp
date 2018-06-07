@@ -9,6 +9,7 @@
 
 #include "InputFromFile.h"
 #include "Environment.h"
+#include <cstdlib>
 using namespace vbl;
 
 // costruttore di default (corrisponde al mezzo di coltura standard senza circolazione del fluido)
@@ -210,7 +211,7 @@ Environment::Environment(const std::string filename)
 	if( !EnvironmentFile ) 
 		{
 		std::cout << "Error opening environment file " << filename << std::endl;
-		exit(-1);
+		std::exit(-1);
 		}
 	
 	xmin = InputRealPar(EnvironmentFile);
