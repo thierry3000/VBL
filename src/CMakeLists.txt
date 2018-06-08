@@ -29,8 +29,7 @@ target_link_libraries(vbl "${myLibs}")
 add_executable(vbl_cells main.cpp )
 target_include_directories(vbl_cells PRIVATE ../include)
 target_link_libraries(vbl_cells vbl)
-#set_target_properties(vbl-v3.2 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-target_link_libraries(vbl_cells "${myLibs}")
+#set_target_properties(vbl_cells PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 install(TARGETS vbl_cells DESTINATION bin)
 
