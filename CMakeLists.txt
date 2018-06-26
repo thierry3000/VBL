@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.1)
 #project(VBL LANGUAGES CXX VERSION 0.0.2 DESCRIPTION "virtual biology lab")
 project(VBL LANGUAGES CXX)
 
+#this is needed for proper hdf5 recognizion
+ENABLE_LANGUAGE(C)
+
 # I try to follow the tutorial at:
 # https://cmake.org/cmake-tutorial/
 set(VBL_VERSION_MAJOR 4)
@@ -12,7 +15,7 @@ option(USE_TUMORCODE
        ON)
 if(USE_TUMORCODE)
   set(VBL_USE_TUMORCODE 1)
-  find_package(HDF5 REQUIRED)
+  find_package(HDF5 REQUIRED COMPONENTS CXX)
   message(STATUS "HDF5_CXX_LIBRARIES      = ${HDF5_CXX_LIBRARIES}")
   message(STATUS "HDF5_C_LIBRARIES    	= ${HDF5_C_LIBRARIES}")
   message(STATUS "HDF5_LIBRARIES    	= ${HDF5_LIBRARIES}")
