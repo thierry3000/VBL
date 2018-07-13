@@ -116,8 +116,8 @@ int main( int argc, char* argv[] )
 	      
       
       
-      
-  if(run_type == 0 || run_type == 1)// In case the run is not the continuation of a previous run, some standard operations are performed
+  // In case the run is not the continuation of a previous run, some standard operations are performed
+  if(run_type == 0 || run_type == 1)
   {
     p_to_current_CellsSystem->Set_idum( idum );// Seed of random number generator
 
@@ -155,6 +155,7 @@ int main( int argc, char* argv[] )
   }
   else if( run_type == 2 )   
   {
+    // This is the continuation part.
     cout << "\n*** VBL - Virtual Biophysics Lab simulation program ***";
     cout << "\n\nInitialized CellsSystem" << endl;
     cout << "Cell system is of size " << sizeof(CellsSystem) << " bytes" << endl;
