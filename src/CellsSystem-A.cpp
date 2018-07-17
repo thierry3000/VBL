@@ -115,6 +115,9 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 		}
 
 // scelta del tipo di distribuzione spaziale
+	double New_x_0 = 0;
+	double New_y_0 = 0;
+	double New_z_0 = 0;
 
 // se le cellule sono disperse, vengono sparse nell'intero volume	
 	if( sim_type == Disperse )
@@ -125,11 +128,36 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 // se la simulazione e' di tipo 3D allora si distinguono diversi tipi di simulazione
 	if( sim_type == Full3D )
 		{
-		// se c'e' solo una cellula, allora non ci sono scelte possibili ... 
+		// if there is only one cell, than choose its starting position.
 		if( nstart == 1 )
-			{
-			initial_cell_dist = OneCell;
+		{
+			bool select;
+			if(terminal){
+				std::cout<<"Set the starting position of the cell (0 = default (at the center of the simulation environment), 1 = insert customized position (x,y,z)):" ;
+				std::cin >> select;
+				if(!select)initial_cell_dist = OneCellDefault;
+				else{
+					initial_cell_dist = OneCell;
+					std::cout <<"insert x y z:" ;
+					std::cin >> New_x_0 >> New_y_0 >> New_z_0;
+					std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
+				}
+
 			}
+			else{
+				commands >> select;
+				if(!select){
+					initial_cell_dist = OneCellDefault;
+					std::cout<<"The first cell was set in default position" << std::endl;
+				}
+				else {
+					initial_cell_dist = OneCell;
+					commands >> New_x_0 >> New_y_0 >> New_z_0;
+					std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
+				}
+
+			}
+		}
 		// se ci sono piu' cellule allora si prende la distribuzione 2D oppure quella 3D
 		else 
 			{
@@ -618,25 +646,46 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 		x_0 = 0.5*(xmax_s+xmin_s);
 		y_0 = 0.5*(ymax_s+ymin_s);
 		z_0 = 0.5*(ymax_s+ymin_s);
-		
+
 		switch (initial_cell_dist) 
+		{
+		case OneCellDefault:
+			delta_x = delta_y = delta_z = 0.;
+			break;
+		case OneCell:
+			delta_x = delta_y = delta_z = 0.;
+			if (New_x_0 < xmax_s && New_x_0 > xmin_s && \
+				New_y_0 < ymax_s && New_y_0 > ymin_s && \
+				New_z_0 < zmax_s && New_z_0 > zmin_s )
 			{
-			case OneCell:
-				delta_x = delta_y = delta_z = 0.;
-				break;
-			case Dist2D:
-				delta_x = 0.5*(xmax_s-xmin_s);
-				delta_y = 0.5*(ymax_s-ymin_s);
-				delta_z = 0.01*(zmax_s-zmin_s);
-				break;
-			case Dist3D:
-				delta_x = 0.5*(xmax_s-xmin_s);
-				delta_y = 0.5*(ymax_s-ymin_s);
-				delta_z = 0.5*(zmax_s-zmin_s);
-				break;
-			default:
-				break;
+				x_0 = New_x_0 ;
+				y_0 = New_y_0;
+				z_0 = New_z_0;
 			}
+			else {
+				std::cout << "Error: the position for the first cell is outside the simulation area" << std::endl;
+				std::cout << "Insert a new position so that:"<< std::endl;
+				std::cout << xmin_s << "< x < "<< xmax_s << std::endl;
+				std::cout << ymin_s << "< y < "<< ymax_s << std::endl;
+				std::cout << zmin_s << "< z < "<< zmax_s << std::endl;
+				std::cout << "Insert x y z:";
+				std::cin >>New_x_0 >> New_y_0 >> New_z_0 ;
+
+			}
+			break;
+		case Dist2D:
+			delta_x = 0.5*(xmax_s-xmin_s);
+			delta_y = 0.5*(ymax_s-ymin_s);
+			delta_z = 0.01*(zmax_s-zmin_s);
+			break;
+		case Dist3D:
+			delta_x = 0.5*(xmax_s-xmin_s);
+			delta_y = 0.5*(ymax_s-ymin_s);
+			delta_z = 0.5*(zmax_s-zmin_s);
+			break;
+		default:
+			break;
+		}
 
 		for(n=0; n<nstart; n++)
 			{

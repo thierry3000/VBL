@@ -148,7 +148,7 @@ enum EnvironmentalSignalType { NullSignal=-1, ConstantSignal, SineSignal, Square
 enum SimType { Disperse=0, Full3D, FixedConfig };
 
 // tipo di distribuzione iniziale delle cellule
-enum DistType { OneCell=1, Dist2D, Dist3D };
+enum DistType { OneCellDefault=0, OneCell=1, Dist2D, Dist3D };
 
 // enum per il timer
 enum timer_button { Start_timer=0, Start_intertime, Stop_intertime, Restart_timer, Clear_intertime };
