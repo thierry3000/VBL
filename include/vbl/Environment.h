@@ -10,6 +10,25 @@
 #include <fstream>
 #include <string>
 #include <iomanip>      // std::setprecision  std::scientific
+#include <boost/property_tree/ptree.hpp>
+#include <vector>
+
+#if 0
+/** reads value from ptree and chooses 
+ * correct type 
+ */
+class T;
+namespace boost { namespace property_tree {
+// Get a value from a property tree. This doesn't require the template argument.
+template<class T>
+inline void get_from_ptree(T &val, const std::string &name, const boost::property_tree::ptree &pt)
+{
+  val = pt.get<T>(name);
+}
+}
+}
+#endif
+
 namespace vbl{
 class Environment 
 {
@@ -24,7 +43,25 @@ class Environment
 	friend std::ostream& operator<<(std::ostream& s, Environment& cEnvironment);
 	
 private:
-
+  //this needs c++ 11 
+  std::vector<std::string> vector_of_env_parameters = { 
+    "T",
+    "G",
+    "O2",
+    "CO2",
+    "A",
+    "AcL",
+    "pH",
+    "xmin",
+    "xmax",
+    "ymin",
+    "ymax",
+    "zmin",
+    "zmax",
+    "volume0",
+    "volume",
+    "DoseRate"};
+    
 	double T;			// temperatura dell'ambiente
 	double G;			// quantita' (kg) di glucosio ambientale
 	double O2;			// quantita' (kg) di ossigeno ambientale
@@ -102,6 +139,8 @@ public:
 	void WriteEnvironment( std::ofstream& stream );
 	void ReadEnvironment( std::ifstream& stream );
 
+  void assign(const boost::property_tree::ptree& pt);
+  boost::property_tree::ptree as_ptree() const;
 
 };
 }//namespace vbl{

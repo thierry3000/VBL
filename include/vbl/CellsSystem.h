@@ -60,7 +60,45 @@ namespace vbl{
 struct ReadInParameters
 {
   /* imulation with dispersed cells (0) or full 3D (1) */
+  // questo serve a identificare il tipo di simulazione
   int sim_type;
+  int run;						// numero del run
+  double dt;					// timestep
+  double dt_sm;               // timestep slow motion
+  double t;					// tempo attuale di simulazione
+  double t_ini;				// tempo di inizializzazione
+  double treal;				// tempo di simulazione vero (dopo l'inizializzazione)
+  double tmax;				// tempo max di simulazione
+  double tsm_start;           // tempo di start dello slow motion
+  double tsm_stop;            // tempo di stop dello slow motion
+  bool slow_motion;           // indica lo stato dello slow motion
+  double t_CPU_max;			// tempo di CPU massimo per una singola frazione di run (in s)
+  unsigned long nstep;			// numero del passo
+  unsigned long nstep_start;		// numero del passo alla partenza della simulazione (quando ready2start diventa true)
+  unsigned long nmax;				// nmax = floor(tmax/dt) numero max di passi
+  int idum;						// variabile globale utilizzata dalle routine di numeri casuali di Numerical Recipes 2
+  unsigned long nprint;			// intervallo (in numero di passi) tra i passi di stampa su file
+  unsigned long nscreen;			// intervallo (in numero di passi) tra i passi di stampa su schermo
+  unsigned long nconfiguration;	// numero delle configurazioni scritte su file
+  // precisione
+  double eps;				// precisione del passo di diffusione
+  double delta_vmax;			// precisione della determinazione di velocita'
+  // numero di cellule 
+  unsigned long ncells;
+  
+  // numero di cellule vive alla fine del passo di metabolismo
+  unsigned long alive;
+
+  // numero di tipi cellulari
+  unsigned long ntypes;
+  // flusso (flag che indica se il flusso e' non nullo, e classe che rappresenta il segnale non nullo)
+  bool flowON;
+  // dose rate (flag che indica se la dose e' non nulla, e classe che rappresenta il segnale non nullo)
+  bool doseON;
+  
+  
+  void assign(const boost::property_tree::ptree &pt);
+  boost::property_tree::ptree as_ptree() const;
 };
 
 /** @brief 
@@ -101,6 +139,8 @@ struct Timing
 class CellsSystem
 {
 private:
+//prameters
+ReadInParameters params;
 // output file
 std::string output_filename;
 std::ofstream output_file;
@@ -163,8 +203,6 @@ std::string commandFile;
 
 // *** dati per la gestione del sistema di cellule ***
 
-// questo serve a identificare il tipo di simulazione
-int sim_type;
 
 // questo identifica il tipo di distribuzione iniziale delle cellule (nel caso di simulazione Full3D)
 int initial_cell_dist;
@@ -176,35 +214,25 @@ double CPU_time, CPU_time_0, CPU_time_1, CPU_time_2;	// CPU time
 clock_t CPU_time, CPU_time_0, CPU_time_1, CPU_time_2;	// CPU time
 #endif
 double t_CPU, t_CPU_int, t_CPU_0, delta_t_CPU;		// CPU time (real)
-double t_CPU_max;			// tempo di CPU massimo per una singola frazione di run (in s)
+//double t_CPU_max;			// tempo di CPU massimo per una singola frazione di run (in s)
 time_t	time_now, time_old;		// tempo reale trascorso dall'ultimo step
 double time_from_CGAL;		// tempo simulato trascorso dall'ultimo update della triangolazione di Delaunay
 double timing;
 
-double dt;					// timestep
-double dt_sm;               // timestep slow motion
-double t;					// tempo attuale di simulazione
-double t_ini;				// tempo di inizializzazione
-double treal;				// tempo di simulazione vero (dopo l'inizializzazione)
-double tmax;				// tempo max di simulazione
-double tsm_start;           // tempo di start dello slow motion
-double tsm_stop;            // tempo di stop dello slow motion
-bool slow_motion;           // indica lo stato dello slow motion
+// double dt;					// timestep
+// double dt_sm;               // timestep slow motion
+// double t;					// tempo attuale di simulazione
+// double t_ini;				// tempo di inizializzazione
+// double treal;				// tempo di simulazione vero (dopo l'inizializzazione)
+// double tmax;				// tempo max di simulazione
+// double tsm_start;           // tempo di start dello slow motion
+// double tsm_stop;            // tempo di stop dello slow motion
+// bool slow_motion;           // indica lo stato dello slow motion
 
 
-unsigned long nstep;			// numero del passo
-unsigned long nstep_start;		// numero del passo alla partenza della simulazione (quando ready2start diventa true)
-unsigned long nmax;				// nmax = floor(tmax/dt) numero max di passi
-int idum;						// variabile globale utilizzata dalle routine di numeri casuali di Numerical Recipes 2
 bool ready2start;				// Global variable by which the simulation can be performed on a regular basis
 bool faketumAtCurrentTime;
-unsigned long nprint;			// intervallo (in numero di passi) tra i passi di stampa su file
-unsigned long nscreen;			// intervallo (in numero di passi) tra i passi di stampa su schermo
-unsigned long nconfiguration;	// numero delle configurazioni scritte su file
 
-// precisione
-double eps;				// precisione del passo di diffusione
-double delta_vmax;			// precisione della determinazione di velocita'
 
 // statistiche
 int ncalls;						// numero di volte che si inizializza il loop dell'algoritmo di diffusione
@@ -242,21 +270,14 @@ double max_extvolume;
 
 // variabili globali che definiscono l'output
 std::string machine;					// nome della macchina
-int run;						// numero del run
+//int run;						// numero del run
 std::string dir;						// nome del directory di output
 int part;						// per un run suddiviso in parti eseguite in tempi diversi, questa variabile indica la parte attuale
 
 // numero iniziale di cellule
 unsigned long nstart;
 
-// numero di cellule 
-unsigned long ncells;
 
-// numero di cellule vive alla fine del passo di metabolismo
-unsigned long alive;
-
-// numero di tipi cellulari
-unsigned long ntypes;		
 
 // ultimo nome assegnato (serve a gestire in modo univoco l'assegnazione del nome alle cellule)
 unsigned long lastname;
@@ -270,16 +291,12 @@ Environment Env;
 // variazione dello stato dell'ambiente 
 //Environment delta_Env;
 
-// flusso (flag che indica se il flusso e' non nullo, e classe che rappresenta il segnale non nullo)
-bool flowON;
 EnvironmentalSignal flowSignal;
     
 // flusso dell'ossigeno (flag che indica il tipo del funzionamento nel modo bioreattore; se la flag è accesa allora viene modulato anche
 // l'ossigeno, che in caso contrario resta invece fisso al valore ambientale); questa flag non serve a nulla se flowON e' spenta.
 bool oxygenflowON;
 
-// dose rate (flag che indica se la dose e' non nulla, e classe che rappresenta il segnale non nullo)
-bool doseON;
 EnvironmentalSignal dose_rateSignal;
 
 // definizione del vettore dei fenotipi cellulari
@@ -561,6 +578,10 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 public:
 friend class ApplyGeometricCalculation;
+ReadInParameters get_params()
+{
+  return params;
+};
 //****************************************************************************************************
 
 // *** Methods for managing the system ***
@@ -574,16 +595,16 @@ int checkNeighbourhood_consistency(std::string atPlace);
 // builder that builds a cell array of no length, but assigns a dynamic reserve to carriers
 // Note that the creation of the CellsSystem also resets cell counts, types, blood vessels
 //CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); Set_BV_reserve(reserve_bv); };
-CellsSystem(const int reserve, const int reserve_bv) { ncells = 0; ntypes = 0; nbv=0; Set_reserve(reserve); };
+CellsSystem(const int reserve, const int reserve_bv) { params.ncells = 0; params.ntypes = 0; nbv=0; Set_reserve(reserve); };
 // default builder, builds a set of cells of zero length and assigns the standard dynamic reserve to the carriers
-CellsSystem() { ncells = 0; ntypes = 0; nbv=0; Set_reserve(RESERVE); Set_BV_reserve(RESERVE_BV); };
+CellsSystem() { params.ncells = 0; params.ntypes = 0; nbv=0; Set_reserve(RESERVE); Set_BV_reserve(RESERVE_BV); };
 //CellsSystem() { ncells = 0; ntypes = 0; nbv=0; Set_reserve(RESERVE); };
 // aggiunta di cellule non inizializzate al sistema
 void AddCells( const int newcells );
 // Adding a single standardized standardized cell
 void AddInitializedCell(int& idum, CellType* cType, Environment* cEnv);
 // inizializzazione standard dell'intero sistema di cellule
-void InitCells( int& idum, CellType* cType, Environment* cEnv ) { for(unsigned long int k=0; k<ncells; k++) AddInitializedCell(idum, cType, cEnv ); };
+void InitCells( int& idum, CellType* cType, Environment* cEnv ) { for(unsigned long int k=0; k<params.ncells; k++) AddInitializedCell(idum, cType, cEnv ); };
 // copia di una cellula (k-esima) in un'altra sezione del sistema di cellule (da kstart incluso a kstop incluso)
 int CopyCell( const unsigned long int k, const unsigned long int kstart, const unsigned long int kstop);
 // metodo di copia: replica la cellula k-esima inserendone una copia alla fine (tutto tranne le caratteristiche geometriche-topologiche)
@@ -618,30 +639,30 @@ std::string Get_Commands( ) { return commandFile; };
 std::string Get_CellTypeFile( ) { return CellTypeFile; };
 std::string Get_CellTypeFileAlt( ) { return CellTypeFileAlt; };
 std::string Get_EnvironmentFile( ) { return EnvironmentFile; };
-int Get_sim_type() { return sim_type; };
+int Get_sim_type() { return params.sim_type; };
 int Get_initial_cell_dist() { return initial_cell_dist; };
-double Get_dt() { return dt; };
-double Get_dt_sm() { return dt_sm; };
-bool Get_slow_motion() { return slow_motion; };
-double Get_t() { return t; };
-double Get_treal() { return treal; };
-double Get_tmax() { return tmax; };
-double Get_time_from_CGAL() { return time_from_CGAL; };
+double Get_dt();
+double Get_dt_sm();
+bool Get_slow_motion();
+double Get_t();
+double Get_treal();
+double Get_tmax();
+double Get_time_from_CGAL();
 
 unsigned long Get_ncalls() { return ncalls; };
-unsigned long Get_nstep() { return nstep; };
-unsigned long Get_nstep_start() { return nstep_start; };
-unsigned long Get_nmax() { return nmax; };
+unsigned long Get_nstep();
+unsigned long Get_nstep_start();
+unsigned long Get_nmax();
 
-int Get_idum() { return idum; };
+int Get_idum();
 
 bool Get_ready2start() { return ready2start; };
-unsigned long Get_nprint() { return nprint; };
-unsigned long Get_nscreen() { return nscreen; };
-unsigned long Get_nconfiguration() { return nconfiguration; };
+unsigned long Get_nprint();
+unsigned long Get_nscreen(); 
+unsigned long Get_nconfiguration();
 
-double Get_eps() { return eps; };
-double Get_delta_vmax() { return delta_vmax; };
+double Get_eps();
+double Get_delta_vmax();
 double Get_nrepeats() { return nrepeats; };
 long int Get_min_nrepeats() { return min_nrepeats; };
 double Get_nrepeats_average() { return nrepeats_average; };
@@ -650,12 +671,12 @@ double Get_nrepeats_min() { return nrepeats_min; };
 
 
 unsigned long Get_nstart() { return nstart; };
-unsigned long Get_ncells() { return ncells; };
-unsigned long Get_alive() { return alive; };
-unsigned long Get_ntypes() { return ntypes; };
+unsigned long Get_ncells();
+unsigned long Get_alive();
+unsigned long Get_ntypes();
 unsigned long Get_lastname() { return lastname; };
-bool Get_flowON() { return flowON; };
-bool Get_doseON() { return doseON; };
+bool Get_flowON();
+bool Get_doseON();
 Environment Get_Env() { return Env; };
 Environment Get_Env_0() { return Env_0; };
 EnvironmentalSignal Get_flowSignal() { return flowSignal; };
@@ -681,14 +702,14 @@ void Set_EnvironmentFile( std::string newEnvironmentFile )
 { 
   EnvironmentFile = newEnvironmentFile; 
 };
-void Set_idum ( int newidum ) { idum = newidum; };
-void Set_dt( double newdt ) { dt = newdt; };
+void Set_idum ( int newidum );
+void Set_dt( double newdt );
 void Set_time_from_CGAL( double newtime_from_CGAL ) { time_from_CGAL = newtime_from_CGAL; };
 void Set_ready2start( bool newr2s ) { ready2start = newr2s; };
-void Set_nconfiguration( unsigned long newnconfiguration ) { nconfiguration = newnconfiguration; };
-void Step_nconfiguration() { nconfiguration++; };
-void Set_eps( double neweps ) { eps = neweps; };
-void Set_delta_vmax( double newdelta_vmax ) { delta_vmax = newdelta_vmax; };
+void Set_nconfiguration( unsigned long newnconfiguration );
+void Step_nconfiguration();
+void Set_eps( double neweps );
+void Set_delta_vmax( double newdelta_vmax );
 
 
 
@@ -720,7 +741,7 @@ void DummyDynamics( ); // dinamica dummy
 void Printout();
 
 // close files
-void CloseOutputFiles() { std::cout << "\nFine del run " << run << " al passo " << nstep << std::endl; 
+void CloseOutputFiles() { std::cout << "\nFine del run " << params.run << " al passo " << params.nstep << std::endl; 
 						output_file.close(); 
 						log_file.close(); 
 						screen_dump_file.close();
@@ -1091,7 +1112,7 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 
 
 	// setters che inizializzano i contatori di produzione dell'ATP (normalmente vanno chiamati solo al momento della mitosi)
-	void Set_ATPstart(  ) { for(unsigned long int k=0; k<ncells; k++) ATPstart[k] = (double)ATPp[k]; };	
+	void Set_ATPstart(  ) { for(unsigned long int k=0; k<params.ncells; k++) ATPstart[k] = (double)ATPp[k]; };	
 	void Set_ATPstart( const unsigned long int k ) { ATPstart[k] = (double)ATPp[k]; };	
 
 	void Set_ATPprod( const std::vector<double>& newATPprod ) { ATPprod = newATPprod; };

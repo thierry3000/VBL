@@ -17,6 +17,21 @@
 
 #ifndef SIM_H
 #define SIM_H  // header guard
+#include <boost/property_tree/ptree.hpp>
+
+/** reads value from ptree and chooses 
+ * correct type 
+ */
+class T;
+namespace boost { namespace property_tree {
+// Get a value from a property tree. This doesn't require the template argument.
+template<class T>
+inline void get_from_ptree(T &val, const std::string &name, const boost::property_tree::ptree &pt)
+{
+  val = pt.get<T>(name);
+}
+}
+}
 namespace vbl{
 // #include <iostream>			// inclusione della libreria standard di I/O
 // #include <iomanip>			// inclusione dei manipolatori per l'I/O
@@ -214,7 +229,7 @@ const long int RESERVE_BV = 2000000;        // dynamic reserve for the BloodVess
 
 const double G_BV = 0.9e-3;           // pg*micron^-3 concentrazione glucosio
 
-const double O2_BV = 7e-6;            // pg*micron^-3 concentrazione ossigeno (atmosfera standard) (ATTENZIONE, QUESTO E' ANCHE UGUALE A O2St, controllare in caso di cambiamenti)
+const double O2_BV = 7e-6*1000;            // pg*micron^-3 concentrazione ossigeno (atmosfera standard) (ATTENZIONE, QUESTO E' ANCHE UGUALE A O2St, controllare in caso di cambiamenti)
 
 const double CO2_BV = 3.4e-4;         // kg*m^-3 concentrazione anidride carbonica (atmosfera standard)
 

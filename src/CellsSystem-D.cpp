@@ -183,7 +183,7 @@ void CellsSystem::Geometry()
 	v.clear();	
 
 // #pragma omp parallel for
-	for(k=0; k<ncells; k++)
+	for(k=0; k<params.ncells; k++)
 		v.push_back( std::make_pair(Point(x[k],y[k],z[k]),k) ); 
 	
 	// cout << "v size: " << v.size() << endl;
@@ -321,9 +321,9 @@ void CellsSystem::Geometry()
 	
 	// compute fixed alpha shape with ALPHAVALUE defined in sim.h
 
-	if( ncells < 5 )	// if there are less than 5 cells they are all on alphashape
+	if( params.ncells < 5 )	// if there are less than 5 cells they are all on alphashape
 		{
-		for(k=0; k<ncells; k++)
+		for(k=0; k<params.ncells; k++)
 			isonAS[k] = true;
 		}
 	else 
@@ -340,7 +340,7 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
 		// cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
 
 		// initialize boolean indicator variable
-		for(k=0; k<ncells; k++)
+		for(k=0; k<params.ncells; k++)
 			isonAS[k] = false;
 		
 		// set boolean true for vertices on alpha shape
@@ -350,7 +350,7 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
 		}
 	
 	// questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
-	for(k=0; k<ncells; k++)
+	for(k=0; k<params.ncells; k++)
 		if( !isonAS[k] ) g_env[k]=0.;
 		
 	// the following loop identifies those cells that are in contact with blood vessels
@@ -359,7 +359,7 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
   std::array<double,3> cellpos; // store the cell coordinates in a 3-vector
   unsigned long k_mt;
 #pragma omp for
-  for(k_mt=0; k_mt<ncells; k_mt++)
+  for(k_mt=0; k_mt<params.ncells; k_mt++)
   {    
     cellpos[0]=x[k_mt];
     cellpos[1]=y[k_mt];
@@ -391,7 +391,7 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
 // calcoli minimi nel caso di cellule disperse
 void CellsSystem::NoGeometry()
 {
-  for(unsigned long k=0; k<ncells; k++)
+  for(unsigned long k=0; k<params.ncells; k++)
   {
     env_surf[k] = surface[k];				// qui si calcola la superficie esposta all'ambiente
     g_env[k] = env_surf[k]/r[k];			// fattore geometrico verso l'ambiente
@@ -402,14 +402,14 @@ void CellsSystem::NoGeometry()
 
 int CellsSystem::checkNeighbourhood_consistency(std::string atPlace)
 {
-  for(int i = 0; i<ncells; ++i)
+  for(int i = 0; i<params.ncells; ++i)
   {
     for(int k =0; k<neigh[i]; ++k)
     {
-      if( neigh[i] > ncells )
+      if( neigh[i] > params.ncells )
       {
 	std::cout << "checking consistency at: " << atPlace << std::endl;
-	std::cout << "non plausible neigh: " << neigh[i] << " ncells: " << ncells << std::endl;
+	std::cout << "non plausible neigh: " << neigh[i] << " ncells: " << params.ncells << std::endl;
 	return 1;
       }
       if( i == vneigh[i][k] )

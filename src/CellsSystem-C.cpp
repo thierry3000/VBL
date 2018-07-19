@@ -23,16 +23,16 @@ int CellsSystem::CellEvents( )
 	bool mitosis_flag = false;				// logical flag that says if at least one mitosis has occurred
 	n_mitoses = 0;							// number of mitosis in this passage
 
-	unsigned long ncells_now = ncells;		// here the initial number of cells is stored
+	unsigned long ncells_now = params.ncells;		// here the initial number of cells is stored
 
-	alive = 0;								// the live cell counter is zeroed
+	params.alive = 0;								// the live cell counter is zeroed
 	
 	
 	for(unsigned long n=0; n<ncells_now; n++)	// the loop goes up to the initial number of cells
   {
 		// increase in cellular age
-		age[n] += (float)dt;
-		phase_age[n] += (float)dt;
+		age[n] += (float)params.dt;
+		phase_age[n] += (float)params.dt;
 
 		/*
      * **** PHASE CHANGES *****
@@ -45,13 +45,13 @@ int CellsSystem::CellEvents( )
     {
 			death_condition[n] = 0;											// indicator of the state of death
 			
-			double dose = dose_rateSignal.SignalIntegral(treal-dt,treal);	// radiation dose integrated during the step
+			double dose = dose_rateSignal.SignalIntegral(params.treal-params.dt,params.treal);	// radiation dose integrated during the step
 			
 			//if( ATPp[n] < ATPmin[n] )
 			//	death_condition[n] += 1;
 			if( pHi[n] < type[n]->Get_pHimin() )
 				death_condition[n] += 2;
-			if( ran2() < 1.-exp(-(type[n]->Get_a_R()) * ConcAcL*dt \
+			if( ran2() < 1.-exp(-(type[n]->Get_a_R()) * ConcAcL*params.dt \
 				  -(type[n]->Get_alpha_R( phase[n] ))*dose \
 				  -(type[n]->Get_beta_R( phase[n] ))*pow(dose,2)) )
 				death_condition[n] += 4;
@@ -188,7 +188,7 @@ int CellsSystem::CellEvents( )
 
 		// *** copy the structure of the mother cell into the new cell (which goes to the bottom of the list)
 		// P.S. this instruction automatically increases the number of type instances
-			if(treal < EventTime || (ran2() > pAlt || pAlt < 2 ))
+			if(params.treal < EventTime || (ran2() > pAlt || pAlt < 2 ))
       {
         ReplicateCell( n );
       }
@@ -222,11 +222,11 @@ int CellsSystem::CellEvents( )
        * because newcell contains everything that the n-th cell does not contain
        */ 
 			
-			double Mit = bnldev(0.5, clusters_M, idum) * ClusteringFactor;	// distribuzione binomiale
+			double Mit = bnldev(0.5, clusters_M, params.idum) * ClusteringFactor;	// distribuzione binomiale
 			if(ran2() > 0.5) Mit += rest_M;
 			
 			M[n] = Mit;										// questi statements definiscono M e ATPmin
-			M[ncells-1] = old_M - Mit;
+			M[params.ncells-1] = old_M - Mit;
 			
 			
 			// calculations related to the volume
@@ -246,17 +246,17 @@ int CellsSystem::CellEvents( )
 			ATPp[n] = (volume[n] - type[n]->C2 * M[n] - type[n]->Vmin)/type[n]->C1;
 			ATPmin[n] = (type[n]->fATPmin)*(type[n]->C2 * M[n])/type[n]->C1;
 			
-			volume[ncells-1] = Vmin + C2*M[ncells-1] + volume_C2;
-			r[ncells-1] = pow(3.*volume[ncells-1]/(4.*PI), (double)1./3.); 
-			surface[ncells-1] = 4.*PI*r[ncells-1]*r[ncells-1]; 
-			mass[ncells-1] = type[ncells-1]->density * volume[ncells-1];
-			volume_extra[ncells-1] = surface[ncells-1]*(type[ncells-1]->extvolume_thickness)*(type[ncells-1]->extvolume_fraction);
-			ATPp[ncells-1] = (volume[ncells-1] - type[ncells-1]->C2 * M[ncells-1] - type[ncells-1]->Vmin)/type[ncells-1]->C1;
-			ATPmin[ncells-1] = (type[ncells-1]->fATPmin)*(type[ncells-1]->C2 * M[ncells-1])/type[ncells-1]->C1;
+			volume[params.ncells-1] = Vmin + C2*M[params.ncells-1] + volume_C2;
+			r[params.ncells-1] = pow(3.*volume[params.ncells-1]/(4.*PI), (double)1./3.); 
+			surface[params.ncells-1] = 4.*PI*r[params.ncells-1]*r[params.ncells-1]; 
+			mass[params.ncells-1] = type[params.ncells-1]->density * volume[params.ncells-1];
+			volume_extra[params.ncells-1] = surface[params.ncells-1]*(type[params.ncells-1]->extvolume_thickness)*(type[params.ncells-1]->extvolume_fraction);
+			ATPp[params.ncells-1] = (volume[params.ncells-1] - type[params.ncells-1]->C2 * M[params.ncells-1] - type[params.ncells-1]->Vmin)/type[params.ncells-1]->C1;
+			ATPmin[params.ncells-1] = (type[params.ncells-1]->fATPmin)*(type[params.ncells-1]->C2 * M[params.ncells-1])/type[params.ncells-1]->C1;
 			
 			// ratio of volumes
 			double volume_ratio = volume[n]/old_volume;
-			double volume_ratio2 = volume[ncells-1]/old_volume;
+			double volume_ratio2 = volume[params.ncells-1]/old_volume;
 			
 			// the concentration of the substances that spread in the extracellular spaces is the same as that of the mother cell
 			// (note that this does not preserve the amount of substance, in other words it is assumed that the diffusion is sufficient
@@ -265,40 +265,40 @@ int CellsSystem::CellEvents( )
 			A_extra[n] = ConcA_extra*volume_extra[n];
 			AcL_extra[n] = ConcAcL_extra*volume_extra[n];
 			
-			G_extra[ncells-1] = ConcG_extra*volume_extra[ncells-1];
-			A_extra[ncells-1] = ConcA_extra*volume_extra[ncells-1];
-			AcL_extra[ncells-1] = ConcAcL_extra*volume_extra[ncells-1];
+			G_extra[params.ncells-1] = ConcG_extra*volume_extra[params.ncells-1];
+			A_extra[params.ncells-1] = ConcA_extra*volume_extra[params.ncells-1];
+			AcL_extra[params.ncells-1] = ConcAcL_extra*volume_extra[params.ncells-1];
 			
 			// setup of the metabolic variables inherited from the mother cell
       // (initially the values ​​are equal in the two cells and therefore are taken only by CellVector [n])
 			
 			double Gnow = G[n];								// glucosio
 			G[n] = Gnow*volume_ratio;
-			G[ncells-1] = Gnow*volume_ratio2;
+			G[params.ncells-1] = Gnow*volume_ratio2;
 			
 			double G6Pnow = G6P[n];							// G6P
 			G6P[n] = G6Pnow*volume_ratio;
-			G6P[ncells-1] = G6Pnow*volume_ratio2;
+			G6P[params.ncells-1] = G6Pnow*volume_ratio2;
 			
 			double Anow = A[n];								// glutammina
 			A[n] = Anow*volume_ratio;
-			A[ncells-1] = Anow*volume_ratio2;
+			A[params.ncells-1] = Anow*volume_ratio2;
 			
 			double storenow = store[n];						// store
 			store[n] = storenow*volume_ratio;
-			store[ncells-1] = storenow*volume_ratio2;
+			store[params.ncells-1] = storenow*volume_ratio2;
 			
 															
 			ATPstart[n] = (double)ATPp[n];									// inizializzazione dei contatori dell'ATP
-			ATPstart[ncells-1] = (double)ATPp[ncells-1];
+			ATPstart[params.ncells-1] = (double)ATPp[params.ncells-1];
 			ATPprod[n] = 0.;
-			ATPprod[ncells-1] = 0.;
+			ATPprod[params.ncells-1] = 0.;
 			ATPcons[n] = 0.;
-			ATPcons[ncells-1] = 0.;
+			ATPcons[params.ncells-1] = 0.;
 			
 			double AcLnow = AcL[n];							// AcL
 			AcL[n] = AcLnow*volume_ratio;
-			AcL[ncells-1] = AcLnow*volume_ratio2;
+			AcL[params.ncells-1] = AcLnow*volume_ratio2;
 			
 			// double H = CellVector[n].Get_H();								// H
 			// CellVector[n].Set_H( H*volume_ratio );
@@ -306,7 +306,7 @@ int CellsSystem::CellEvents( )
 			
 			double O2now = O2[n];
 			O2[n] = O2now*volume_ratio;
-			O2[ncells-1] = O2now*volume_ratio2;
+			O2[params.ncells-1] = O2now*volume_ratio2;
 			
 			// double CO2 = CellVector[n].Get_CO2();
 			// CellVector[n].Set_CO2( CO2*volume_ratio );
@@ -315,24 +315,24 @@ int CellsSystem::CellEvents( )
 			// assume proteins are widespread throughout the cell, including the nucleus, and therefore splitting as for other substances
 			double proteinnow = protein[n];
 			protein[n] = proteinnow*volume_ratio;
-			protein[ncells-1] = proteinnow*volume_ratio2;
+			protein[params.ncells-1] = proteinnow*volume_ratio2;
 
 			// the splitting algorithm of the pRb is based on the idea that it sticks to the nuclear matrix
-			double splitting_fraction = (double) bnldev(0.5, type[n]->Get_NUCLEAR_OBJ(), idum); // distribuzione binomiale
+			double splitting_fraction = (double) bnldev(0.5, type[n]->Get_NUCLEAR_OBJ(), params.idum); // distribuzione binomiale
 			double splitting_ratio = splitting_fraction / type[n]->Get_NUCLEAR_OBJ();
 			double splitting_ratio2 = 1.-splitting_ratio;
 			
 			double pRbnow = pRb[n];
 			pRb[n] = pRbnow*splitting_ratio;
-			pRb[ncells-1] = pRbnow*splitting_ratio2;
+			pRb[params.ncells-1] = pRbnow*splitting_ratio2;
 
 
 			// definizione di DNA_spread e M_T
 			DNA_spread[n] = type[n]->Get_DNA_MAX_SPREAD() * (2.*ran2()-1.);
 			M_T[n] = type[n]->Get_M_T_MEAN() * (1.+ type[n]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
 
-			DNA_spread[ncells-1] = type[ncells-1]->Get_DNA_MAX_SPREAD() * (2.*ran2()-1.);
-			M_T[ncells-1] = type[ncells-1]->Get_M_T_MEAN() * (1.+ type[ncells-1]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
+			DNA_spread[params.ncells-1] = type[params.ncells-1]->Get_DNA_MAX_SPREAD() * (2.*ran2()-1.);
+			M_T[params.ncells-1] = type[params.ncells-1]->Get_M_T_MEAN() * (1.+ type[params.ncells-1]->Get_PHASE_SPREAD() * (2.*ran2()-1.));
 			
 
 			// cells are temporally created isolated
@@ -343,19 +343,19 @@ int CellsSystem::CellEvents( )
 			env_surf[n] = surface[n];
 			g_env[n] = env_surf[n]/r[n];
 			
-			isonCH[ncells-1] = true;
-			isonAS[ncells-1] = true;
-			neigh[ncells-1] = 0 ;
-			contact_surf[ncells-1] = 0.;
-			env_surf[ncells-1] = surface[ncells-1];
-			g_env[ncells-1] = env_surf[ncells-1]/r[ncells-1];
+			isonCH[params.ncells-1] = true;
+			isonAS[params.ncells-1] = true;
+			neigh[params.ncells-1] = 0 ;
+			contact_surf[params.ncells-1] = 0.;
+			env_surf[params.ncells-1] = surface[params.ncells-1];
+			g_env[params.ncells-1] = env_surf[params.ncells-1]/r[params.ncells-1];
 						
 
 		// *** if the simulation is ready then the new coordinates are calculated
 			if( ready2start )
       {
 				// geometria della mitosi (solo nel caso di simulazione Full3D)
-				if( sim_type == Full3D ) 
+				if( params.sim_type == Full3D ) 
         {
           //number in [-1 1]
 					double xr = 1.-2.*ran2(); 
@@ -367,7 +367,7 @@ int CellsSystem::CellEvents( )
 					zr /= len;	// at this point {xr, yr, zr} is a random vector of the sphere
 
 					double r_1 = r[n];							// the new values ​​of the ray coming from the metabolism routine
-					double r_2 = r[ncells-1];
+					double r_2 = r[params.ncells-1];
 					
           double moving_factor_1 = old_r -r_1;
 					double x_1 = old_x + xr*(moving_factor_1);		// calculation of the new coordinates of the cell centers
@@ -383,25 +383,25 @@ int CellsSystem::CellEvents( )
 					y[n] = y_1;
 					z[n] = z_1;
 
-					x[ncells-1] = x_2;
-					y[ncells-1] = y_2;
-					z[ncells-1] = z_2;
+					x[params.ncells-1] = x_2;
+					y[params.ncells-1] = y_2;
+					z[params.ncells-1] = z_2;
 					
-					vx[ncells-1] = vx[n];	// the velocity of the center of the new cell is initially the same as that of the mother cell
-					vy[ncells-1] = vy[n];
-					vz[ncells-1] = vz[n];
+					vx[params.ncells-1] = vx[n];	// the velocity of the center of the new cell is initially the same as that of the mother cell
+					vy[params.ncells-1] = vy[n];
+					vz[params.ncells-1] = vz[n];
 					}
 				}
 
 
 			// in the case of startup or conf. fixed, we forget the last cell ... otherwise the live cell counter is updated
-			if( !ready2start || sim_type == FixedConfig )
+			if( !ready2start || params.sim_type == FixedConfig )
       {
-				ncells--;						// decremento del numero di cellule, si torna al valore precedente, l'ultima cellula viene dimenticata
+				params.ncells--;						// decremento del numero di cellule, si torna al valore precedente, l'ultima cellula viene dimenticata
 				type[n]->Delete_instance();		// cancellazione dell'instance di type che era stato aggiunto da ReplicateCell
 			}
 			else 
-				alive++;
+				params.alive++;
     } // fine del trattamento della mitosi
 
 /* T.F.
@@ -417,7 +417,7 @@ int CellsSystem::CellEvents( )
 
 	
 		if(phase[n] != dead) 
-      alive++;								// if the cell is not dead, then it's alive ...
+      params.alive++;								// if the cell is not dead, then it's alive ...
   } // fine del loop sulle cellule
 	//return mitosis_flag;
   return n_mitoses;
@@ -432,7 +432,7 @@ void CellsSystem::CleanCellsSystem( )
 {
 	//bool cleaned = false;
 	
-	for(unsigned long n=ncells; n>1; n--)				
+	for(unsigned long n=params.ncells; n>1; n--)				
 		{
 		if( (phase[n-1] == dead) && (volume[n-1] < volume_extra[n-1]) )
 				{

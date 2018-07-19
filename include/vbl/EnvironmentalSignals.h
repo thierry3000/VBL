@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <boost/property_tree/ptree.hpp>
 
 namespace vbl{
 class EnvironmentalSignal
@@ -68,9 +69,9 @@ public:
 // read and write binario
 	void WriteEnvironmentalSignal( std::ofstream& stream);
 	void ReadEnvironmentalSignal( std::ifstream& stream);
-
-	
-	
+  
+  void assign(const boost::property_tree::ptree& pt);
+  boost::property_tree::ptree as_ptree() const;
 };
 }//namespace vbl{
 #endif //#ifndef ENVIRONMENTSIGNAL_H

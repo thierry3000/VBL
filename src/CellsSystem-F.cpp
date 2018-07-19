@@ -20,7 +20,7 @@ void CellsSystem::PrintFlows()
 
 	// apertura del file di output
 	char str[100];	
-	sprintf(str,"%lu.bin",nconfiguration);
+	sprintf(str,"%lu.bin",params.nconfiguration);
 	std::string flow_record = flow_b_filename+str;
 	flow_b_file.open( flow_record.c_str(), std::ios::binary );
 	
@@ -32,7 +32,7 @@ void CellsSystem::PrintFlows()
 	double concAcLenv = Env.GetEnvironmentAcL()/Env.GetEnvironmentvolume();
 		
 		
-	for(unsigned long n=0; n<ncells; n++)	// loop sulle cellule
+	for(unsigned long n=0; n<params.ncells; n++)	// loop sulle cellule
 		{
 		
 		// inizializzazione delle componenti del flusso

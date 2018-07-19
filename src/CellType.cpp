@@ -5,6 +5,7 @@
 //
 // **********************************************************************************
 
+#include <boost/property_tree/ptree.hpp>
 #include "sim.h"
 #include "InputFromFile.h"
 
@@ -120,6 +121,121 @@ CellType::CellType()
     a2cAcL_thr = 6.8;  				// 
     c2aAcL_slope = 1.5;  			// correzione al trasporto di AcL da interno a esterno
     c2aAcL_thr = 6.8;  				// 
+}
+
+void CellType::assign(const boost::property_tree::ptree& pt)
+{
+  /** maybe for later, 
+   * right now these are constants
+   * no need to write to disk in case of rerun
+   */
+  #define DOPT(name_buffer) boost::property_tree::get_from_ptree(name_buffer, #name_buffer, pt)
+  DOPT(name);
+//   name = 0;					// nome del fenotipo standard 
+// 	n_instances = 0;			// inizialmente non ci sono cellule con questo fenotipo
+// 	
+//     VMAX_1 = 4e-6;  				// pg/(s·micron^2)
+//     VMAX_2 = 2.4e-4; 				// pg/s
+//     VMAX_22 = 2.4e-3;				// pg/s
+//     VMAX_A = 1.e-6;  				// pg/(s·micron^2) 
+//     VMAX_P = 3.e-4;  				// pg/s  
+//     VMAX_P_A = 1.018e-5;  			// pg/s
+//     VMAX_P_ATP = 1.81e-3;  			// pg/s 
+//     VMAX_DNA = 5.e-5;  				// molecole/s 
+//     VMAX_DNA_A = 5.847e-5;  		// pg/s 
+//     VMAX_DNA_ATP = 9.01e-5;  		// pg/s
+//     VMAX_M = 2e-3;  				// mitocondri/s 
+//     VMAX_M_A = 7.3e-8;  			// pg/s 
+//     VMAX_M_ATP = 1.125e-7;  		// pg/s 
+//     Km1 = 0.27024e-3;  				// pg/micron^3
+//     Km2 = 1.80e-3;  				// pg/micron^3
+//     Km22 = 1.80e-5;  				// pg/micron^3
+//     KmA = 0.023798e-3;  			// pg/micron^3
+//     Ka = 0.054e-3;  				// pg/micron^3
+//     Kmc = 0.096e-3;  				// pg/micron^3
+//     Kmd = 1.8e-5;  					// pg/micron^3
+//     KmO2 = 7.e-7;  					// pg/micron^3
+//     Kmp = 0.0067e-6;  				// (pg/micron^3)^2  
+//     KmDNA = 0.00045e-6;  			// (pg/micron^3)^2  
+//     KmM = 1.46e-8;  				// (pg/micron^3)^2  
+//     coeffg1 = 0.0075;  				// s^-1   
+//     coeffg2 = 0.00108;  			// s^-1   
+//     coeffg3 = 0.00067;  			// s^-1  
+//     coeffr1 = 3.e-5;  				// pg/s
+//     ATPSt = 2.3e-3;  				// pg/s ATP standard
+//     Vmin = 90;  					// micron^3
+//     DVap = 3e-6;  					// s^-1 DVap coefficiente di variazione di volume (shrinkage) per cellule apoptotiche
+//     fATPmin = 1.2;  				// frazione del volume cellulare e mitocondriale accessibile all'ATP
+//     pHimin = 6.8;  					// pH intracellulare minimo tollerabile
+//     VmaxAL0 = 9.583585e-5;  		// pg/(s·micron^2) 
+//     KmAL = 0.40536e-3;  			// pg/micron^3
+//     M_T_MEAN = 1800.;  				// s durata media della fase M
+//     DNA_MAX_SPREAD = 0.1;  			// fluttuazione massima di DNA_FRACTION nella singola cellula
+//     v_WORK = 1.5e-5;  				// pg/(s·micron^3) 
+//     PHASE_SPREAD = 0.5;  			// 
+//     k_pRb = 10;  					// 
+//     N_pRb = 16;  					// 
+//     pRb_ONOFFratio = 1.e-6;  		// k_ON/k_OFF in unita' di concentrazione molare per la fosforilazione della pRb
+//     pRb_fraction = 1.5e-2;  		// frazione delle proteine che e' pRb
+//     cyclinD_fraction = 10.e-3;  	// frazione delle proteine che e' ciclina D
+//     cyclinE_fraction = 3.e-3;  		// frazione delle proteine che e' ciclina E
+//     cyclinX_fraction = 14.e-3;  	// frazione delle proteine che e' ciclina A + B
+//     ConcS_0 = 0.001;  				// concentrazione MOLARE iniziale della sostanza S
+//     Thresh_S_start = 0.8;  			// frazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1m-G1p
+//     Thresh_S_stop = 0.05;  			// frazione di molecola S (nella reazione MM downstream) che fissa il passaggio del checkpoint G1p-S
+//     k3MM = 1.e4;  					// rate per la reazione MM downstream
+//     KmMM = 1.e-3;  					// concentrazione MOLARE della Km per la MM downstream
+//     NUCLEAR_OBJ = 46;  				// numero di pseudooggetti legati alla matrice nucleare che tengono legata la pRb e che si separano a meta' circa al momento della mitosi (NB. la fluttuazione relativa e' uguale a 1/sqrt(NUCLEAR_OBJ) )
+//     ClusteringFactor = 15;  		// numero di compartimenti in cui si aggregano i mitocondri (costruzione fatta per adattare la stocasticita' a quella osservata)
+//     CycXThr = 0.08;  				// pg quantita' di ciclina A+B che definisce la soglia del checkpoint G2-M
+//     Vrif = -0.021;  				// V potenziale di Nernst in condizioni normali (interno a pH 7.2, esterno a pH 7.54)
+//     HPumpEff = 0.1;  				// inverso dell'efficienza del meccanismo di espulsione degli H+ (10 = efficienza 0.1)
+//     DiffH = 1.40e2;  				// micron^2/s Coefficiente di diffusione per gli H+
+//     C1 = 100;  						// micron^3/pg
+//     C2 = 0.2;  						// micron^3
+//     a_R = 5.e-2;  					// micron^3/(pg s) coefficiente che collega la concentrazione dell'AcL al danno endogeno
+//     alpha_R[G0_phase] = 0.;  		// 
+//     alpha_R[G1m_phase] = 0.43;  	// 
+//     alpha_R[G1p_phase] = 0.43;  	// 
+//     alpha_R[S_phase] = 0.17;  		// 
+//     alpha_R[G2_phase] = 0.77;  		// 
+//     alpha_R[M_phase] = 0.77;  		// 
+//     beta_R[G0_phase] = 0.;  		// 
+//     beta_R[G1m_phase] = 0.017;  	// 
+//     beta_R[G1p_phase] = 0.017;  	// 
+//     beta_R[S_phase] = 0.02;  		// 
+//     beta_R[G2_phase] = 0.;  		// 
+//     beta_R[M_phase] = 0.;  			// 
+//     YoungMod = 1e12;  				// pg/(micron·s^2) modulo di Young cellulare
+//     PoissonRatio = 0.5;  			// rapporto di Poisson cellulare
+//     density = 1.070;  				// pg/micron^3 densita' cellulare
+//     viscosity = 2e11;  				// pg/(micron·s) viscosita' citoplasmatica
+//     Mphase_correction = 1.1;  		// correzione al range della funzione di viscosita' durante la fase M e G1m
+//     adhesion_range = -0.5;  		// (frazione di raggio cellulare) range della forza di adesione
+//     adhesion_decay = 2.;  			// rate di decadimento della forza di adesione
+//     packing_factor = 0.9047;  		// fattore di impacchettamento
+//     extension_coeff = 1.1;  		// coefficiente di estensione
+//     extvolume_thickness = 0.1;  	// micron semispessore della matrice extracellulare
+//     extvolume_compression = 0.25;  	// micron-1 fattore di compressibilita' della matrice extracellulare
+//     extvolume_fraction = 0.3;  		// frazione di volume della matrice extracellulare utilizzabile per la diffusione
+//     tph_slope = 2.727273;  			// tuning dei rates in funzione del pH interno
+//     tph_thr = 6.55;  				// 
+//     tp11_slope = 10.90909;  		// tuning di p11 in funzione del pH interno
+//     tp11_thr = 6.9625;  			// 
+//     a2c_slope = 2.419355;  			// correzione al trasporto di glucosio da esterno a interno
+//     a2c_thr = 6.92;  				// 
+//     c2a_slope = 2.419355;  			// correzione al trasporto di glucosio da interno ad esterno
+//     c2a_thr = 6.92;  				// 
+//     a2cA_slope = 2.419355;  		// correzione al trasporto di glutammina da esterno a interno
+//     a2cA_thr = 6.92;  				// 
+//     c2aA_slope = 2.419355;  		// correzione al trasporto di glutammina da interno ad esterno
+//     c2aA_thr = 6.92;  				// 
+//     a2cAcL_slope = 1.5;  			// correzione al trasporto di AcL da esterno a interno
+//     a2cAcL_thr = 6.8;  				// 
+//     c2aAcL_slope = 1.5;  			// correzione al trasporto di AcL da interno a esterno
+//     c2aAcL_thr = 6.8;  				// 
+  
+  #undef DOPT
 }
 
 // costruttore che prende i valori da un file

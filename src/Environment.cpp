@@ -455,6 +455,27 @@ void Environment::PrintEnvironmentData(std::ofstream& stream, long int nrec)
 
 }
 
+void vbl::Environment::assign(const boost::property_tree::ptree& pt)
+{
+#define assign_macro(name_buffer)name_buffer = pt.get<double>(#name_buffer)
+  for(auto entry:vector_of_env_parameters)
+  {
+    assign_macro(entry);
+  }
+#undef assign_macro
+}
+
+boost::property_tree::ptree vbl::Environment::as_ptree() const
+{
+  boost::property_tree::ptree pt;
+#define DOPT(name_buffer) pt.put(#name_buffer, name_buffer)
+  for(auto entry:vector_of_env_parameters)
+  {
+    DOPT(entry);
+  }
+#undef DOPT
+  return pt;
+}
 
 void Environment::WriteEnvironment( std::ofstream& stream )
 {

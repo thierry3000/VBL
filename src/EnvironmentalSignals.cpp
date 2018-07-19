@@ -298,3 +298,29 @@ void EnvironmentalSignal::ReadEnvironmentalSignal( std::ifstream& stream)
 
 }
 
+void vbl::EnvironmentalSignal::assign(const boost::property_tree::ptree& pt)
+{
+  type = (vbl::EnvironmentalSignalType) pt.get<int>("type");
+  ampMin = pt.get<double>("ampMin");
+  ampMax = pt.get<double>("ampMax");
+	period = pt.get<double>("period");
+	tstart = pt.get<double>("tstart");
+	tstop = pt.get<double>("tstop");
+	tON = pt.get<double>("tON");
+	tOFF = pt.get<double>("tOFF");
+}
+
+boost::property_tree::ptree vbl::EnvironmentalSignal::as_ptree() const
+{
+  boost::property_tree::ptree pt;
+  pt.put("type", (int) type);
+  pt.put("ampMin", ampMin);
+  pt.put("ampMax",ampMax);
+	pt.put("period",period);
+  pt.put("tstart",tstart);
+	pt.put("tstop",tstop);
+	pt.put("tON",tON);
+	pt.put("tOFF",tOFF);
+  return pt;
+}
+

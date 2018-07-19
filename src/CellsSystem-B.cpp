@@ -36,7 +36,7 @@ void CellsSystem::Diff()
  * Therefore I comment it out.
  */
 #pragma omp parallel for
-	for(unsigned long n=0; n<ncells; n++)						
+	for(unsigned long n=0; n<params.ncells; n++)						
   {
 		
 		// controllo preliminare di consistenza
@@ -87,7 +87,7 @@ void CellsSystem::Diff()
 	proteinNew = protein;
 	
 	// delta_protein (inizialmente la variazione e' nulla)
-	delta_protein.assign(ncells,0.);
+	delta_protein.assign(params.ncells,0.);
 	
 	// pRb
 	pRbNew = pRb;
@@ -124,11 +124,11 @@ void CellsSystem::Diff()
 	
 	bool isOK;													// variabile che ferma il loop
 	ncalls++;													// update del numero di volte che si inizializza il loop
-  min_nrepeats = 10.*pow(ncells,1/3.);                        // numero minimo di ripetizioni dell'algoritmo di diffusione
+  min_nrepeats = 10.*pow(params.ncells,1/3.);                        // numero minimo di ripetizioni dell'algoritmo di diffusione
   if(min_nrepeats > MAXREPEATS/2 ) min_nrepeats = MAXREPEATS/2; 
 	nrepeats=0;													// inizializzazione del numero di ripetizioni del loop
 	
-	double prec=eps;										// precisione ottenuta
+	double prec=params.eps;										// precisione ottenuta
 
 	do// inizio del loop
   {
@@ -149,7 +149,7 @@ void CellsSystem::Diff()
 #endif
 //#pragma omp parallel for ordered schedule(dynamic)
 #pragma omp parallel for
-    for(unsigned long n=0; n<ncells; n++)						// loop sulle cellule per il calcolo delle somme
+    for(unsigned long n=0; n<params.ncells; n++)						// loop sulle cellule per il calcolo delle somme
     {
       // volume totale occupato dalle cellule
       cell_volume += volumeOld[n];
@@ -173,42 +173,42 @@ void CellsSystem::Diff()
 	
     volume_envNew = Env_0.GetEnvironmentvolume() - cell_volume;
 
-    if( flowON && ready2start )				// se si lavora con il bioreattore allora le equazioni per l'ambiente devono tenere conto di termini in piu' ... 
+    if( params.flowON && ready2start )				// se si lavora con il bioreattore allora le equazioni per l'ambiente devono tenere conto di termini in piu' ... 
     {
-      mG_envNew = ( Env.GetEnvironmentG() + dt*( Diff_W_G*sG_env + Env_0.GetEnvironmentG()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(treal) ) )\
-        /( 1. + dt*(Diff_W_G*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
+      mG_envNew = ( Env.GetEnvironmentG() + params.dt*( Diff_W_G*sG_env + Env_0.GetEnvironmentG()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(params.treal) ) )\
+        /( 1. + params.dt*(Diff_W_G*s0_env)/Env.GetEnvironmentvolume() + params.dt * flowSignal.SignalValue(params.treal)/volume_envOld );
       
       // la concentrazione di ossigeno nell'ambiente varia solo se oxygenflowON è acceso
           if( oxygenflowON )
-              mO2_envNew = ( Env.GetEnvironmentO2() + dt*( Diff_W_O2*sO2_env + Env_0.GetEnvironmentO2()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(treal) ) )\
-              /( 1. + dt*(Diff_W_O2*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
+              mO2_envNew = ( Env.GetEnvironmentO2() + params.dt*( Diff_W_O2*sO2_env + Env_0.GetEnvironmentO2()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(params.treal) ) )\
+              /( 1. + params.dt*(Diff_W_O2*s0_env)/Env.GetEnvironmentvolume() + params.dt * flowSignal.SignalValue(params.treal)/volume_envOld );
           else
               mO2_envNew = (Env_0.GetEnvironmentO2()/Env_0.GetEnvironmentvolume()) * volume_envOld;
       
-      mA_envNew = ( Env.GetEnvironmentA() + dt*( Diff_W_A*sA_env + Env_0.GetEnvironmentA()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(treal) ) )\
-        /( 1. + dt*(Diff_W_A*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
+      mA_envNew = ( Env.GetEnvironmentA() + params.dt*( Diff_W_A*sA_env + Env_0.GetEnvironmentA()/Env.GetEnvironmentvolume() * flowSignal.SignalValue(params.treal) ) )\
+        /( 1. + params.dt*(Diff_W_A*s0_env)/Env.GetEnvironmentvolume() + params.dt * flowSignal.SignalValue(params.treal)/volume_envOld );
       
       // l'acido lattico nella soluzione nutritiva pulita e' sempre zero
-      mAcL_envNew = ( Env.GetEnvironmentAcL() + dt*( Diff_W_AcL*sAcL_env ) )\
-        /( 1. + dt*(Diff_W_AcL*s0_env)/Env.GetEnvironmentvolume() + dt * flowSignal.SignalValue(treal)/volume_envOld );
+      mAcL_envNew = ( Env.GetEnvironmentAcL() + params.dt*( Diff_W_AcL*sAcL_env ) )\
+        /( 1. + params.dt*(Diff_W_AcL*s0_env)/Env.GetEnvironmentvolume() + params.dt * flowSignal.SignalValue(params.treal)/volume_envOld );
     }
-    else if( !flowON && ready2start )		// ... altrimenti si utilizzano le equazioni senza i termini aggiuntivi (questo e' vero anche per l'inizializzazione)
+    else if( !params.flowON && ready2start )		// ... altrimenti si utilizzano le equazioni senza i termini aggiuntivi (questo e' vero anche per l'inizializzazione)
     {
-      mG_envNew = ( Env.GetEnvironmentG() + dt*( Diff_W_G*sG_env ) )\
-        /( 1. + dt*(Diff_W_G*s0_env)/volume_envOld );
+      mG_envNew = ( Env.GetEnvironmentG() + params.dt*( Diff_W_G*sG_env ) )\
+        /( 1. + params.dt*(Diff_W_G*s0_env)/volume_envOld );
       
           if( oxygenflowON )
-              mO2_envNew = ( Env.GetEnvironmentO2() + dt*( Diff_W_O2*sO2_env ) )\
-              /( 1. + dt*(Diff_W_O2*s0_env)/volume_envOld );
+              mO2_envNew = ( Env.GetEnvironmentO2() + params.dt*( Diff_W_O2*sO2_env ) )\
+              /( 1. + params.dt*(Diff_W_O2*s0_env)/volume_envOld );
           else
               mO2_envNew = (Env_0.GetEnvironmentO2()/Env_0.GetEnvironmentvolume()) * volume_envOld;
       
-      mA_envNew = ( Env.GetEnvironmentA() + dt*( Diff_W_A*sA_env ) )\
-        /( 1. + dt*(Diff_W_A*s0_env)/volume_envOld );
+      mA_envNew = ( Env.GetEnvironmentA() + params.dt*( Diff_W_A*sA_env ) )\
+        /( 1. + params.dt*(Diff_W_A*s0_env)/volume_envOld );
       
       // l'acido lattico nella soluzione nutritiva pulita e' sempre zero
-      mAcL_envNew = ( Env.GetEnvironmentAcL() + dt*( Diff_W_AcL*sAcL_env ) )\
-        /( 1. + dt*(Diff_W_AcL*s0_env)/volume_envOld );
+      mAcL_envNew = ( Env.GetEnvironmentAcL() + params.dt*( Diff_W_AcL*sAcL_env ) )\
+        /( 1. + params.dt*(Diff_W_AcL*s0_env)/volume_envOld );
     }
     else if ( !ready2start )				// infine, durante la fase di inizializzazione si tengono fisse le concentrazioni ambientali
     {
@@ -237,7 +237,7 @@ void CellsSystem::Diff()
     double time_run_bico = 0.0;
     
 #pragma omp parallel for
-    for(unsigned long n=0; n<ncells; n++)// loop on the cells
+    for(unsigned long n=0; n<params.ncells; n++)// loop on the cells
     {
       // coefficienti (queste assegnazioni non sono strettamente necessarie, ma servono a rendere il codice piu' leggibile)
       // get local thread variables!
@@ -475,12 +475,12 @@ void CellsSystem::Diff()
       }
                           
       // 1. calculation of the new value of mGin
-      mGinNew[n] = mGinOld[n] - ( mGinOld[n] - ( G[n] + dt*( M_Gnow + T_Gnow ) ) )/( 1. - dt*( DM_Gnow + DT_Gnow_in ) );
+      mGinNew[n] = mGinOld[n] - ( mGinOld[n] - ( G[n] + params.dt*( M_Gnow + T_Gnow ) ) )/( 1. - params.dt*( DM_Gnow + DT_Gnow_in ) );
 
       if( mGinNew[n] < 0 )	// if you get to this point it means that Newton's method has problems ...
       {
-        double fhi = mGinOld[n] - ( G[n] + dt*( M_Gnow + T_Gnow ) );	// f valutata in mGinOld[n]
-        double flo = - ( G[n] + dt*( M_Gnow_0 + T_Gnow_0in ) );		// f valutata in mGin = 0
+        double fhi = mGinOld[n] - ( G[n] + params.dt*( M_Gnow + T_Gnow ) );	// f valutata in mGinOld[n]
+        double flo = - ( G[n] + params.dt*( M_Gnow_0 + T_Gnow_0in ) );		// f valutata in mGin = 0
         double xsol = mGinOld[n]*flo/(flo-fhi);
         mGinNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -491,7 +491,7 @@ void CellsSystem::Diff()
       }
       if( mGinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mGinNew["<< n << "] = " << std::scientific << mGinNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mGinNew["<< n << "] = " << std::scientific << mGinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mGinNew[n] = mGinOld[n] = " << mGinOld[n] << "\n" << std::endl;
         
         mGinNew[n] = mGinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
@@ -500,17 +500,17 @@ void CellsSystem::Diff()
 
 
       // 2. calculation of the new value of mGext *** MODIFIED FOR BLOOD VESSELS ***
-      double cG = G_extra[n] + dt*Diff_ES_G*sG + dt*Diff_Env_G*(mG_envOld/volume_envOld)*g_env[n] + dt*Diff_BV_G*rhoG_bv*g_bv[n];	// calcolo della parte fissa
+      double cG = G_extra[n] + params.dt*Diff_ES_G*sG + params.dt*Diff_Env_G*(mG_envOld/volume_envOld)*g_env[n] + params.dt*Diff_BV_G*rhoG_bv*g_bv[n];	// calcolo della parte fissa
       //if( true )//local speed up variables
       {
-        double buffer = 1.+Diff_ES_G*dt*s0/volume_extraOld[n]+Diff_Env_G*dt*g_env[n]/volume_extraOld[n]+Diff_BV_G*dt*g_bv[n]/volume_extraOld[n];
-        mGextNew[n] = mGextOld[n] - ( mGextOld[n]*( buffer) + dt*T_Gnow - cG )\
-            /( buffer + dt*DT_Gnow_ext );
+        double buffer = 1.+Diff_ES_G*params.dt*s0/volume_extraOld[n]+Diff_Env_G*params.dt*g_env[n]/volume_extraOld[n]+Diff_BV_G*params.dt*g_bv[n]/volume_extraOld[n];
+        mGextNew[n] = mGextOld[n] - ( mGextOld[n]*( buffer) + params.dt*T_Gnow - cG )\
+            /( buffer + params.dt*DT_Gnow_ext );
       }
       if(mGextNew[n] < 0)	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = ( mGextOld[n]*(1+Diff_ES_G*dt*s0/volume_extraOld[n]+Diff_Env_G*dt*g_env[n]/volume_extraOld[n]+Diff_BV_G*dt*g_bv[n]/volume_extraOld[n]) + dt*T_Gnow - cG );
-        double flo = ( dt*T_Gnow_0ext - cG );
+        double fhi = ( mGextOld[n]*(1+Diff_ES_G*params.dt*s0/volume_extraOld[n]+Diff_Env_G*params.dt*g_env[n]/volume_extraOld[n]+Diff_BV_G*params.dt*g_bv[n]/volume_extraOld[n]) + params.dt*T_Gnow - cG );
+        double flo = ( params.dt*T_Gnow_0ext - cG );
         double xsol = mGextOld[n]*flo/(flo-fhi);
         mGextNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -521,7 +521,7 @@ void CellsSystem::Diff()
       }
       if( mGextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mGextNew["<< n << "] = " << std::scientific << mGextNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mGextNew["<< n << "] = " << std::scientific << mGextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mGextNew[n] = mGextOld[n] = " << mGextOld[n] << "\n" << std::endl;
         mGextNew[n] = mGextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
@@ -537,7 +537,7 @@ void CellsSystem::Diff()
       
       // *** G6P (exact solution of the iterative equation derived from the Euler method)
       if( phase[n] != dead )
-        mG6PNew[n] = (mG6POld[n] - dt*M_Gnow)/( 1. + dt*( tpH*coeffg1 + coeffg2*SensO2[n] + coeffg3) );
+        mG6PNew[n] = (mG6POld[n] - params.dt*M_Gnow)/( 1. + params.dt*( tpH*coeffg1 + coeffg2*SensO2[n] + coeffg3) );
       else
         mG6PNew[n] = mG6POld[n];
 
@@ -580,19 +580,19 @@ void CellsSystem::Diff()
 	O2Rate[n] = M_O2now; //*************************** new for O2 rate ******* april 2018
         
       // calcolo del nuovo valore
-      double cO2 = O2[n] + dt*Diff_ES_O2*sO2 + dt*Diff_Env_O2*(mO2_envOld/volume_envOld)*g_env[n] + dt*Diff_BV_O2*rhoO2_bv*g_bv[n];	// calcolo della parte fissa
+      double cO2 = O2[n] + params.dt*Diff_ES_O2*sO2 + params.dt*Diff_Env_O2*(mO2_envOld/volume_envOld)*g_env[n] + params.dt*Diff_BV_O2*rhoO2_bv*g_bv[n];	// calcolo della parte fissa
       
       //if( true )// speed up environment
       {
-        double buffer = 1+Diff_ES_O2*dt*s0/volumeOld[n]+Diff_Env_O2*dt*g_env[n]/volumeOld[n]+Diff_BV_O2*dt*g_bv[n]/volumeOld[n];
-        mO2New[n] = mO2Old[n] - ( mO2Old[n] * ( buffer) - dt*M_O2now - cO2 )\
-            /( buffer - dt*DM_O2now);
+        double buffer = 1+Diff_ES_O2*params.dt*s0/volumeOld[n]+Diff_Env_O2*params.dt*g_env[n]/volumeOld[n]+Diff_BV_O2*params.dt*g_bv[n]/volumeOld[n];
+        mO2New[n] = mO2Old[n] - ( mO2Old[n] * ( buffer) - params.dt*M_O2now - cO2 )\
+            /( buffer - params.dt*DM_O2now);
       }
       
       if( mO2New[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = mO2Old[n] * ( 1+Diff_ES_O2*dt*s0/volumeOld[n]+Diff_Env_O2*dt*g_env[n]/volumeOld[n]+Diff_BV_O2*dt*g_bv[n]/volumeOld[n]) - dt*M_O2now - cO2;
-        double flo = - dt*M_O2now_0 - cO2;
+        double fhi = mO2Old[n] * ( 1+Diff_ES_O2*params.dt*s0/volumeOld[n]+Diff_Env_O2*params.dt*g_env[n]/volumeOld[n]+Diff_BV_O2*params.dt*g_bv[n]/volumeOld[n]) - params.dt*M_O2now - cO2;
+        double flo = - params.dt*M_O2now_0 - cO2;
         double xsol = mO2Old[n]*flo/(flo-fhi);
         mO2New[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -603,7 +603,7 @@ void CellsSystem::Diff()
       }
       if( mO2New[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mO2New["<< n << "] = " << std::scientific << mO2New[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mO2New["<< n << "] = " << std::scientific << mO2New[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mO2New[n] = mO2Old[n] = " << mO2Old[n] << "\n" << std::endl;
         mO2New[n] = mO2Old[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
@@ -646,13 +646,13 @@ void CellsSystem::Diff()
         T_Anow_0ext = - c2aA*vmaxA * mAinOld[n]/(buffer5);		// mAext = 0
         
         // 1. calcolo del nuovo valore di mAin
-        mAinNew[n] = mAinOld[n] - ( mAinOld[n] - ( A[n] + dt*( M_Anow + T_Anow ) ) )/( 1. - dt*( DM_Anow + DT_Anow_in ) );
+        mAinNew[n] = mAinOld[n] - ( mAinOld[n] - ( A[n] + params.dt*( M_Anow + T_Anow ) ) )/( 1. - params.dt*( DM_Anow + DT_Anow_in ) );
       }
       
       if( mAinNew[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = mAinOld[n] - ( A[n] + dt*( M_Anow + T_Anow ) );
-        double flo = - ( A[n] + dt*( M_Anow_0 + T_Anow_0in ) );
+        double fhi = mAinOld[n] - ( A[n] + params.dt*( M_Anow + T_Anow ) );
+        double flo = - ( A[n] + params.dt*( M_Anow_0 + T_Anow_0in ) );
         double xsol = mAinOld[n]*flo/(flo-fhi);
         mAinNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -663,7 +663,7 @@ void CellsSystem::Diff()
       }
       if( mAinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mAinNew["<< n << "] = " << std::scientific << mAinNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mAinNew["<< n << "] = " << std::scientific << mAinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAinNew[n] = mAinOld[n] = " << mAinOld[n] << "\n" << std::endl;
         mAinNew[n] = mAinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
@@ -671,18 +671,18 @@ void CellsSystem::Diff()
       
       
       // 2. calcolo del nuovo valore di mAext      *** MODIFIED FOR BLOOD VESSELS ***
-      double cA = A_extra[n] + dt*Diff_ES_A*sA + dt*Diff_Env_A*(mA_envOld/volume_envOld)*g_env[n] + dt*Diff_BV_A*rhoA_bv*g_bv[n];	// calcolo della parte fissa
+      double cA = A_extra[n] + params.dt*Diff_ES_A*sA + params.dt*Diff_Env_A*(mA_envOld/volume_envOld)*g_env[n] + params.dt*Diff_BV_A*rhoA_bv*g_bv[n];	// calcolo della parte fissa
       
       //if( true )// speed up
       {
-        double buffer = (1.+Diff_ES_A*dt*s0/volume_extraOld[n]+Diff_Env_A*dt*g_env[n]/volume_extraOld[n]+Diff_BV_A*dt*g_bv[n]/volume_extraOld[n]);
-        mAextNew[n] = mAextOld[n] - ( mAextOld[n]*buffer + dt*T_Anow - cA )\
-            /(buffer + dt*DT_Anow_ext );
+        double buffer = (1.+Diff_ES_A*params.dt*s0/volume_extraOld[n]+Diff_Env_A*params.dt*g_env[n]/volume_extraOld[n]+Diff_BV_A*params.dt*g_bv[n]/volume_extraOld[n]);
+        mAextNew[n] = mAextOld[n] - ( mAextOld[n]*buffer + params.dt*T_Anow - cA )\
+            /(buffer + params.dt*DT_Anow_ext );
       }
       if( mAextNew[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = ( mAextOld[n]*(1+Diff_ES_A*dt*s0/volume_extraOld[n]+Diff_Env_A*dt*g_env[n]/volume_extraOld[n]+Diff_BV_A*dt*g_bv[n]/volume_extraOld[n]) + dt*T_Anow - cA );
-        double flo = ( dt*T_Anow_0ext - cA );
+        double fhi = ( mAextOld[n]*(1+Diff_ES_A*params.dt*s0/volume_extraOld[n]+Diff_Env_A*params.dt*g_env[n]/volume_extraOld[n]+Diff_BV_A*params.dt*g_bv[n]/volume_extraOld[n]) + params.dt*T_Anow - cA );
+        double flo = ( params.dt*T_Anow_0ext - cA );
         double xsol = mAextOld[n]*flo/(flo-fhi);
         mAextNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -693,7 +693,7 @@ void CellsSystem::Diff()
       }
       if( mAextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mAextNew["<< n << "] = " << std::scientific << mAextNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mAextNew["<< n << "] = " << std::scientific << mAextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAextNew[n] = mAextOld[n] = " << mAextOld[n] << "\n" << std::endl;
         mAextNew[n] = mAextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
@@ -715,8 +715,8 @@ void CellsSystem::Diff()
         {
           double buffer2 = (double) (coeffg3*mG6POld[n] + tp11*tpH*coeffr1*(mAinOld[n]/(volumeOld[n]*Kmd+mAinOld[n]))*(1-SensATP));
           double buffer3 = (double) ( tpH*coeffr1 + coeffg3*mG6POld[n]*SensO2[n] + SensO2[n]*SensATP*0.033333*(PM_G/PM_ATP)*( ATP_St[n] - ATP_Ox[n] ) );
-          double Ast = store[n] + dt * ( buffer2 );
-          double Bst = -dt * ( buffer3 );
+          double Ast = store[n] + params.dt * ( buffer2 );
+          double Bst = -params.dt * ( buffer3 );
           double Kst = volumeOld[n]*Kmc;
 
         
@@ -769,13 +769,13 @@ void CellsSystem::Diff()
           
 
         // 1. calcolo del nuovo valore di mAcLin
-        mAcLinNew[n] = mAcLinOld[n] - ( mAcLinOld[n] - ( AcL[n] + dt*( M_AcLnow + T_AcLnow ) ) )/( 1 - dt*( DM_AcLnow + DT_AcLnow_in ) );
+        mAcLinNew[n] = mAcLinOld[n] - ( mAcLinOld[n] - ( AcL[n] + params.dt*( M_AcLnow + T_AcLnow ) ) )/( 1 - params.dt*( DM_AcLnow + DT_AcLnow_in ) );
       }
       
       if( mAcLinNew[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = mAcLinOld[n] - ( AcL[n] + dt*( M_AcLnow + T_AcLnow ) );	// f valutata in mAcLinOld[n]
-        double flo = - ( AcL[n] + dt*( M_AcLnow_0 + T_AcLnow_0in ) );			// f valutata in mAcLin = 0
+        double fhi = mAcLinOld[n] - ( AcL[n] + params.dt*( M_AcLnow + T_AcLnow ) );	// f valutata in mAcLinOld[n]
+        double flo = - ( AcL[n] + params.dt*( M_AcLnow_0 + T_AcLnow_0in ) );			// f valutata in mAcLin = 0
         double xsol = mAcLinOld[n]*flo/(flo-fhi);
         mAcLinNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -786,26 +786,26 @@ void CellsSystem::Diff()
       }
       if( mAcLinNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLinNew["<< n << "] = " << std::scientific << mAcLinNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mAcLinNew["<< n << "] = " << std::scientific << mAcLinNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAcLinNew[n] = mAcLinOld[n] = " << mAcLinOld[n] << "\n" << std::endl;
         mAcLinNew[n] = mAcLinOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
       
       // 2. calcolo del nuovo valore di mAcLext      *** MODIFIED FOR BLOOD VESSELS ***
-      double cAcL = AcL_extra[n] + dt*Diff_ES_AcL*sAcL + dt*Diff_Env_AcL*(mAcL_envOld/volume_envOld)*g_env[n] + dt*Diff_BV_AcL*rhoAcL_bv*g_bv[n];	// calcolo della parte fissa
+      double cAcL = AcL_extra[n] + params.dt*Diff_ES_AcL*sAcL + params.dt*Diff_Env_AcL*(mAcL_envOld/volume_envOld)*g_env[n] + params.dt*Diff_BV_AcL*rhoAcL_bv*g_bv[n];	// calcolo della parte fissa
       
       if( true ) // local speed up
       {
-        double buffer = Diff_Env_AcL*dt*g_env[n]/volume_extraOld[n];
-        double buffer2 = 1.+Diff_ES_AcL*dt*s0/volume_extraOld[n];
-        double buffer3 = Diff_BV_AcL*dt*g_bv[n]/volume_extraOld[n];
-        mAcLextNew[n] = mAcLextOld[n] - ( mAcLextOld[n]*(buffer2+buffer+buffer3) + dt*T_AcLnow - cAcL )\
-          /( buffer2 + buffer + buffer3 + dt*DT_AcLnow_ext );
+        double buffer = Diff_Env_AcL*params.dt*g_env[n]/volume_extraOld[n];
+        double buffer2 = 1.+Diff_ES_AcL*params.dt*s0/volume_extraOld[n];
+        double buffer3 = Diff_BV_AcL*params.dt*g_bv[n]/volume_extraOld[n];
+        mAcLextNew[n] = mAcLextOld[n] - ( mAcLextOld[n]*(buffer2+buffer+buffer3) + params.dt*T_AcLnow - cAcL )\
+          /( buffer2 + buffer + buffer3 + params.dt*DT_AcLnow_ext );
       }
       if( mAcLextNew[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
       {
-        double fhi = mAcLextOld[n]*(1+Diff_ES_AcL*dt*s0/volume_extraOld[n]+Diff_Env_AcL*dt*g_env[n]/volume_extraOld[n]+Diff_BV_AcL*dt*g_bv[n]/volume_extraOld[n]) + dt*T_AcLnow - cAcL;
-        double flo = dt*T_AcLnow_0ext - cAcL;
+        double fhi = mAcLextOld[n]*(1+Diff_ES_AcL*params.dt*s0/volume_extraOld[n]+Diff_Env_AcL*params.dt*g_env[n]/volume_extraOld[n]+Diff_BV_AcL*params.dt*g_bv[n]/volume_extraOld[n]) + params.dt*T_AcLnow - cAcL;
+        double flo = params.dt*T_AcLnow_0ext - cAcL;
         double xsol = mAcLextOld[n]*flo/(flo-fhi);
         mAcLextNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -816,7 +816,7 @@ void CellsSystem::Diff()
       }
       if( mAcLextNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
       {
-        errorlog_file << "ATTENZIONE: al passo " << nstep << " mAcLextNew["<< n << "] = " << std::scientific << mAcLextNew[n] << " < 0" << std::endl;
+        errorlog_file << "ATTENZIONE: al passo " << params.nstep << " mAcLextNew["<< n << "] = " << std::scientific << mAcLextNew[n] << " < 0" << std::endl;
         errorlog_file << "in questa iterazione si mantiene mAcLextNew[n] = mAcLextOld[n] = " << mAcLextOld[n] << "\n" << std::endl;
         mAcLextNew[n] = mAcLextOld[n];	// allora si mantiene temporanemente il vecchio valore e si confida nella prossima iterazione ... 
       }
@@ -852,11 +852,11 @@ void CellsSystem::Diff()
         DM_ATPnow = - v_WORK*C1 - vmaxP_ATP*dvp_ATPp - vmaxDNA_ATP*dvDNA_ATPp - vmaxM_ATP*dvM_ATPp; 
 
         // calcolo del nuovo valore di ATPp
-        ATPpNew[n] = ATPpOld[n] - ( ATPpOld[n] - ATPp[n] - dt*M_ATPnow )/(1.-dt*DM_ATPnow);
+        ATPpNew[n] = ATPpOld[n] - ( ATPpOld[n] - ATPp[n] - params.dt*M_ATPnow )/(1.-params.dt*DM_ATPnow);
         if( ATPpNew[n] < 0 )	// se si arriva a questo punto vuol dire che il metodo di Newton ha dei problemi ... 
         {
-          double fhi = ATPpOld[n] - ATPp[n] - dt*M_ATPnow;
-          double flo = - ( ATPp[n] + dt*(ATP_NOx[n]) );
+          double fhi = ATPpOld[n] - ATPp[n] - params.dt*M_ATPnow;
+          double flo = - ( ATPp[n] + params.dt*(ATP_NOx[n]) );
           double xsol = ATPpOld[n]*flo/(flo-fhi);
           ATPpNew[n] = xsol;
   #ifdef SECANT_IN_ERRORLOG
@@ -867,7 +867,7 @@ void CellsSystem::Diff()
         }
         if( ATPpNew[n] < 0 )	// se si arriva a questo punto vuol dire che anche il metodo della secante ha dei problemi ... 
         {
-          errorlog_file << "ATTENZIONE: al passo " << nstep << " ATPpNew["<< n << "] = " << std::scientific << ATPpNew[n] << " < 0" << std::endl;
+          errorlog_file << "ATTENZIONE: al passo " << params.nstep << " ATPpNew["<< n << "] = " << std::scientific << ATPpNew[n] << " < 0" << std::endl;
           errorlog_file << "in questa iterazione si mantiene ATPpNew[n] = ATPpOld[n] = " << ATPpOld[n] << "\n" << std::endl;
           errorlog_file << "Altre informazioni sullo stato cellulare attuale: " << std::endl;
           errorlog_file << "eta' cellulare " << age[n] << std::endl;
@@ -892,7 +892,7 @@ void CellsSystem::Diff()
         
         // proliferazione dei mitocondri (la proliferazione dei mitocondri e' bloccata in fase G0)
         if(phase[n] != G0_phase)
-          MitNew[n] = M[n] + vmaxM*vM*dt; 
+          MitNew[n] = M[n] + vmaxM*vM*params.dt; 
         else
           MitNew[n] = M[n];
       }
@@ -911,7 +911,7 @@ void CellsSystem::Diff()
       
       if( phase[n] != dead )
       {
-        delta_protein[n] = vmaxP*vp*dt;
+        delta_protein[n] = vmaxP*vp*params.dt;
         proteinNew[n] = protein[n] + delta_protein[n];
         
         if( phase[n] == G2_phase || phase[n] == M_phase)
@@ -958,7 +958,7 @@ void CellsSystem::Diff()
         double ConcE = ConcpRb*Pk_pRb;	// concentrazione MOLARE dell'enzima
 
         // reazione downstream (MM)
-        double buffer3 = ConcS[n] - dt*ConcE*type[n]->Get_k3MM() - type[n]->Get_KmMM();
+        double buffer3 = ConcS[n] - params.dt*ConcE*type[n]->Get_k3MM() - type[n]->Get_KmMM();
         ConcSNew[n] = 0.5*( (buffer3) \
           + sqrt( pow(buffer3,2) \
               + 4.*ConcS[n]*type[n]->Get_KmMM() ) );
@@ -973,7 +973,7 @@ void CellsSystem::Diff()
       
       // *** DNA
       if(phase[n] == S_phase)
-        DNANew[n] = DNA[n] + DNA_rate[n]*dt;
+        DNANew[n] = DNA[n] + DNA_rate[n]*params.dt;
       else
         DNANew[n] = DNA[n];
       
@@ -989,7 +989,7 @@ void CellsSystem::Diff()
   if( nrepeats < min_nrepeats ) isOK = false;
 
 	// convergence control for environmental variables
-	if( fabs(mG_envOld - mG_envNew) > eps*0.5*(fabs(mG_envOld)+fabs(mG_envNew))+TOL ) 
+	if( fabs(mG_envOld - mG_envNew) > params.eps*0.5*(fabs(mG_envOld)+fabs(mG_envNew))+TOL ) 
   {
 		isOK = false;
 		convergence_fail[0]++;
@@ -1003,7 +1003,7 @@ void CellsSystem::Diff()
 //		double newprec = 2.*fabs(mO2_envOld - mO2_envNew)/(fabs(mO2_envOld)+fabs(mO2_envNew));
 //		prec = newprec > prec ? newprec : prec;
 //		}
-	if( fabs(mA_envOld - mA_envNew) > eps*0.5*(fabs(mA_envOld)+fabs(mA_envNew))+TOL ) 
+	if( fabs(mA_envOld - mA_envNew) > params.eps*0.5*(fabs(mA_envOld)+fabs(mA_envNew))+TOL ) 
   {
 		isOK = false;
 		convergence_fail[2]++;
@@ -1011,7 +1011,7 @@ void CellsSystem::Diff()
 		prec = newprec > prec ? newprec : prec;
 	}
 
-	if( fabs(mAcL_envOld - mAcL_envNew) > eps*0.5*(fabs(mAcL_envOld)+fabs(mAcL_envNew))+TOL )
+	if( fabs(mAcL_envOld - mAcL_envNew) > params.eps*0.5*(fabs(mAcL_envOld)+fabs(mAcL_envNew))+TOL )
   {
 		isOK = false;
 		convergence_fail[3]++;
@@ -1033,12 +1033,12 @@ void CellsSystem::Diff()
 #endif
 //#pragma omp parallel for ordered schedule(dynamic)
 #pragma omp parallel for
-	for(unsigned long n=0; n<ncells; n++)  // assignment of new values in preparation for the next iteration
+	for(unsigned long n=0; n<params.ncells; n++)  // assignment of new values in preparation for the next iteration
   {
 		bool cellisOK = true;
 		
 		// First check if the algorithm has reached convergence ...
-		if( fabs(mGinOld[n] - mGinNew[n]) > eps*0.5*(fabs(mGinOld[n])+fabs(mGinNew[n]))+TOL ) 
+		if( fabs(mGinOld[n] - mGinNew[n]) > params.eps*0.5*(fabs(mGinOld[n])+fabs(mGinNew[n]))+TOL ) 
     {
 			isOK = false;
 			cellisOK = false;
@@ -1054,7 +1054,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mGextOld[n] - mGextNew[n]) > eps*0.5*(fabs(mGextOld[n])+fabs(mGextNew[n]))+TOL )
+		if( fabs(mGextOld[n] - mGextNew[n]) > params.eps*0.5*(fabs(mGextOld[n])+fabs(mGextNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1070,7 +1070,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mO2Old[n] - mO2New[n]) > eps*0.5*(fabs(mO2Old[n])+fabs(mO2New[n]))+TOL )
+		if( fabs(mO2Old[n] - mO2New[n]) > params.eps*0.5*(fabs(mO2Old[n])+fabs(mO2New[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1086,7 +1086,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mAinOld[n] - mAinNew[n]) > eps*0.5*(fabs(mAinOld[n])+fabs(mAinNew[n]))+TOL )
+		if( fabs(mAinOld[n] - mAinNew[n]) > params.eps*0.5*(fabs(mAinOld[n])+fabs(mAinNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1102,7 +1102,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mAextOld[n] - mAextNew[n]) > eps*0.5*(fabs(mAextOld[n])+fabs(mAextNew[n]))+TOL )
+		if( fabs(mAextOld[n] - mAextNew[n]) > params.eps*0.5*(fabs(mAextOld[n])+fabs(mAextNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1118,7 +1118,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mAcLinOld[n] - mAcLinNew[n]) > eps*0.5*(fabs(mAcLinOld[n])+fabs(mAcLinNew[n]))+TOL )
+		if( fabs(mAcLinOld[n] - mAcLinNew[n]) > params.eps*0.5*(fabs(mAcLinOld[n])+fabs(mAcLinNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1134,7 +1134,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(mAcLextOld[n] - mAcLextNew[n]) > eps*0.5*(fabs(mAcLextOld[n])+fabs(mAcLextNew[n]))+TOL )
+		if( fabs(mAcLextOld[n] - mAcLextNew[n]) > params.eps*0.5*(fabs(mAcLextOld[n])+fabs(mAcLextNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1150,7 +1150,7 @@ void CellsSystem::Diff()
 				errorlog_file << "\teta' di fase: " << phase_age[n] << " s\n" << std::endl;
       }
     }
-		if( fabs(ATPpOld[n] - ATPpNew[n]) > eps*0.5*(fabs(ATPpOld[n])+fabs(ATPpNew[n]))+TOL )
+		if( fabs(ATPpOld[n] - ATPpNew[n]) > params.eps*0.5*(fabs(ATPpOld[n])+fabs(ATPpNew[n]))+TOL )
     {
 			isOK = false;
 			cellisOK = false;
@@ -1194,7 +1194,7 @@ void CellsSystem::Diff()
 	nrepeats++;
 	if( nrepeats >= MAXREPEATS )
   {
-		errorlog_file << "\n*** ATTENZIONE: al passo " << nstep << " potenziale problema di convergenza dell'algoritmo in CellsSystem::Diff ***" << std::endl;
+		errorlog_file << "\n*** ATTENZIONE: al passo " << params.nstep << " potenziale problema di convergenza dell'algoritmo in CellsSystem::Diff ***" << std::endl;
 		errorlog_file << "precisione limitata a " << std::scientific << prec << " per " << ncell_fails << " cellule" << "\n" << std::endl;
 	}
 	
@@ -1204,7 +1204,7 @@ void CellsSystem::Diff()
 
 
 	// calcolo del flusso di AcL nell'ambiente
-	AcLFlow = ( mAcL_envOld - Env.GetEnvironmentAcL() )/dt;
+	AcLFlow = ( mAcL_envOld - Env.GetEnvironmentAcL() )/params.dt;
 
 	// assegnazione delle variabili ambientali
 	Env.SetEnvironmentvolume(volume_envOld);
@@ -1226,7 +1226,7 @@ void CellsSystem::Diff()
 	AcL_extra = mAcLextOld;
 
 #pragma omp parallel for
-	for(unsigned long n=0; n<ncells; n++)
+	for(unsigned long n=0; n<params.ncells; n++)
   {
 		// assegnazioni che si fanno solo nel caso in cui la cellula e' viva
 		if( phase[n] != dead )					
@@ -1259,7 +1259,7 @@ void CellsSystem::Diff()
 
 			// altre variabili e quantita' collegate
 			protein[n] = proteinNew[n];
-			prot_rate[n] = delta_protein[n]/dt;
+			prot_rate[n] = delta_protein[n]/params.dt;
 						
 			pRb[n] = pRbNew[n];
 			
@@ -1283,8 +1283,8 @@ void CellsSystem::Diff()
 			rATPprod = ATP_Ox[n] + ATP_NOx[n] + ATP2[n] + ATP3[n];
 			rATPcons = ConsATP[n] + ConsATP_1[n] + ConsATP_2[n] + ConsATP_3[n] + ConsATP_5[n];
 			
-			ATPprod[n] += rATPprod*dt;						// ATP prodotto in questo timestep
-			ATPcons[n] += rATPcons*dt;						// ATP consumato in questo timestep
+			ATPprod[n] += rATPprod*params.dt;						// ATP prodotto in questo timestep
+			ATPcons[n] += rATPcons*params.dt;						// ATP consumato in questo timestep
 			ATPtot[n] = rATPprod - rATPcons;				// rate di variazione totale dell'ATPp
 
     }
@@ -1306,7 +1306,7 @@ void CellsSystem::Diff()
             
       // *********
       // this instruction corresponds to the exact solution of the equation for the volume
-      volume[n] = volumeOld[n]*exp(-dt*type[n]->Get_DVap()); 
+      volume[n] = volumeOld[n]*exp(-params.dt*type[n]->Get_DVap()); 
       
       r[n] = pow(3.*volume[n]/(4.*PI), (double)1./3.); 
       surface[n] = 4.*PI*r[n]*r[n]; 

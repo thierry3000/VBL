@@ -37,7 +37,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 		
 // inizializzazione del seme del generatore di numeri casuali 
 
-	std::cout << "The seed of the generator and' " << idum << std::endl;
+	std::cout << "The seed of the generator and' " << params.idum << std::endl;
 
 	
 // queste dichiarazioni servono alla definizione di flusso e dose di radiazione: si tratta di una struttura un po' ridondante che 
@@ -73,15 +73,15 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 
 		// cout << "Simulazione con cellule disperse (0), full 3D (1), oppure con configurazione fissa (2) ? ";
 		std::cout << "Simulation with dispersed cells (0) or full 3D (1) ? ";
-		std::cin >> sim_type;
+		std::cin >> params.sim_type;
 		
 		}
 	else 
 		{
-		commands >> sim_type;
+		commands >> params.sim_type;
 		}
 
-	switch(sim_type)
+	switch(params.sim_type)
 		{
 		case Disperse:
 		std::cout << "E' stata selezionata la simulazione con cellule disperse\n" << std::endl;
@@ -100,7 +100,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 		break; 		 
 		}
 
-	if( sim_type == Disperse || sim_type == Full3D )
+	if( params.sim_type == Disperse || params.sim_type == Full3D )
 		{
 		if( terminal )
 			{
@@ -120,132 +120,138 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	double New_z_0 = 0;
 
 // se le cellule sono disperse, vengono sparse nell'intero volume	
-	if( sim_type == Disperse )
-		{
-		initial_cell_dist = Dist3D;
-		}
+	if( params.sim_type == Disperse )
+  {
+    initial_cell_dist = Dist3D;
+  }
 
 // se la simulazione e' di tipo 3D allora si distinguono diversi tipi di simulazione
-	if( sim_type == Full3D )
-		{
-		// if there is only one cell, than choose its starting position.
-		if( nstart == 1 )
-		{
-			bool select;
-			if(terminal){
-				std::cout<<"Set the starting position of the cell (0 = default (at the center of the simulation environment), 1 = insert customized position (x,y,z)):" ;
-				std::cin >> select;
-				if(!select)initial_cell_dist = OneCellDefault;
-				else{
-					initial_cell_dist = OneCell;
-					std::cout <<"insert x y z:" ;
-					std::cin >> New_x_0 >> New_y_0 >> New_z_0;
-					std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
-				}
+	if( params.sim_type == Full3D )
+  {
+    // if there is only one cell, than choose its starting position.
+    if( nstart == 1 )
+    {
+      bool select;
+      if(terminal)
+      {
+        std::cout<<"Set the starting position of the cell (0 = default (at the center of the simulation environment), 1 = insert customized position (x,y,z)):" ;
+        std::cin >> select;
+        if(!select)
+          initial_cell_dist = OneCellDefault;
+        else
+        {
+          initial_cell_dist = OneCell;
+          std::cout <<"insert x y z:" ;
+          std::cin >> New_x_0 >> New_y_0 >> New_z_0;
+          std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
+        }
 
-			}
-			else{
-				commands >> select;
-				if(!select){
-					initial_cell_dist = OneCellDefault;
-					std::cout<<"The first cell was set in default position" << std::endl;
-				}
-				else {
-					initial_cell_dist = OneCell;
-					commands >> New_x_0 >> New_y_0 >> New_z_0;
-					std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
-				}
-
-			}
-		}
-		// se ci sono piu' cellule allora si prende la distribuzione 2D oppure quella 3D
-		else 
-			{
-			if( terminal )
-				{
-				std::cout << "Tipo di distribuzione delle cellule (2 = distribuzione 2D, 3 = distribuzione 3D): ";
-				std::cin >> initial_cell_dist;
-				}
-			else 
-				{
-				commands >> initial_cell_dist;
-				if(initial_cell_dist == 2) 
-					std::cout << "E' stata selezionata la distribuzione di cellule 2D" << std::endl;
-				else if (initial_cell_dist == 3)
-					std::cout << "E' stata selezionata la distribuzione di cellule 3D" << std::endl;
-				else 
-					std::cout << "ATTENZIONE: distribuzione di cellule indefinita!" << std::endl;
-					}
-			}
-		}
+      }
+      else
+      {
+        commands >> select;
+        if(!select)
+        {
+          initial_cell_dist = OneCellDefault;
+          std::cout<<"The first cell was set in default position" << std::endl;
+        }
+        else 
+        {
+          initial_cell_dist = OneCell;
+          commands >> New_x_0 >> New_y_0 >> New_z_0;
+          std::cout<<"The first cell was set in position: (" << New_x_0 << ", " << New_y_0 << ", " << New_z_0 << ")" << std::endl;
+        }
+      }
+    }
+    // se ci sono piu' cellule allora si prende la distribuzione 2D oppure quella 3D
+    else 
+    {
+      if( terminal )
+      {
+        std::cout << "Tipo di distribuzione delle cellule (2 = distribuzione 2D, 3 = distribuzione 3D): ";
+        std::cin >> initial_cell_dist;
+      }
+      else 
+      {
+        commands >> initial_cell_dist;
+        if(initial_cell_dist == 2) 
+          std::cout << "E' stata selezionata la distribuzione di cellule 2D" << std::endl;
+        else if (initial_cell_dist == 3)
+          std::cout << "E' stata selezionata la distribuzione di cellule 3D" << std::endl;
+        else 
+          std::cout << "ATTENZIONE: distribuzione di cellule indefinita!" << std::endl;
+      }
+    }
+  }
 
 
 	if( terminal )
 		{
 		std::cout << "Stepsize (s): ";
-		std::cin >> dt;
+		std::cin >> params.dt;
 		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo (-1 = default = 1e-5): ";
-		std::cin >> eps;
-		if (eps < 0) eps = 1e-5; // precisione relativa
+		std::cin >> params.eps;
+		if (params.eps < 0) params.eps = 1e-5; // precisione relativa
 		std::cout << "Precisione nella determinazione della velocita' (micron/s) (-1 = default = 1e-5 micron/s): ";
-		std::cin >> delta_vmax;
-		if( delta_vmax < 0 ) delta_vmax = 1.e-5; // micron/s
+		std::cin >> params.delta_vmax;
+		if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-5; // micron/s
 		std::cout << "Durata dell'inizializzazione (s) (-1 = default = 1e6 s): ";
-		std::cin >> t_ini;
-		if(t_ini < 0) t_ini = 1000000.; // s
+		std::cin >> params.t_ini;
+		if(params.t_ini < 0) params.t_ini = 1000000.; // s
 		std::cout << "Durata della simulazione (s): ";
-		std::cin >> tmax;
+		std::cin >> params.tmax;
 		std::cout << "Maximum CPU time for a fraction of run (s) (Select if you break the run in multiple parts, if <= 0 = idle): ";
-		std::cin >> t_CPU_max;
+		std::cin >> params.t_CPU_max;
     std::cout << "Stepsize per slow motion (s): (0 = no slow motion) ";
-    std::cin >> dt_sm;
-        if(dt_sm > 0)
-            {
-            std::cout << "Slow motion start time (s): ";
-            std::cin >> tsm_start;
-            std::cout << "Slow motion stop time (s): ";
-            std::cin >> tsm_stop;
-            }
-        else
-            {
-            tsm_start = 0;
-            tsm_stop = 0;
-            }
-		}
-	else 
-		{
-		commands >> dt;
-		std::cout << "Stepsize (s): " << dt << std::endl;
-		commands >> eps;
-		if (eps < 0) eps = 1e-2; // precisione relativa
-		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << eps << std::endl;
-		commands >> delta_vmax;
-		if( delta_vmax < 0 ) delta_vmax = 1.e-4; // micron/s
-		std::cout << "Precisione nella determinazione della velocita' (micron/s): " << delta_vmax << std::endl;
-		commands >> t_ini;
-		if(t_ini < 0) t_ini = 1000000.; // s
-		std::cout << "Durata dell'inizializzazione (s): " << t_ini << std::endl;
-		commands >> tmax;
-		std::cout << "Durata della simulazione (s): " << tmax << std::endl;
-		commands >> t_CPU_max;
-		std::cout << "Massimo CPU time per una frazione di run (s): " << t_CPU_max << std::endl;
-    commands >> dt_sm;
-    std::cout << "Stepsize per slow motion (s): " << dt_sm << std::endl;
-    if(dt_sm > 0)
+    std::cin >> params.dt_sm;
+    if(params.dt_sm > 0)
     {
-      commands >> tsm_start;
-      std::cout << "Slow motion start time (s): " << tsm_start << std::endl;
-      commands >> tsm_stop;
-      std::cout << "Slow motion stop time (s): " << tsm_stop << std::endl;
+      std::cout << "Slow motion start time (s): ";
+      std::cin >> params.tsm_start;
+      std::cout << "Slow motion stop time (s): ";
+      std::cin >> params.tsm_stop;
     }
     else
     {
-      tsm_start = 0;
-      tsm_stop = 0;
+      params.tsm_start = 0;
+      params.tsm_stop = 0;
+    }
+		}
+	else 
+		{
+		commands >> params.dt;
+		std::cout << "Stepsize (s): " << params.dt << std::endl;
+		commands >> params.eps;
+		if (params.eps < 0) params.eps = 1e-2; // precisione relativa
+		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << params.eps << std::endl;
+		commands >> params.delta_vmax;
+		if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-4; // micron/s
+		std::cout << "Precisione nella determinazione della velocita' (micron/s): " << params.delta_vmax << std::endl;
+		commands >> params.t_ini;
+		if(params.t_ini < 0) 
+      params.t_ini = 1000000.; // s
+		std::cout << "Durata dell'inizializzazione (s): " << params.t_ini << std::endl;
+		commands >> params.tmax;
+		std::cout << "Durata della simulazione (s): " << params.tmax << std::endl;
+		commands >> params.t_CPU_max;
+		std::cout << "Massimo CPU time per una frazione di run (s): " << params.t_CPU_max << std::endl;
+    commands >> params.dt_sm;
+    std::cout << "Stepsize per slow motion (s): " << params.dt_sm << std::endl;
+    if(params.dt_sm > 0)
+    {
+      commands >> params.tsm_start;
+      std::cout << "Slow motion start time (s): " << params.tsm_start << std::endl;
+      commands >> params.tsm_stop;
+      std::cout << "Slow motion stop time (s): " << params.tsm_stop << std::endl;
+    }
+    else
+    {
+      params.tsm_start = 0;
+      params.tsm_stop = 0;
     }
 		}
 
-	nmax = (unsigned long)floor((tmax+t_ini)/dt);
+	params.nmax = (unsigned long)floor((params.tmax+params.t_ini)/params.dt);
 
 /*		
 	cout << "Selezione dell'ambiente (0 = Standard, 1 = Modificato): ";
@@ -271,15 +277,15 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	if( terminal )
 		{
 		std::cout << "\nFlusso nullo (0) o non nullo (1)? ";
-		std::cin >> flowON;
+		std::cin >> params.flowON;
 		}
 	else 
 		{
-		commands >> flowON;
+		commands >> params.flowON;
 		}
-	if(!flowON) std::cout << "In questo run il flusso e' nullo" << std::endl;
+	if(!params.flowON) std::cout << "In questo run il flusso e' nullo" << std::endl;
 
-	if(!flowON)
+	if(!params.flowON)
 		{
 		flow_type = NullSignal;
 		flowSignal = EnvironmentalSignal( );
@@ -441,15 +447,15 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	if( terminal )
 		{
 		std::cout << "\nDose di radiazione nulla (0) o non nulla (1)? ";
-		std::cin >> doseON;
+		std::cin >> params.doseON;
 		}
 	else 
 		{
-		commands >> doseON;
+		commands >> params.doseON;
 		}
-	if(!doseON) std::cout << "In questo run la dose e' nulla" << std::endl;
+	if(!params.doseON) std::cout << "In questo run la dose e' nulla" << std::endl;
 
-	if(!doseON)
+	if(!params.doseON)
 		{
 		dose_rate_type = NullSignal;
 		dose_rateSignal = EnvironmentalSignal( );
@@ -611,13 +617,13 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	CellTypeVector.push_back( initial_type );	// si immagazzina il tipo appena definito nel vettore dei tipi cellulari
                                                 // per assicurarne la permanenza
 												// si noti che questo primo tipo cellulare sta in posizione 0 nel vettore
-    ntypes = 1;                                 // qui si inizializza ntypes (conteggio dei tipi già definiti)
+    params.ntypes = 1;                                 // qui si inizializza ntypes (conteggio dei tipi già definiti)
 	
 	CellTypeVector.push_back( alt_type );       // si immagazzina il tipo alternativo in fondo al vettore, in posizione 1
-    ntypes++;                                   // si incrementa ntypes
+    params.ntypes++;                                   // si incrementa ntypes
     
     lastname = 0;
-	AddInitializedCell(idum, &CellTypeVector[0], &Env); 
+	AddInitializedCell(params.idum, &CellTypeVector[0], &Env); 
 	
 	// la cellula viene immediatamente replicata (nstart-1 copie, in modo da avere un totale di nstart cellule)
 	if(nstart > 1)
@@ -637,7 +643,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	double zmin_s = Env.Get_zmin();
 	double zmax_s = Env.Get_zmax();	
 
-	if( sim_type == Disperse || sim_type == Full3D )
+	if( params.sim_type == Disperse || params.sim_type == Full3D )
 		{
 		
 		double delta_x = 0, delta_y = 0, delta_z = 0.;	// semiintervalli per ciascuna coordinata
@@ -705,24 +711,24 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 
 	if( terminal )
 		{
-		std::cout << "\nNumer of dt: " << dt << "steps Seconds between two file records: ";
-		std::cin >> nprint;
+		std::cout << "\nNumer of dt: " << params.dt << "steps Seconds between two file records: ";
+		std::cin >> params.nprint;
 		}
 	else 
 		{
-		commands >> nprint;
-		std::cout << "\nNumero di passi da " << dt << " secondi tra due record su file: " << nprint << std::endl;
+		commands >> params.nprint;
+		std::cout << "\nNumero di passi da " << params.dt << " secondi tra due record su file: " << params.nprint << std::endl;
 		}
 
 	if( terminal )
 		{
-		std::cout << "\nNumero di passi da " << dt << " Number of 1-second steps between two on-screen recordings: ";
-		std::cin >> nscreen;
+		std::cout << "\nNumero di passi da " << params.dt << " Number of 1-second steps between two on-screen recordings: ";
+		std::cin >> params.nscreen;
 		}
 	else 
 		{
-		commands >> nscreen;
-		std::cout << "\nNumero di passi da " << dt << " secondi tra due record su schermo: " << nscreen << std::endl;
+		commands >> params.nscreen;
+		std::cout << "\nNumero di passi da " << params.dt << " secondi tra due record su schermo: " << params.nscreen << std::endl;
 		}
     
 // gestione eventi speciali
@@ -769,13 +775,13 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
         }
 
 		
-	ncells = nstart;						// numero di cellule alla partenza
+	params.ncells = nstart;						// numero di cellule alla partenza
 	//ntypes = 1;								// un solo tipo cellulare, per ora
 	
-	t = treal = 0;							// inizializzazione dei timers del tempo di simulazione
-	nstep = 0;								// inizializzazione del passo
+	params.t = params.treal = 0;							// inizializzazione dei timers del tempo di simulazione
+	params.nstep = 0;								// inizializzazione del passo
     
-    slow_motion = false;                    // inizialmente lo slow motion non c'e'
+  params.slow_motion = false;                    // inizialmente lo slow motion non c'e'
 
 	ready2start = false;					// il programma non e' ancora pronto a partire
   faketumAtCurrentTime = false;
@@ -806,9 +812,9 @@ void CellsSystem::RunDefinition(  )
 		{
 		
 		std::ofstream fileout( "./runs/run_number.txt" );	// ... allora si crea il file e ci si mette il numero 1
-		run = 1;
+		params.run = 1;
 		fileout << "name" << std::endl;
-		fileout << run << std::endl;
+		fileout << params.run << std::endl;
 		fileout.close();
 		
 		}
@@ -816,18 +822,18 @@ void CellsSystem::RunDefinition(  )
 		{
 		
 		runfile >> machine;							// si legge il nome della macchina
-		runfile >> run;								// si legge l'ultimo numero di run
+		runfile >> params.run;								// si legge l'ultimo numero di run
 		runfile.close();							// si chiude il file in lettura ...
-		run++;										// ... si incrementa il numero di run
+		params.run++;										// ... si incrementa il numero di run
 		runfile.open( "./runs/run_number.txt");		// ... quindi si sovrascrive il vecchio file 
 		runfile << machine << std::endl;					// con il nome della macchina
-		runfile << run << std::endl;						// e con il nuovo numero di run
+		runfile << params.run << std::endl;						// e con il nuovo numero di run
 		runfile.close();
 		}
 
 // qui si definisce il nome del directory di output
 	char str[100];
-	sprintf(str,"./runs/run_%d-%s/",run,machine.c_str());
+	sprintf(str,"./runs/run_%d-%s/",params.run,machine.c_str());
 	//dir = dir+str;
 	dir = str;
 	std::cout << std::endl << "I/O directory: " << dir << "\n\n";
@@ -855,14 +861,14 @@ void CellsSystem::RunDefinition(  )
 // apertura del file stream per l'output su file delle impostazioni del run e quindi output
 	std::string runfilename = dir+"run_data.txt";
 	std::ofstream run_data( runfilename.c_str() );
-	run_data << "Parametri del run " << run << std::endl << std::endl;
+	run_data << "Parametri del run " << params.run << std::endl << std::endl;
 	
 // printout dei parametri ottenuti da terminale o command file
-	run_data << "Timestep (s): " << dt << std::endl;
-	run_data << "Precisione per CellsSystem::Diff: " << eps << std::endl;
-	run_data << "Precisione nella determinazione delle velocita (micron/s): " << delta_vmax << std::endl;
-	run_data << "Durata inizializzazione (s): " << t_ini << std::endl;
-	run_data << "Durata max della simulazione (s) " << tmax << std::endl;
+	run_data << "Timestep (s): " << params.dt << std::endl;
+	run_data << "Precisione per CellsSystem::Diff: " << params.eps << std::endl;
+	run_data << "Precisione nella determinazione delle velocita (micron/s): " << params.delta_vmax << std::endl;
+	run_data << "Durata inizializzazione (s): " << params.t_ini << std::endl;
+	run_data << "Durata max della simulazione (s) " << params.tmax << std::endl;
 	run_data << std::endl;
 
 
@@ -877,7 +883,7 @@ void CellsSystem::RunDefinition(  )
 */	
 
 // printout di flusso e dose-rate
-	if( flowON )
+	if( params.flowON )
 		{
 		run_data << "Flusso -- non nullo -- con le seguenti caratteristiche (ampiezze in m^3/s):  " << std::endl;
 		run_data << flowSignal << std::endl;
@@ -885,7 +891,7 @@ void CellsSystem::RunDefinition(  )
 	else
 		run_data << "Flusso -- nullo -- " << std::endl;
 
-	if( doseON )
+	if( params.doseON )
 		{
 		run_data << "Dose di radiazione -- non nulla -- con le seguenti caratteristiche (ampiezze in Gy/s):  " << std::endl;
 		run_data << dose_rateSignal << std::endl;
@@ -952,7 +958,7 @@ void CellsSystem::RunDefinition(  )
 
 // stampa iniziale su error log
 	
-	errorlog_file << "Errors and warnings for run " << run << "\n" << std::endl;
+	errorlog_file << "Errors and warnings for run " << params.run << "\n" << std::endl;
 	
 
 }
@@ -1025,7 +1031,7 @@ void CellsSystem::RunDefinition( std::string run_name )
 
 // stampa iniziale su error log
 	
-	errorlog_file << "Errors and warnings for run " << run << "\n" << std::endl;
+	errorlog_file << "Errors and warnings for run " << params.run << "\n" << std::endl;
 	
 
 }
@@ -1041,155 +1047,158 @@ void CellsSystem::WriteCellsSystem( )
 	std::ofstream stream;
 	
  	stream.open( cellsys_out_filename.c_str(), std::ios::binary );
-
+  /** PARAMETER WRITE
+   *  these are now contained in the new ReadInParameters struct
+   */
 // parametri per la definizione del run	
-	stream.write( (char*)(&sim_type), sizeof(int) );
-	stream.write( (char*)(&run), sizeof(int) );
-	stream.write( (char*)(&dt), sizeof(double) );
-	stream.write( (char*)(&dt_sm), sizeof(double) );
-	stream.write( (char*)(&t), sizeof(double) );
-	stream.write( (char*)(&t_ini), sizeof(double) );
-	stream.write( (char*)(&treal), sizeof(double) );
-	stream.write( (char*)(&tmax), sizeof(double) );
-	stream.write( (char*)(&tsm_start), sizeof(double) );
-	stream.write( (char*)(&tsm_stop), sizeof(double) );
-	stream.write( (char*)(&slow_motion), sizeof(bool) );
+	stream.write( (char*)(&params.sim_type), sizeof(int) );
+	stream.write( (char*)(&params.run), sizeof(int) );
+	stream.write( (char*)(&params.dt), sizeof(double) );
+	stream.write( (char*)(&params.dt_sm), sizeof(double) );
+	stream.write( (char*)(&params.t), sizeof(double) );
+	stream.write( (char*)(&params.t_ini), sizeof(double) );
+	stream.write( (char*)(&params.treal), sizeof(double) );
+	stream.write( (char*)(&params.tmax), sizeof(double) );
+	stream.write( (char*)(&params.tsm_start), sizeof(double) );
+	stream.write( (char*)(&params.tsm_stop), sizeof(double) );
+	stream.write( (char*)(&params.slow_motion), sizeof(bool) );
 	
-	stream.write( (char*)(&t_CPU_max), sizeof(double) );
+	stream.write( (char*)(&params.t_CPU_max), sizeof(double) );
 
-	stream.write( (char*)(&nstep), sizeof(unsigned long) );
-	stream.write( (char*)(&nstep_start), sizeof(unsigned long) );
-	stream.write( (char*)(&nmax), sizeof(unsigned long) );
-	stream.write( (char*)(&idum), sizeof(int) );
+	stream.write( (char*)(&params.nstep), sizeof(unsigned long) );
+	stream.write( (char*)(&params.nstep_start), sizeof(unsigned long) );
+	stream.write( (char*)(&params.nmax), sizeof(unsigned long) );
+	stream.write( (char*)(&params.idum), sizeof(int) );
 
-	stream.write( (char*)(&nprint), sizeof(unsigned long) );
-	stream.write( (char*)(&nscreen), sizeof(unsigned long) );
-	stream.write( (char*)(&nconfiguration), sizeof(unsigned long) );
+	stream.write( (char*)(&params.nprint), sizeof(unsigned long) );
+	stream.write( (char*)(&params.nscreen), sizeof(unsigned long) );
+	stream.write( (char*)(&params.nconfiguration), sizeof(unsigned long) );
 
-	stream.write( (char*)(&eps), sizeof(double) );
-	stream.write( (char*)(&delta_vmax), sizeof(double) );
+	stream.write( (char*)(&params.eps), sizeof(double) );
+	stream.write( (char*)(&params.delta_vmax), sizeof(double) );
 
-	stream.write( (char*)(&ncells), sizeof(unsigned long) );
-	stream.write( (char*)(&alive), sizeof(unsigned long) );
-	stream.write( (char*)(&ntypes), sizeof(unsigned long) );
+	stream.write( (char*)(&params.ncells), sizeof(unsigned long) );
+	stream.write( (char*)(&params.alive), sizeof(unsigned long) );
+	stream.write( (char*)(&params.ntypes), sizeof(unsigned long) );
 
+  // flussi
+	stream.write( (char*)(&params.flowON), sizeof(bool) );
+	stream.write( (char*)(&params.doseON), sizeof(bool) );
+  
 // parametri ambientali
 	// ambiente iniziale Env_0
 	Env_0.WriteEnvironment( stream );
 	
 	// ambiente attuale Env
 	Env.WriteEnvironment( stream );
-
-	// flussi
-	stream.write( (char*)(&flowON), sizeof(bool) );
-	stream.write( (char*)(&doseON), sizeof(bool) );
 	
 	// segnali
 	flowSignal.WriteEnvironmentalSignal( stream );
 	dose_rateSignal.WriteEnvironmentalSignal( stream );
 	
-	
+	/** DATA WRITE **/
+  
 // vettore dei tipi cellulari
-	for(unsigned long int k=0; k<ntypes; k++)
+	for(unsigned long int k=0; k<params.ntypes; k++)
 		{
 		CellTypeVector[k].WriteCellType( stream );
 		}
 	
 	// maxdr e i dati sul flusso globale di O2 e AcL vengono ricalcolati 
 	
-	stream.write( (char*)(&name[0]) , ncells*sizeof( unsigned long ) );
-	stream.write( (char*)(&mark[0]) , ncells*sizeof( int ) );
-	for(unsigned long int n = 0; n<ncells; n++)
+	stream.write( (char*)(&name[0]) , params.ncells*sizeof( unsigned long ) );
+	stream.write( (char*)(&mark[0]) , params.ncells*sizeof( int ) );
+	for(unsigned long int n = 0; n<params.ncells; n++)
 		{
 		unsigned long int k = (unsigned long int)(type[n]-&CellTypeVector[0]);
 		stream.write( (char*)(&k) , sizeof( unsigned long int ) );
 		// cout << k << endl;
 		}
 	
-	stream.write( (char*)(&Temperature[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&Temperature[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&phase[0]) , ncells*sizeof( CellPhase ) );
-	stream.write( (char*)(&death_condition[0]) , ncells*sizeof( int ) );
-	stream.write( (char*)(&age[0]) , ncells*sizeof( float ) );
-	stream.write( (char*)(&phase_age[0]) , ncells*sizeof( float ) );
-	stream.write( (char*)(&age_mother[0]) , ncells*sizeof( float ) );
-	stream.write( (char*)(&n_mitosis[0]) , ncells*sizeof( int ) );
+	stream.write( (char*)(&phase[0]) , params.ncells*sizeof( CellPhase ) );
+	stream.write( (char*)(&death_condition[0]) , params.ncells*sizeof( int ) );
+	stream.write( (char*)(&age[0]) , params.ncells*sizeof( float ) );
+	stream.write( (char*)(&phase_age[0]) , params.ncells*sizeof( float ) );
+	stream.write( (char*)(&age_mother[0]) , params.ncells*sizeof( float ) );
+	stream.write( (char*)(&n_mitosis[0]) , params.ncells*sizeof( int ) );
 	
-	stream.write( (char*)(&x[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&y[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&z[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&vx[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&vy[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&vz[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&r[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&surface[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&volume[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&mass[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&x[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&y[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&z[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&vx[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&vy[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&vz[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&r[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&surface[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&volume[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&mass[0]) , params.ncells*sizeof( double ) );
 	
 	// le variabili dinamiche vxnew, fx, etc non vengono scritte ma ricalcolate dal metodo per la dinamica
 	
-	stream.write( (char*)(&volume_extra[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&volume_extra[0]) , params.ncells*sizeof( double ) );
 	
 	// le variabili geometriche che si calcolano con CGAL non vengono scritte ma ricalcolate al volo dopo la lettura
 
-	stream.write( (char*)(&M[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&M[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&G[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&G6P[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&O2[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&store[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&A[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&AcL[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&G[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&G6P[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&O2[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&store[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&A[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&AcL[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&h[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&pHi[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&h[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&pHi[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&protein[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&prot_rate[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&DNA[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&DNA_rate[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&protein[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&prot_rate[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&DNA[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&DNA_rate[0]) , params.ncells*sizeof( double ) );
 
 	// i rates non vengono scritti ma ricalcolati dal metodo del metabolismo
 
-	stream.write( (char*)(&ATP_St[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATP_Ox[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATP_NOx[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATP2[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATP3[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP_1[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP_2[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP_3[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP_4[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsATP_5[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATPtot[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATPp[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATPmin[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&ATP_St[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATP_Ox[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATP_NOx[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATP2[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATP3[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP[0]) ,params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP_1[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP_2[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP_3[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP_4[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsATP_5[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPtot[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPp[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPmin[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&ATPstart[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATPprod[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ATPcons[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPstart[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPprod[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ATPcons[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&G_extra[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&A_extra[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&AcL_extra[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&G_extra[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&A_extra[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&AcL_extra[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&SensO2[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&ConsO[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&SensO2[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&ConsO[0]) , params.ncells*sizeof( double ) );
 
-	stream.write( (char*)(&DNA_spread[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&M_T[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&pRb[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&DNA_spread[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&M_T[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&pRb[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&ConcS[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&ConcS[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&cyclinD[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&cyclinE[0]) , ncells*sizeof( double ) );
-	stream.write( (char*)(&cyclinX[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&cyclinD[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&cyclinE[0]) , params.ncells*sizeof( double ) );
+	stream.write( (char*)(&cyclinX[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&NpRbk[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&NpRbk[0]) , params.ncells*sizeof( double ) );
 	
-	stream.write( (char*)(&DNA_spread[0]) , ncells*sizeof( double ) );
+	stream.write( (char*)(&DNA_spread[0]) , params.ncells*sizeof( double ) );
 	
 	// le copie per i calcoli in Diff non vengono scritte su file
 	
@@ -1214,47 +1223,47 @@ void CellsSystem::ReadCellsSystem( )
 		}
 
 // parametri per la definizione del run	
-	stream.read( (char*)(&sim_type), sizeof(int) );
-	std::cout << "Tipo di simulazione: " << sim_type << std::endl;
-	stream.read( (char*)(&run), sizeof(int) );
-	std::cout << "Run: " << run << std::endl;
-	stream.read( (char*)(&dt), sizeof(double) );
-	std::cout << "dt (s): " << dt << std::endl;
-	stream.read( (char*)(&dt_sm), sizeof(double) );
-	std::cout << "dt_sm (s): " << dt_sm << std::endl;
-	stream.read( (char*)(&t), sizeof(double) );
-	stream.read( (char*)(&t_ini), sizeof(double) );
-	stream.read( (char*)(&treal), sizeof(double) );
-	std::cout << "tempo simulato raggiunto (s): " << treal << std::endl;
-	stream.read( (char*)(&tmax), sizeof(double) );
-	stream.read( (char*)(&tsm_start), sizeof(double) );
-	stream.read( (char*)(&tsm_stop), sizeof(double) );
-	stream.read( (char*)(&slow_motion), sizeof(bool) );
+	stream.read( (char*)(&params.sim_type), sizeof(int) );
+	std::cout << "Tipo di simulazione: " << params.sim_type << std::endl;
+	stream.read( (char*)(&params.run), sizeof(int) );
+	std::cout << "Run: " << params.run << std::endl;
+	stream.read( (char*)(&params.dt), sizeof(double) );
+	std::cout << "dt (s): " << params.dt << std::endl;
+	stream.read( (char*)(&params.dt_sm), sizeof(double) );
+	std::cout << "dt_sm (s): " << params.dt_sm << std::endl;
+	stream.read( (char*)(&params.t), sizeof(double) );
+	stream.read( (char*)(&params.t_ini), sizeof(double) );
+	stream.read( (char*)(&params.treal), sizeof(double) );
+	std::cout << "tempo simulato raggiunto (s): " << params.treal << std::endl;
+	stream.read( (char*)(&params.tmax), sizeof(double) );
+	stream.read( (char*)(&params.tsm_start), sizeof(double) );
+	stream.read( (char*)(&params.tsm_stop), sizeof(double) );
+	stream.read( (char*)(&params.slow_motion), sizeof(bool) );
 
-	stream.read( (char*)(&t_CPU_max), sizeof(double) );
-	std::cout << "tempo di CPU max per una frazione di run (s): " << t_CPU_max << std::endl;
+	stream.read( (char*)(&params.t_CPU_max), sizeof(double) );
+	std::cout << "tempo di CPU max per una frazione di run (s): " << params.t_CPU_max << std::endl;
 
-	stream.read( (char*)(&nstep), sizeof(unsigned long) );
-	stream.read( (char*)(&nstep_start), sizeof(unsigned long) );
-	stream.read( (char*)(&nmax), sizeof(unsigned long) );
-	stream.read( (char*)(&idum), sizeof(int) );
+	stream.read( (char*)(&params.nstep), sizeof(unsigned long) );
+	stream.read( (char*)(&params.nstep_start), sizeof(unsigned long) );
+	stream.read( (char*)(&params.nmax), sizeof(unsigned long) );
+	stream.read( (char*)(&params.idum), sizeof(int) );
 
-	stream.read( (char*)(&nprint), sizeof(unsigned long) );
-	stream.read( (char*)(&nscreen), sizeof(unsigned long) );
-	stream.read( (char*)(&nconfiguration), sizeof(unsigned long) );
+	stream.read( (char*)(&params.nprint), sizeof(unsigned long) );
+	stream.read( (char*)(&params.nscreen), sizeof(unsigned long) );
+	stream.read( (char*)(&params.nconfiguration), sizeof(unsigned long) );
 
-	stream.read( (char*)(&eps), sizeof(double) );
-	stream.read( (char*)(&delta_vmax), sizeof(double) );
+	stream.read( (char*)(&params.eps), sizeof(double) );
+	stream.read( (char*)(&params.delta_vmax), sizeof(double) );
 
-	ncells = 0;
+	params.ncells = 0;
 	unsigned long old_ncells;
 	stream.read( (char*)(&old_ncells), sizeof(unsigned long) );
 	std::cout << "numero di cellule: " << old_ncells << std::endl;
 	
-	stream.read( (char*)(&alive), sizeof(unsigned long) );
-	std::cout << "di cui vive: " << alive << std::endl;
-	stream.read( (char*)(&ntypes), sizeof(unsigned long) );
-	std::cout << "numero di fenotipi: " << ntypes << std::endl;
+	stream.read( (char*)(&params.alive), sizeof(unsigned long) );
+	std::cout << "di cui vive: " << params.alive << std::endl;
+	stream.read( (char*)(&params.ntypes), sizeof(unsigned long) );
+	std::cout << "numero di fenotipi: " << params.ntypes << std::endl;
 
 // parametri ambientali
 	// ambiente iniziale Env_0
@@ -1266,8 +1275,8 @@ void CellsSystem::ReadCellsSystem( )
 	std::cout << "volume ambiente attuale (microlitri) " << 1e-9*Env.GetEnvironmentvolume() << std::endl;
 
 	// flussi
-	stream.read( (char*)(&flowON), sizeof(bool) );
-	stream.read( (char*)(&doseON), sizeof(bool) );
+	stream.read( (char*)(&params.flowON), sizeof(bool) );
+	stream.read( (char*)(&params.doseON), sizeof(bool) );
 	
 	// segnali
 	flowSignal.ReadEnvironmentalSignal( stream );
@@ -1278,9 +1287,9 @@ void CellsSystem::ReadCellsSystem( )
 	
 // vettore dei tipi cellulari
 
-	CellTypeVector.resize( ntypes );
+	CellTypeVector.resize( params.ntypes );
 	
-	for(unsigned long int k=0; k<ntypes; k++)
+	for(unsigned long int k=0; k<params.ntypes; k++)
 		{
 		CellTypeVector[k].ReadCellType( stream );
 		}
@@ -1291,100 +1300,100 @@ void CellsSystem::ReadCellsSystem( )
 	
 	AddCells( old_ncells );		// qui si alloca spazio ai vettori che descrivono le cellule (da qui in poi e' definito ncells );
 	
-	stream.read( (char*)(&name[0]) , ncells*sizeof( unsigned long ) );
-	stream.read( (char*)(&mark[0]) , ncells*sizeof( int ) );
+	stream.read( (char*)(&name[0]) , params.ncells*sizeof( unsigned long ) );
+	stream.read( (char*)(&mark[0]) , params.ncells*sizeof( int ) );
 	
 	unsigned long int ktype;
-	for(unsigned long int n = 0; n<ncells; n++)
+	for(unsigned long int n = 0; n<params.ncells; n++)
 		{
 		stream.read( (char*)(&ktype) , sizeof( unsigned long int ) );
 		type[n] = &(CellTypeVector[ktype]);
 		}
 	
-	stream.read( (char*)(&Temperature[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&Temperature[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&phase[0]) , ncells*sizeof( CellPhase ) );
-	stream.read( (char*)(&death_condition[0]) , ncells*sizeof( int ) );
-	stream.read( (char*)(&age[0]) , ncells*sizeof( float ) );
-	stream.read( (char*)(&phase_age[0]) , ncells*sizeof( float ) );
-	stream.read( (char*)(&age_mother[0]) , ncells*sizeof( float ) );
-	stream.read( (char*)(&n_mitosis[0]) , ncells*sizeof( int ) );
+	stream.read( (char*)(&phase[0]) , params.ncells*sizeof( CellPhase ) );
+	stream.read( (char*)(&death_condition[0]) , params.ncells*sizeof( int ) );
+	stream.read( (char*)(&age[0]) , params.ncells*sizeof( float ) );
+	stream.read( (char*)(&phase_age[0]) ,params.ncells*sizeof( float ) );
+	stream.read( (char*)(&age_mother[0]) , params.ncells*sizeof( float ) );
+	stream.read( (char*)(&n_mitosis[0]) , params.ncells*sizeof( int ) );
 	
-	stream.read( (char*)(&x[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&y[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&z[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&vx[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&vy[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&vz[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&r[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&surface[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&volume[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&mass[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&x[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&y[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&z[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&vx[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&vy[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&vz[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&r[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&surface[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&volume[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&mass[0]) , params.ncells*sizeof( double ) );
 	
 	// le variabili dinamiche vxnew, fx, etc non vengono scritte ma ricalcolate dal metodo per la dinamica
 	
-	stream.read( (char*)(&volume_extra[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&volume_extra[0]) , params.ncells*sizeof( double ) );
 	
 	// le variabili geometriche che si calcolano con CGAL non vengono scritte ma ricalcolate al volo dopo la lettura
 
-	stream.read( (char*)(&M[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&M[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&G[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&G6P[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&O2[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&store[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&A[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&AcL[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&G[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&G6P[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&O2[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&store[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&A[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&AcL[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&h[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&pHi[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&h[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&pHi[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&protein[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&prot_rate[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&DNA[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&DNA_rate[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&protein[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&prot_rate[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&DNA[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&DNA_rate[0]) ,params.ncells*sizeof( double ) );
 
 	// i rates non vengono scritti ma ricalcolati dal metodo del metabolismo
 
-	stream.read( (char*)(&ATP_St[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATP_Ox[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATP_NOx[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATP2[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATP3[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP_1[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP_2[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP_3[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP_4[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsATP_5[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATPtot[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATPp[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATPmin[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&ATP_St[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATP_Ox[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATP_NOx[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATP2[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATP3[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP_1[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP_2[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP_3[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP_4[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsATP_5[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPtot[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPp[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPmin[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&ATPstart[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATPprod[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ATPcons[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPstart[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPprod[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ATPcons[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&G_extra[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&A_extra[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&AcL_extra[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&G_extra[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&A_extra[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&AcL_extra[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&SensO2[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&ConsO[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&SensO2[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&ConsO[0]) , params.ncells*sizeof( double ) );
 
-	stream.read( (char*)(&DNA_spread[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&M_T[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&pRb[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&DNA_spread[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&M_T[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&pRb[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&ConcS[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&ConcS[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&cyclinD[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&cyclinE[0]) , ncells*sizeof( double ) );
-	stream.read( (char*)(&cyclinX[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&cyclinD[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&cyclinE[0]) , params.ncells*sizeof( double ) );
+	stream.read( (char*)(&cyclinX[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&NpRbk[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&NpRbk[0]) , params.ncells*sizeof( double ) );
 	
-	stream.read( (char*)(&DNA_spread[0]) , ncells*sizeof( double ) );
+	stream.read( (char*)(&DNA_spread[0]) , params.ncells*sizeof( double ) );
 	
 	// le copie per i calcoli in Diff non vengono scritte su file
 	
@@ -1439,39 +1448,39 @@ bool CellsSystem::TimersAdvanceUntil( boost::optional<double> endtime)
     double timestep; 
     
     // selezione del timestep
-    if( treal < tsm_start || treal >= tsm_stop)      // in questo intervallo ... slow motion
+    if( params.treal < params.tsm_start || params.treal >= params.tsm_stop)      // in questo intervallo ... slow motion
         {
-        timestep = dt;
-        slow_motion = false;
+        timestep = params.dt;
+        params.slow_motion = false;
         }
     else
         {
-        timestep = dt_sm;
-        slow_motion = true;
+        timestep = params.dt_sm;
+        params.slow_motion = true;
         }  
     
-	t += timestep;							// update del tempo di simulazione
+	params.t += timestep;							// update del tempo di simulazione
 	time_from_CGAL += timestep;				// update del tempo di simulazione dall'ultima chiamata a CGAL
-	if(ready2start) treal += timestep;		// update del tempo che e' passato dalla partenza vera e propria della simulazione
+	if(ready2start) params.treal += timestep;		// update del tempo che e' passato dalla partenza vera e propria della simulazione
 	
-	nstep++;
+	params.nstep++;
 	
-	if(!ready2start && t > t_ini)			// condizione di fine dell'inizializzazione dello stato cellulare
+	if(!ready2start && params.t > params.t_ini)			// condizione di fine dell'inizializzazione dello stato cellulare
 		{
 		std::cout << "\nFine dell'inizializzazione\n" << std::endl;
 		ready2start = true;
-		nstep_start = nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
+		params.nstep_start = params.nstep;				// qui si memorizza il numero del passo che corrisponde alla fine dell'inizializzazione
 		}	
 	if( endtime )
 	{
-	  if(treal < endtime && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
+	  if(params.treal < endtime && ( t_CPU < params.t_CPU_max || params.t_CPU_max <= 0 ) )
 		  return true;
 	  else 
 		  return false;
 	}
 	else
 	{
-	  if(treal < tmax && ( t_CPU < t_CPU_max || t_CPU_max <= 0 ) )
+	  if(params.treal < params.tmax && ( t_CPU < params.t_CPU_max || params.t_CPU_max <= 0 ) )
 		return true;
 	  else 
 		return false;
@@ -1633,7 +1642,7 @@ void CellsSystem::Printout()
 	double ATP_cons_tot = 0;
 	
 // loop sulle cellule per le statistiche	
-	for(unsigned long n=0; n<ncells; n++)
+	for(unsigned long n=0; n<params.ncells; n++)
 		{
 		
 		volume_totale += volume[n];
@@ -1665,10 +1674,10 @@ void CellsSystem::Printout()
 
 		}
 
-  if( alive>0)
+  if( params.alive>0)
   {
-    av_mitocondri /= alive;			// numero medio di mitocondri per cellula
-    ATP_totale /= alive;			// ATPp medio per cellula
+    av_mitocondri /= params.alive;			// numero medio di mitocondri per cellula
+    ATP_totale /= params.alive;			// ATPp medio per cellula
   }
   else
   {
@@ -1677,32 +1686,32 @@ void CellsSystem::Printout()
 	
 // output su schermo
 
-	std::cout << std::setw(8) << std::right << nstep;																					// numero di passi
+	std::cout << std::setw(8) << std::right << params.nstep;																					// numero di passi
 	std::cout << " " << std::setw(12) << std::setprecision(3) << std::fixed << std::right << std::showpoint << delta_t_CPU;							// tempo di CPU
 	std::cout << " " << std::setw(8) <<std::setprecision(1) << std::fixed << std::right << std::showpoint << (delta_t_CPU>0 ? 100.*t_CPU_int/delta_t_CPU : 0);	// frazione di tempo di CPU passata in diff
 	std::cout << " " << std::setw(10) << std::setprecision(0) << std::fixed << std::right << std::showpoint << timing;								// tempo reale
-	std::cout << " | " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << t/3600.;								// tempo di simulazione
-    if(!slow_motion)
+	std::cout << " | " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << params.t/3600.;								// tempo di simulazione
+    if(!params.slow_motion)
         {
-        std::cout << " " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << treal/3600.;							// tempo dalla partenza
+        std::cout << " " << std::setw(10) << std::setprecision(3) << std::fixed << std::right << std::showpoint << params.treal/3600.;							// tempo dalla partenza
         std::cout << " ";
         }
     else
         {
-        std::cout << " " << std::setw(10) << std::setprecision(6) << std::fixed << std::right << std::showpoint << treal-tsm_start;							// tempo dalla partenza
+        std::cout << " " << std::setw(10) << std::setprecision(6) << std::fixed << std::right << std::showpoint << params.treal-params.tsm_start;							// tempo dalla partenza
         std::cout << "s";
         }
 	std::cout << "| " << std::setw(6) << std::right << lastname;																		// numero totale di cellule 
-	std::cout << std::setw(6) << std::right << ncells;																		// numero totale di cellule
-	std::cout << " " << std::setw(6) << std::right << alive << " |";																	// numero di cellule vive
-	for(int k=0; k<Nphase-1; k++) std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100.*((double)phase_counter[k])/alive; // % di cellule vive in ciascuna fase cellulare
-	std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100*((double)phase_counter[Nphase-1])/ncells;	// % di cellule morte rispetto al totale
+	std::cout << std::setw(6) << std::right << params.ncells;																		// numero totale di cellule
+	std::cout << " " << std::setw(6) << std::right << params.alive << " |";																	// numero di cellule vive
+	for(int k=0; k<Nphase-1; k++) std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100.*((double)phase_counter[k])/params.alive; // % di cellule vive in ciascuna fase cellulare
+	std::cout << " " << std::setw(5) << std::setprecision(1) << std::fixed << std::right << 100*((double)phase_counter[Nphase-1])/params.ncells;	// % di cellule morte rispetto al totale
 	std::cout << "  | " << std::setw(9) << std::setprecision(3) << std::scientific << std::right << volume_totale;								// volume totale occupato dalle cellule
 	
 	std::cout << " " << std::setw(8) << std::setprecision(2) << std::fixed << std::right << pow( 3.*volume_totale/(4.*PI), (double)0.333333333);		// raggio dello sferoide in micron
 	std::cout << " " << std::setw(8) << std::setprecision(5) << std::fixed << std::right << 100.*volume_totale/Env.GetEnvironmentvolume0();		// % volume occupato dalle cellule
-	std::cout << " | " << std::setw(9) << std::setprecision(3) << std::scientific << std::right << volume_totale_vive/alive;						// volume medio di una cellula viva
-	std::cout << " " << std::setw(8) << std::setprecision(2) << std::fixed << std::right << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);		// raggio medio di una cellula viva
+	std::cout << " | " << std::setw(9) << std::setprecision(3) << std::scientific << std::right << volume_totale_vive/params.alive;						// volume medio di una cellula viva
+	std::cout << " " << std::setw(8) << std::setprecision(2) << std::fixed << std::right << pow(3*volume_totale_vive/(params.alive*4*PI),(double)1./3.);		// raggio medio di una cellula viva
 	std::cout << " " << std::setw(6) << std::setprecision(1) << std::fixed << std::right << av_mitocondri;										// numero medio di mitocondri
 	std::cout << " " << std::setw(8) << std::setprecision(2) << std::scientific << std::right << ATP_totale;										// ATPp medio per cellula
 
@@ -1716,24 +1725,24 @@ void CellsSystem::Printout()
 	
 	// screen dump su file
 	
-	screen_dump_file << nstep;													// numero di passi
+	screen_dump_file << params.nstep;													// numero di passi
 	screen_dump_file << "\t" << t_CPU;											// tempo di CPU integrato
 	screen_dump_file << "\t" << delta_t_CPU;									// tempo di CPU
 	screen_dump_file << "\t" << (delta_t_CPU>0 ? 100.*t_CPU_int/delta_t_CPU : 0);	// frazione di tempo di CPU passata in diff
 	screen_dump_file << "\t" << timing;											// tempo reale
-	screen_dump_file << "\t" << std::fixed << t/3600.;								// tempo di simulazione
-	screen_dump_file << "\t" << std::fixed << treal/3600.;							// tempo dalla partenza
+	screen_dump_file << "\t" << std::fixed << params.t/3600.;								// tempo di simulazione
+	screen_dump_file << "\t" << std::fixed << params.treal/3600.;							// tempo dalla partenza
 	screen_dump_file << "\t" << lastname;										// numero totale di cellule
-	screen_dump_file << "\t" << ncells;											// numero totale di cellule
-	screen_dump_file << "\t" << alive;											// numero di cellule vive
-	for(int k=0; k<Nphase-1; k++) screen_dump_file << "\t" << 100*((double)phase_counter[k])/alive;	// conteggio in ciascuna fase cellulare
-	screen_dump_file << "\t" << 100*((double)phase_counter[Nphase-1])/ncells;	// % di cellule morte rispetto al totale
+	screen_dump_file << "\t" << params.ncells;											// numero totale di cellule
+	screen_dump_file << "\t" << params.alive;											// numero di cellule vive
+	for(int k=0; k<Nphase-1; k++) screen_dump_file << "\t" << 100*((double)phase_counter[k])/params.alive;	// conteggio in ciascuna fase cellulare
+	screen_dump_file << "\t" << 100*((double)phase_counter[Nphase-1])/params.ncells;	// % di cellule morte rispetto al totale
 	screen_dump_file << "\t" << std::scientific << volume_totale;					// volume totale occupato dalle cellule
 	
 	screen_dump_file << "\t" << pow( 3.*volume_totale/(4.*PI), (double)0.333333333);// raggio dello sferoide in micron
 	screen_dump_file << "\t" << 100.*volume_totale/Env.GetEnvironmentvolume0();	// % volume occupato dalle cellule
-	screen_dump_file << "\t" << std::scientific << volume_totale_vive/alive;			// volume medio di una cellula viva
-	screen_dump_file << "\t" << pow(3*volume_totale_vive/(alive*4*PI), (double)1./3.);// raggio medio di una cellula viva
+	screen_dump_file << "\t" << std::scientific << volume_totale_vive/params.alive;			// volume medio di una cellula viva
+	screen_dump_file << "\t" << pow(3*volume_totale_vive/(params.alive*4*PI), (double)1./3.);// raggio medio di una cellula viva
 	screen_dump_file << "\t" << av_mitocondri;									// numero medio di mitocondri
 	screen_dump_file << "\t" << std::scientific << ATP_totale;						// ATPp medio per cellula
 	screen_dump_file << "\t" << Env.GetEnvironmentpH();							// pH ambientale
@@ -1773,7 +1782,7 @@ void CellsSystem::Printout()
 	
 	
 	// printout dei dati relativi alla convergenza
-	convlog_file << nstep << "\t";
+	convlog_file << params.nstep << "\t";
 	for(int k=0; k<NCONV_TEST-1; k++)
 		convlog_file << convergence_fail[k] << "\t";
 	convlog_file << convergence_fail[NCONV_TEST-1] << std::endl;
@@ -1867,7 +1876,7 @@ void CellsSystem::Print2file()
 	int max_neigh = 0;
 	
 // loop sulle cellule per le statistiche	
-	for(n=0; n<ncells; n++)
+	for(n=0; n<params.ncells; n++)
 		{
 		
 		volume_totale += volume[n];
@@ -1933,51 +1942,51 @@ void CellsSystem::Print2file()
 
 		}
 
-	av_mitocondri /= alive;			// numero medio di mitocondri per cellula
-	av2_mitocondri /= alive;		// secondo momento del numero di mitocondri per cellula
-	av_DNA /= alive;				// quantita' media di DNA per cellula
-	av2_DNA /= alive;				// secondo momento del DNA per cellula
-	ATP_totale /= alive;			// ATPp medio per cellula
+	av_mitocondri /= params.alive;			// numero medio di mitocondri per cellula
+	av2_mitocondri /= params.alive;		// secondo momento del numero di mitocondri per cellula
+	av_DNA /= params.alive;				// quantita' media di DNA per cellula
+	av2_DNA /= params.alive;				// secondo momento del DNA per cellula
+	ATP_totale /= params.alive;			// ATPp medio per cellula
 	// pRb_totale /= alive;			// pRb media per cellula
-	av_age_mother /= alive;			// eta' media della madre
+	av_age_mother /= params.alive;			// eta' media della madre
 	av_age_mother /= 86400.;		// l'eta' media della madre viene convertita in giorni
 	
-	av_GAbsRate /= alive;			// valore medio del rate di assorbimento del glucosio
-	av_GConsRate /= alive;			// valore medio del rate di consumo del glucosio
-	av_AAbsRate /= alive;			// valore medio del rate di assorbimento della glutammina
-	av_AConsRate /= alive;			// valore medio del rate di consumo del glutammmina
-	av_StoreFillRate /= alive;		// valore medio del rate di riempiemento dello store
-	av_StoreConsRate /= alive;		// valore medio del rate di consumo dello store
-	av_AcLRate /= alive;			// valore medio del rate di produzione dell'acido lattico
-	av_AcLOutRate /= alive;			// valore medio del rate di espulsione dell'acido lattico
+	av_GAbsRate /= params.alive;			// valore medio del rate di assorbimento del glucosio
+	av_GConsRate /= params.alive;			// valore medio del rate di consumo del glucosio
+	av_AAbsRate /= params.alive;			// valore medio del rate di assorbimento della glutammina
+	av_AConsRate /= params.alive;			// valore medio del rate di consumo del glutammmina
+	av_StoreFillRate /= params.alive;		// valore medio del rate di riempiemento dello store
+	av_StoreConsRate /= params.alive;		// valore medio del rate di consumo dello store
+	av_AcLRate /= params.alive;			// valore medio del rate di produzione dell'acido lattico
+	av_AcLOutRate /= params.alive;			// valore medio del rate di espulsione dell'acido lattico
 
-	av_ATP_Ox /= alive;				// valore medio del rate di produzione di ATP tramite fosforilazione ossidativa
-	av_ATP_NOx /= alive;			// valore medio del rate di produzione di ATP tramite glicolisi anaerobica
-	av_ATP2 /= alive;				// valore medio del rate di produzione di ATP dallo store
-	av_ATP3 /= alive;				// valore medio del rate di produzione di ATP dagli altri nutrienti
-	av_ConsATP /= alive;			// valore medio del rate di consumo di ATP associato al metabolismo
-	av_ConsATP_1 /= alive;			// valore medio del rate di consumo di ATP associato ai mitocondri
-	av_ConsATP_2 /= alive;			// valore medio del rate di consumo di ATP associato alla produzione di proteine
-	av_ConsATP_3 /= alive;			// valore medio del rate di consumo di ATP associato alla produzione di DNA
-	av_ConsATP_5 /= alive;			// valore medio del rate di consumo di ATP associato alla produzione di mtDNA
-	av_ATPtot /= alive;				// valore medio del rate totale di variazione dell'ATP = somma dei rates
+	av_ATP_Ox /= params.alive;				// valore medio del rate di produzione di ATP tramite fosforilazione ossidativa
+	av_ATP_NOx /= params.alive;			// valore medio del rate di produzione di ATP tramite glicolisi anaerobica
+	av_ATP2 /= params.alive;				// valore medio del rate di produzione di ATP dallo store
+	av_ATP3 /= params.alive;				// valore medio del rate di produzione di ATP dagli altri nutrienti
+	av_ConsATP /= params.alive;			// valore medio del rate di consumo di ATP associato al metabolismo
+	av_ConsATP_1 /= params.alive;			// valore medio del rate di consumo di ATP associato ai mitocondri
+	av_ConsATP_2 /= params.alive;			// valore medio del rate di consumo di ATP associato alla produzione di proteine
+	av_ConsATP_3 /= params.alive;			// valore medio del rate di consumo di ATP associato alla produzione di DNA
+	av_ConsATP_5 /= params.alive;			// valore medio del rate di consumo di ATP associato alla produzione di mtDNA
+	av_ATPtot /= params.alive;				// valore medio del rate totale di variazione dell'ATP = somma dei rates
 	
-	av_Gin /= alive;				// valore medio del glucosio interno
-	av_Ain /= alive;				// valore medio della glutammina interna
-	av_O2 /= alive;					// valore medio dell'ossigeno
-	av_AcLin /= alive;				// valore medio dell'acido lattico interno
+	av_Gin /= params.alive;				// valore medio del glucosio interno
+	av_Ain /= params.alive;				// valore medio della glutammina interna
+	av_O2 /= params.alive;					// valore medio dell'ossigeno
+	av_AcLin /= params.alive;				// valore medio dell'acido lattico interno
 
-	av_neigh /= alive;				// numero medio di vicini per cellula
-	av2_neigh /= alive;				// secondo momento del numero di vicini per cellula
+	av_neigh /= params.alive;				// numero medio di vicini per cellula
+	av2_neigh /= params.alive;				// secondo momento del numero di vicini per cellula
 
 // output	
 
-	output_file << nstep;												// numero di passi
-	output_file << "\t" << t/3600.;										// tempo di simulazione
-	output_file << "\t" << treal/3600.;									// tempo dalla partenza
+	output_file << params.nstep;												// numero di passi
+	output_file << "\t" << params.t/3600.;										// tempo di simulazione
+	output_file << "\t" << params.treal/3600.;									// tempo dalla partenza
 	if(ready2start)
 		{
-		output_file << "\t" << flowSignal.SignalValue(treal)/((1.e-9)/60.);	// flusso attuale (in microlitri/min)
+		output_file << "\t" << flowSignal.SignalValue(params.treal)/((1.e-9)/60.);	// flusso attuale (in microlitri/min)
 		output_file << "\t" << Env.GetEnvironmentDoseRate();			// dose (Gy/s)
 		// output_file << "\t" << setprecision(6) << right << showpoint << dose_rateSignal.SignalValue(t);
 		}
@@ -1987,15 +1996,15 @@ void CellsSystem::Print2file()
 		output_file << "\t" << 0.;										// flusso attuale (in microlitri/min)
 		}
 		
-	output_file << "\t" << ncells;													// numero totale di cellule
-	output_file << "\t" << alive;													// numero di cellule vive
+	output_file << "\t" << params.ncells;													// numero totale di cellule
+	output_file << "\t" << params.alive;													// numero di cellule vive
 	for(k=0; k<Nphase; k++) output_file << "\t" << phase_counter[k];				// conteggio in ciascuna fase cellulare
-	output_file << "\t" << ((double)phase_counter[S_phase])/alive;				// % di cellule in fase S
+	output_file << "\t" << ((double)phase_counter[S_phase])/params.alive;				// % di cellule in fase S
 	
 	output_file << "\t" << 100.*volume_totale/Env.GetEnvironmentvolume0();			// % volume occupato dalle cellule
 	output_file << "\t" << 100.*volume_totale_vive/Env.GetEnvironmentvolume0();		// % volume occupato dalle cellule vive
-	output_file << "\t" << std::scientific << volume_totale_vive/alive;					// volume medio di una cellula viva
-	output_file << "\t" << std::scientific << pow(3*volume_totale_vive/(alive*4*PI),(double)1./3.);	// raggio medio di una cellula viva
+	output_file << "\t" << std::scientific << volume_totale_vive/params.alive;					// volume medio di una cellula viva
+	output_file << "\t" << std::scientific << pow(3*volume_totale_vive/(params.alive*4*PI),(double)1./3.);	// raggio medio di una cellula viva
 	output_file << "\t" << av_mitocondri;											// numero medio di mitocondri
 	output_file << "\t" << sqrt(fabs(av2_mitocondri-SQR(av_mitocondri)));			// dev. st. del numero di mitocondri
 	output_file << "\t" << min_mitocondri;											// numero min di mitocondri
@@ -2065,26 +2074,26 @@ void CellsSystem::Print2file()
 void CellsSystem::Print2logfile(std::string str)
 {
 	log_file << "\n" << str << "\n" << std::endl;
-	log_file << "\n\n***** Step " << nstep << " *****\n\n" << std::endl;
+	log_file << "\n\n***** Step " << params.nstep << " *****\n\n" << std::endl;
 	log_file << "Environment \n" << std::endl;
 	log_file << Env << "\n\n" << std::endl;
-	log_file << "*** ncells = " << ncells << " ***\n" << std::endl;
+	log_file << "*** ncells = " << params.ncells << " ***\n" << std::endl;
 	log_file << "First cell (0)\n" << std::endl;
 	PrintCell( log_file, 0 );
 	log_file << "\n\n" << std::endl;
 	log_file << "Cell type (0)\n" << std::endl;
 	log_file << *(type[0]) << std::endl;
 
-	if(ncells > 1) 
+	if(params.ncells > 1) 
 		{
 		log_file << "Second cell" << std::endl;
 		PrintCell( log_file, 1 );
 		log_file << "\n\n" << std::endl;
 		}
-	if(ncells > 2) 
+	if(params.ncells > 2) 
 		{
-		log_file << "Last cell (" << ncells-1 << ")\n" << std::endl;
-		PrintCell( log_file, ncells-1 );
+		log_file << "Last cell (" << params.ncells-1 << ")\n" << std::endl;
+		PrintCell( log_file, params.ncells-1 );
 		log_file << "\n\n" << std::endl;
 		}
 
@@ -2099,12 +2108,12 @@ void CellsSystem::Print2logfile(std::string str)
 void CellsSystem::PrintAll2logfile(std::string str)
 {
 	log_file << "\n" << str << "\n" << std::endl;
-	log_file << "\n\n***** Step " << nstep << " *****\n\n" << std::endl;
+	log_file << "\n\n***** Step " << params.nstep << " *****\n\n" << std::endl;
 	log_file << "Environment \n" << std::endl;
 	log_file << Env << "\n\n" << std::endl;
-	log_file << "*** ncells = " << ncells << " ***\n" << std::endl;
+	log_file << "*** ncells = " << params.ncells << " ***\n" << std::endl;
 	
-	for(unsigned int n=0; n<ncells; n++)
+	for(unsigned int n=0; n<params.ncells; n++)
 		{
 		log_file << "Cell " << n << "\n" << std::endl;
 		PrintCell( log_file, 0 );
@@ -2128,27 +2137,27 @@ void CellsSystem::PrintConfiguration(bool isBinary)
 	char str[100];
 	if(isBinary)
 		{
-		if(!slow_motion) 
-            sprintf(str,"%lu.bin",nconfiguration);
+		if(!params.slow_motion) 
+            sprintf(str,"%lu.bin",params.nconfiguration);
         else
-            sprintf(str,"%lu_sm.bin",nconfiguration);
+            sprintf(str,"%lu_sm.bin",params.nconfiguration);
 
 		std::string configuration_record = configuration_b_filename+str;
 		configuration_b_file.open( configuration_record.c_str(), std::ios::binary );
 		
-		configuration_b_file.write( (char*)(&sim_type), sizeof(int) );
+		configuration_b_file.write( (char*)(&params.sim_type), sizeof(int) );
 		}
 	else
 		{
-		if(!slow_motion) 
-            sprintf(str,"%lu.txt",nconfiguration);
+		if(!params.slow_motion) 
+            sprintf(str,"%lu.txt",params.nconfiguration);
         else
-            sprintf(str,"%lu_sm.txt",nconfiguration);
+            sprintf(str,"%lu_sm.txt",params.nconfiguration);
 
 		std::string configuration_record = configuration_filename+str;
 		configuration_file.open( configuration_record.c_str() );
 		
-		configuration_file << sim_type << std::endl;
+		configuration_file << params.sim_type << std::endl;
 		}
 	
 	PrintHeader(isBinary);		// header
@@ -2178,13 +2187,13 @@ void CellsSystem::PrintHeader(bool isBinary)
 {
 	if( isBinary )
 		{
-		configuration_b_file.write( (char*)(&nstep), sizeof(nstep) );
-		double treal_d = (double )treal;
+		configuration_b_file.write( (char*)(&params.nstep), sizeof(params.nstep) );
+		double treal_d = (double )params.treal;
 		configuration_b_file.write( (char*)(&treal_d), sizeof(treal_d) );
-		configuration_b_file.write( (char*)(&ncells), sizeof(ncells) );
+		configuration_b_file.write( (char*)(&params.ncells), sizeof(params.ncells) );
 		}
 	else
-		configuration_file << nstep << " " << treal << " " << ncells << std::endl;
+		configuration_file << params.nstep << " " << params.treal << " " << params.ncells << std::endl;
 }
 
 
@@ -2195,7 +2204,7 @@ void CellsSystem::PrintHeader(bool isBinary)
 //
 void CellsSystem::PrintPoints(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double xpr = (double)x[k];
 		double ypr = (double)y[k];
@@ -2228,7 +2237,7 @@ void CellsSystem::PrintPoints(bool isBinary)
 void CellsSystem::PrintLinks(bool isBinary)
 {
 		
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		
 		if( isBinary )
@@ -2255,7 +2264,7 @@ void CellsSystem::PrintLinks(bool isBinary)
 // questo metodo stampa solo la flag di appartenenza al CH su file
 void CellsSystem::PrintCHFlag(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		
 		bool IsOnCH = isonCH[k];
@@ -2275,7 +2284,7 @@ void CellsSystem::PrintCHFlag(bool isBinary)
 // questo metodo stampa solo la flag di appartenenza all'AS su file
 void CellsSystem::PrintASFlag(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		
 		bool IsOnAS = isonAS[k];
@@ -2295,7 +2304,7 @@ void CellsSystem::PrintASFlag(bool isBinary)
 // this method prints on file the isonBV flag
 void CellsSystem::PrintBVFlag(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		
 		int IsOnBV = isonBV[k];
@@ -2315,7 +2324,7 @@ void CellsSystem::PrintBVFlag(bool isBinary)
 // questo metodo stampa solo i raggi cellulari su file
 void CellsSystem::PrintR(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double rpr = (double)r[k];
 		if( isBinary )
@@ -2333,7 +2342,7 @@ void CellsSystem::PrintR(bool isBinary)
 // questo metodo stampa il codice della fase cellulare
 void CellsSystem::PrintPhase(bool isBinary)
 {
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		if( isBinary )
 			configuration_b_file.write( (char*)(&phase[k]), sizeof(int) );
@@ -2349,7 +2358,7 @@ void CellsSystem::PrintPhase(bool isBinary)
 // questo metodo stampa il nome del CellType
 void CellsSystem::PrintType(bool isBinary)
 {
-    for(unsigned long k=0; k<ncells; k++)
+    for(unsigned long k=0; k<params.ncells; k++)
     {
         int name = type[k]->Get_name();
         
@@ -2369,7 +2378,7 @@ void CellsSystem::PrintType(bool isBinary)
 void CellsSystem::PrintVar(bool isBinary)
 {
 	// G
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double Gpr = (double)G[k];
 		if( isBinary )
@@ -2380,7 +2389,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// G extracellulare
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double concGextra = (double)(G_extra[k]/volume_extra[k]);
 		if( isBinary )
@@ -2391,7 +2400,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di assorbimento del glucosio
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double GAbsRatepr = (double)GAbsRate[k];
 		if( isBinary )
@@ -2402,7 +2411,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di consumo del glucosio
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double GConsRatepr = (double)GConsRate[k];
 		if( isBinary )
@@ -2413,7 +2422,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// G6P
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double G6Ppr = (double)G6P[k];
 		if( isBinary )
@@ -2424,7 +2433,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// O2
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double concO2 = (double)(O2[k]/volume[k]);
 		if( isBinary )
@@ -2435,7 +2444,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// Store
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double storepr = (double)store[k];
 		if( isBinary )
@@ -2446,7 +2455,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// A
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double Apr = (double)A[k];
 		if( isBinary )
@@ -2457,7 +2466,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// A extracellulare
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double concAextra = (double)(A_extra[k]/volume_extra[k]);
 		if( isBinary )
@@ -2468,7 +2477,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di assorbimento della glutammina
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double AAbsRatepr = (double)AAbsRate[k];
 		if( isBinary )
@@ -2479,7 +2488,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// rate di consumo della glutammina
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double AConsRatepr = (double)AConsRate[k];
 		if( isBinary )
@@ -2490,7 +2499,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// AcL
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double AcLpr = (double)AcL[k];
 		if( isBinary )
@@ -2501,7 +2510,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// AcL extracellulare
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double concAcL = (double)(AcL_extra[k]/volume_extra[k]);
 		if( isBinary )
@@ -2512,7 +2521,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// ATPp
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double ATPppr = (double)ATPp[k];
 		if( isBinary )
@@ -2523,7 +2532,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// Mitocondri
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double Mpr = (double)M[k];
 		if( isBinary )
@@ -2534,7 +2543,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// pH extracellulare
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double pHpr = (double)pH[k];
 		if( isBinary )
@@ -2545,7 +2554,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 	
 	// protein
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double proteinpr = (double)protein[k];
 		if( isBinary )
@@ -2556,7 +2565,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// prot_rate
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double prot_ratepr = (double)prot_rate[k];
 		if( isBinary )
@@ -2567,7 +2576,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// pRb
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double pRbpr = (double)pRb[k];
 		if( isBinary )
@@ -2578,7 +2587,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// ConcS
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double ConcSpr = (double)ConcS[k];
 		if( isBinary )
@@ -2589,7 +2598,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// DNA_rate
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double DNA_ratepr = (double)DNA_rate[k];
 		if( isBinary )
@@ -2600,7 +2609,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// age
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		if( isBinary )
 			configuration_b_file.write( (char*)(&age[k]), sizeof(float) );
@@ -2610,7 +2619,7 @@ void CellsSystem::PrintVar(bool isBinary)
 	if( !isBinary ) configuration_file << std::endl;
 
 	// phase age
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		if( isBinary )
 			configuration_b_file.write( (char*)(&phase_age[k]), sizeof(float) );
@@ -2621,7 +2630,7 @@ void CellsSystem::PrintVar(bool isBinary)
 
 	//*************************** new for O2 rate ******* april 2018	
 	// O2 consumption rate 
-	for(unsigned long k=0; k<ncells; k++)
+	for(unsigned long k=0; k<params.ncells; k++)
 		{
 		double O2Ratepr = (double)O2Rate[k];
 		if( isBinary )
@@ -2709,7 +2718,7 @@ void CellsSystem::StepStat( bool reset_stat )
 		
 		n_mitoses_average = 0.;
 		n_mitoses_max = 0;
-		n_mitoses_min = ncells;
+		n_mitoses_min = params.ncells;
 
 		min_Gin = 1.;
 		max_Gin = -1;
@@ -2746,7 +2755,7 @@ void CellsSystem::StepStat( bool reset_stat )
 		if( n_mitoses > n_mitoses_max ) n_mitoses_max = n_mitoses;
 		if( n_mitoses < n_mitoses_min ) n_mitoses_min = n_mitoses;
 			
-		for(unsigned long n=0; n<ncells; n++)
+		for(unsigned long n=0; n<params.ncells; n++)
 			{
 			if( G[n] < min_Gin ) min_Gin = G[n];
 			if( G[n] > max_Gin ) max_Gin = G[n];

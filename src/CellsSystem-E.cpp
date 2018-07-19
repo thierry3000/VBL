@@ -36,20 +36,20 @@ void CellsSystem::Dynamics( )
 void CellsSystem::GetForces()
 {
 	// resizing vectors
-	fx.resize(ncells);
-	fy.resize(ncells);
-	fz.resize(ncells);
+	fx.resize(params.ncells);
+	fy.resize(params.ncells);
+	fz.resize(params.ncells);
 	
 	// initialize vectors with zeros
-	fx.assign(ncells,0);
-	fy.assign(ncells,0);
-	fz.assign(ncells,0);
+	fx.assign(params.ncells,0);
+	fy.assign(params.ncells,0);
+	fz.assign(params.ncells,0);
 		
 	// the cell-cell force is calculated only if there are at least two cells
-	if(ncells>1)
+	if(params.ncells>1)
   {
 #pragma omp parallel for
-		for(unsigned long n=0; n<ncells; n++)
+		for(unsigned long n=0; n<params.ncells; n++)
     {
 			
 			// parameters related to the n-th cell
@@ -175,7 +175,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 	
 	loop_count = 0;	// conteggio dei passaggi nel loop
 	
-	if( ncells > 1 )
+	if( params.ncells > 1 )
   {
 		while( true )	// The infinite loop is interrupted by a break when the stop condition is reached
     {
@@ -183,7 +183,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 
 //#pragma omp parallel for ordered schedule(dynamic)
 #pragma omp parallel for
-			for(unsigned long n=0; n<ncells; n++)	// loop on the cells
+			for(unsigned long n=0; n<params.ncells; n++)	// loop on the cells
       {
 				int nneigh = neigh[n];		// number of adjacent cells
 				double rn = r[n];					// cell radius (now used to calculate the friction coefficient)
@@ -245,16 +245,16 @@ void CellsSystem::NewPositionsAndVelocities( )
 //           }
         }//check, all used variables are local --> openMP compatible!
 				
-				bx = vx[n] + (gamma_int*bx + fx[n])*dt/mn;
-				by = vy[n] + (gamma_int*by + fy[n])*dt/mn;
-				bz = vz[n] + (gamma_int*bz + fz[n])*dt/mn;
+				bx = vx[n] + (gamma_int*bx + fx[n])*params.dt/mn;
+				by = vy[n] + (gamma_int*by + fy[n])*params.dt/mn;
+				bz = vz[n] + (gamma_int*bz + fz[n])*params.dt/mn;
 				
-				axx = 1. + (gamma + gamma_int*axx)*dt/mn;
-				axy = gamma_int*axy*dt/mn;
-				axz = gamma_int*axz*dt/mn;
-				ayy = 1. + (gamma + gamma_int*ayy)*dt/mn;
-				ayz = gamma_int*ayz*dt/mn;
-				azz = 1. + (gamma + gamma_int*azz)*dt/mn;
+				axx = 1. + (gamma + gamma_int*axx)*params.dt/mn;
+				axy = gamma_int*axy*params.dt/mn;
+				axz = gamma_int*axz*params.dt/mn;
+				ayy = 1. + (gamma + gamma_int*ayy)*params.dt/mn;
+				ayz = gamma_int*ayz*params.dt/mn;
+				azz = 1. + (gamma + gamma_int*azz)*params.dt/mn;
 				
 				double det = axx*ayy*azz + 2.*axy*axz*ayz - axx*ayz*ayz - ayy*axz*axz - azz*axy*axy;
 				
@@ -295,9 +295,9 @@ void CellsSystem::NewPositionsAndVelocities( )
 			
 			//if(loop_count > 100) exit(0);
 			// if( dvmax < (1.e-11) ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.01 nm/s
-			if( dvmax < delta_vmax ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.1 nm/s
+			if( dvmax < params.delta_vmax ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.1 nm/s
 #pragma omp parallel for
-			for(unsigned long n=0; n<ncells; n++)	// qui si copiano in v i nuovi valori vnew
+			for(unsigned long n=0; n<params.ncells; n++)	// qui si copiano in v i nuovi valori vnew
       {
 				vx[n] = vxnew[n];
 				vy[n] = vynew[n];
@@ -312,9 +312,9 @@ void CellsSystem::NewPositionsAndVelocities( )
     double mn = mass[0];				// massa della cellula
     double gamma = 6.*PI*VISCOSITY_ENV*rn;
 		
-		vx[0] = vx[0]/(1.+gamma*dt/mn);
-		vy[0] = vy[0]/(1.+gamma*dt/mn);
-		vz[0] = vz[0]/(1.+gamma*dt/mn);
+		vx[0] = vx[0]/(1.+gamma*params.dt/mn);
+		vy[0] = vy[0]/(1.+gamma*params.dt/mn);
+		vz[0] = vz[0]/(1.+gamma*params.dt/mn);
   }
 
 
@@ -323,13 +323,13 @@ void CellsSystem::NewPositionsAndVelocities( )
 	maxdr = 0;	// inizializzazione dello spostamento massimo nel sistema di cellule
 	
 #pragma omp parallel for
-	for(unsigned long n=0; n<ncells; n++)				// loop sulle cellule
+	for(unsigned long n=0; n<params.ncells; n++)				// loop sulle cellule
   {
 		double rn = r[n];			// raggio della cellula
 
-		double dx = vx[n]*dt;						// variazioni delle coordinate
-		double dy = vy[n]*dt;
-		double dz = vz[n]*dt;
+		double dx = vx[n]*params.dt;						// variazioni delle coordinate
+		double dy = vy[n]*params.dt;
+		double dz = vz[n]*params.dt;
 			
 		double dr = sqrt( dx*dx + dy*dy + dz*dz);	// spostamento totale
 		if(dr>maxdr) maxdr = dr;						// update dello spostamento massimo
@@ -337,7 +337,7 @@ void CellsSystem::NewPositionsAndVelocities( )
 		if( dr > rn )		// management of possible errors in the calculation of the position
     {
 			std::cout << "Errore in Cells::NewPositionsAndVelocities: " << std::endl;
-			std::cout << "Al passo " << nstep;
+			std::cout << "Al passo " << params.nstep;
 			std::cout << " si e' verificato un problema nel calcolo della posizione della cellula " << n << "-esima" << std::endl;
 			std::cout << "dx = " << std::scientific << dx << std::endl;
 			std::cout << "dy = " << std::scientific << dy << std::endl;

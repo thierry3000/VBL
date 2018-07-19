@@ -435,175 +435,175 @@ void CellsSystem::Set_BV_reserve(const int reserve_bv)
 void CellsSystem::AddCells( const int newcells )
 {
 
-	ncells += newcells;				// aggiornamento del numero di cellule
+	params.ncells += newcells;				// aggiornamento del numero di cellule
 	
-	name.resize(ncells);
-	mark.resize(ncells);
-	type.resize(ncells);
+	name.resize(params.ncells);
+	mark.resize(params.ncells);
+	type.resize(params.ncells);
 	
-	Temperature.resize(ncells);
+	Temperature.resize(params.ncells);
 	
-	phase.resize(ncells);
+	phase.resize(params.ncells);
 	
-	death_condition.resize(ncells);
-	age.resize(ncells);
-	phase_age.resize(ncells);
-	age_mother.resize(ncells);
-	n_mitosis.resize(ncells);
+	death_condition.resize(params.ncells);
+	age.resize(params.ncells);
+	phase_age.resize(params.ncells);
+	age_mother.resize(params.ncells);
+	n_mitosis.resize(params.ncells);
 	
-	x.resize(ncells);
-	y.resize(ncells);
-	z.resize(ncells);
+	x.resize(params.ncells);
+	y.resize(params.ncells);
+	z.resize(params.ncells);
 	
-	vx.resize(ncells);
-	vy.resize(ncells);
-	vz.resize(ncells);
+	vx.resize(params.ncells);
+	vy.resize(params.ncells);
+	vz.resize(params.ncells);
 	
-	vxnew.resize(ncells);
-	vynew.resize(ncells);
-	vznew.resize(ncells);
+	vxnew.resize(params.ncells);
+	vynew.resize(params.ncells);
+	vznew.resize(params.ncells);
 	
-	fx.resize(ncells);
-	fy.resize(ncells);
-	fz.resize(ncells);
+	fx.resize(params.ncells);
+	fy.resize(params.ncells);
+	fz.resize(params.ncells);
 	
-	v.resize(ncells);
+	v.resize(params.ncells);
 	
-	r.resize(ncells);
-	surface.resize(ncells);
-	volume.resize(ncells);
-	mass.resize(ncells);
+	r.resize(params.ncells);
+	surface.resize(params.ncells);
+	volume.resize(params.ncells);
+	mass.resize(params.ncells);
 	
-	volume_extra.resize(ncells);
+	volume_extra.resize(params.ncells);
 	
-	neigh.resize(ncells);
-	vneigh.resize(ncells);
-	vdist.resize(ncells);
-	vcsurf.resize(ncells);
-	gnk.resize(ncells);
-	contact_surf.resize(ncells);
+	neigh.resize(params.ncells);
+	vneigh.resize(params.ncells);
+	vdist.resize(params.ncells);
+	vcsurf.resize(params.ncells);
+	gnk.resize(params.ncells);
+	contact_surf.resize(params.ncells);
 	
-	isonCH.resize(ncells);
-	isonAS.resize(ncells);
-	isonBV.resize(ncells);
-	env_surf.resize(ncells);
-	bv_surf.resize(ncells);
-	g_env.resize(ncells);
-	g_bv.resize(ncells);
+	isonCH.resize(params.ncells);
+	isonAS.resize(params.ncells);
+	isonBV.resize(params.ncells);
+	env_surf.resize(params.ncells);
+	bv_surf.resize(params.ncells);
+	g_env.resize(params.ncells);
+	g_bv.resize(params.ncells);
 	
-	M.resize(ncells);
+	M.resize(params.ncells);
 	
-	G.resize(ncells);
-	G6P.resize(ncells);
-	O2.resize(ncells);
-	store.resize(ncells);
-	A.resize(ncells);
-	AcL.resize(ncells);
+	G.resize(params.ncells);
+	G6P.resize(params.ncells);
+	O2.resize(params.ncells);
+	store.resize(params.ncells);
+	A.resize(params.ncells);
+	AcL.resize(params.ncells);
 	
-	h.resize(ncells);
-	pHi.resize(ncells);
+	h.resize(params.ncells);
+	pHi.resize(params.ncells);
 	
-	protein.resize(ncells);
-	prot_rate.resize(ncells);
-	DNA.resize(ncells);
-	DNA_rate.resize(ncells);
+	protein.resize(params.ncells);
+	prot_rate.resize(params.ncells);
+	DNA.resize(params.ncells);
+	DNA_rate.resize(params.ncells);
 	
-	GAbsRate.resize(ncells);
-	GConsRate.resize(ncells);
-	AAbsRate.resize(ncells);
-	AConsRate.resize(ncells);
-	StoreFillRate.resize(ncells);
-	StoreConsRate.resize(ncells);
-	AcLRate.resize(ncells);
-	AcLOutRate.resize(ncells);
-	O2Rate.resize(ncells); //*************************** new for O2 rate ******* april 2018
+	GAbsRate.resize(params.ncells);
+	GConsRate.resize(params.ncells);
+	AAbsRate.resize(params.ncells);
+	AConsRate.resize(params.ncells);
+	StoreFillRate.resize(params.ncells);
+	StoreConsRate.resize(params.ncells);
+	AcLRate.resize(params.ncells);
+	AcLOutRate.resize(params.ncells);
+	O2Rate.resize(params.ncells); //*************************** new for O2 rate ******* april 2018
 	
-	ATP_St.resize(ncells);
-	ATP_Ox.resize(ncells);
-	ATP_NOx.resize(ncells);
-	ATP2.resize(ncells);
-	ATP3.resize(ncells);
-	ConsATP.resize(ncells);
-	ConsATP_1.resize(ncells);
-	ConsATP_2.resize(ncells);
-	ConsATP_3.resize(ncells);
-	ConsATP_4.resize(ncells);
-	ConsATP_5.resize(ncells);
-	ATPtot.resize(ncells);
-	ATPp.resize(ncells);
-	ATPmin.resize(ncells);
+	ATP_St.resize(params.ncells);
+	ATP_Ox.resize(params.ncells);
+	ATP_NOx.resize(params.ncells);
+	ATP2.resize(params.ncells);
+	ATP3.resize(params.ncells);
+	ConsATP.resize(params.ncells);
+	ConsATP_1.resize(params.ncells);
+	ConsATP_2.resize(params.ncells);
+	ConsATP_3.resize(params.ncells);
+	ConsATP_4.resize(params.ncells);
+	ConsATP_5.resize(params.ncells);
+	ATPtot.resize(params.ncells);
+	ATPp.resize(params.ncells);
+	ATPmin.resize(params.ncells);
 	
-	ATPstart.resize(ncells);
-	ATPprod.resize(ncells);
-	ATPcons.resize(ncells);
+	ATPstart.resize(params.ncells);
+	ATPprod.resize(params.ncells);
+	ATPcons.resize(params.ncells);
 	
-	G_extra.resize(ncells);
-	A_extra.resize(ncells);
-	AcL_extra.resize(ncells);
+	G_extra.resize(params.ncells);
+	A_extra.resize(params.ncells);
+	AcL_extra.resize(params.ncells);
 	
-	pH.resize(ncells);
-	SensO2.resize(ncells);
-	ConsO.resize(ncells);
+	pH.resize(params.ncells);
+	SensO2.resize(params.ncells);
+	ConsO.resize(params.ncells);
 	
-	DNA_spread.resize(ncells);
+	DNA_spread.resize(params.ncells);
 	
-	M_T.resize(ncells);
-	pRb.resize(ncells);
+	M_T.resize(params.ncells);
+	pRb.resize(params.ncells);
 	
-	ConcS.resize(ncells);
+	ConcS.resize(params.ncells);
 	
-	cyclinD.resize(ncells);
-	cyclinE.resize(ncells);
-	cyclinX.resize(ncells);
+	cyclinD.resize(params.ncells);
+	cyclinE.resize(params.ncells);
+	cyclinX.resize(params.ncells);
 	
-	NpRbk.resize(ncells);
+	NpRbk.resize(params.ncells);
 
 
-	volumeOld.resize(ncells);
-	volumeNew.resize(ncells);
-	volume_extraOld.resize(ncells);
-	volume_extraNew.resize(ncells);
+	volumeOld.resize(params.ncells);
+	volumeNew.resize(params.ncells);
+	volume_extraOld.resize(params.ncells);
+	volume_extraNew.resize(params.ncells);
 	
-	MitOld.resize(ncells);
-	MitNew.resize(ncells);
+	MitOld.resize(params.ncells);
+	MitNew.resize(params.ncells);
 	
-	pHiOld.resize(ncells);
-	pHiNew.resize(ncells);
-	pHOld.resize(ncells);
-	pHNew.resize(ncells);
+	pHiOld.resize(params.ncells);
+	pHiNew.resize(params.ncells);
+	pHOld.resize(params.ncells);
+	pHNew.resize(params.ncells);
 	
-	mGinOld.resize(ncells);
-	mGinNew.resize(ncells);
-	mGextOld.resize(ncells);
-	mGextNew.resize(ncells);
+	mGinOld.resize(params.ncells);
+	mGinNew.resize(params.ncells);
+	mGextOld.resize(params.ncells);
+	mGextNew.resize(params.ncells);
 	
-	mG6POld.resize(ncells);
-	mG6PNew.resize(ncells);
+	mG6POld.resize(params.ncells);
+	mG6PNew.resize(params.ncells);
 	
-	mO2Old.resize(ncells);
-	mO2New.resize(ncells);
+	mO2Old.resize(params.ncells);
+	mO2New.resize(params.ncells);
 	
-	StoreOld.resize(ncells);
-	StoreNew.resize(ncells);
+	StoreOld.resize(params.ncells);
+	StoreNew.resize(params.ncells);
 	
-	mAinOld.resize(ncells);
-	mAinNew.resize(ncells);
-	mAextOld.resize(ncells);
-	mAextNew.resize(ncells);
+	mAinOld.resize(params.ncells);
+	mAinNew.resize(params.ncells);
+	mAextOld.resize(params.ncells);
+	mAextNew.resize(params.ncells);
 	
-	mAcLinOld.resize(ncells);
-	mAcLinNew.resize(ncells);
-	mAcLextOld.resize(ncells);
-	mAcLextNew.resize(ncells);
+	mAcLinOld.resize(params.ncells);
+	mAcLinNew.resize(params.ncells);
+	mAcLextOld.resize(params.ncells);
+	mAcLextNew.resize(params.ncells);
 	
-	ATPpOld.resize(ncells);
-	ATPpNew.resize(ncells);
+	ATPpOld.resize(params.ncells);
+	ATPpNew.resize(params.ncells);
 	
-	proteinNew.resize(ncells);
-	pRbNew.resize(ncells);
-	delta_protein.resize(ncells);
-	ConcSNew.resize(ncells);
-	DNANew.resize(ncells);
+	proteinNew.resize(params.ncells);
+	pRbNew.resize(params.ncells);
+	delta_protein.resize(params.ncells);
+	ConcSNew.resize(params.ncells);
+	DNANew.resize(params.ncells);
 	
 }
 
@@ -617,7 +617,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	AddCells( 1 );
 	
 	// posizione della nuova cellula 
-	unsigned long k = ncells - 1;
+	unsigned long k = params.ncells - 1;
 	
 	// nome della nuova cellula
 	name[k] = lastname;
@@ -745,7 +745,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
 {
 
 	// controllo di consistenza dell'indice k
-	if( kstart > kstop || kstop > ncells-1)
+	if( kstart > kstop || kstop > params.ncells-1)
 	 return -1;
 	
 	// copia del contenuto della cellula k-esima in tutte le celle da kstart a kstop (estremi inclusi)
@@ -876,7 +876,7 @@ int CellsSystem::CopyCell( const unsigned long int k, const unsigned long int ks
 {
     
     // controllo di consistenza dell'indice k
-    if( kstart > kstop || kstop > ncells-1)
+    if( kstart > kstop || kstop > params.ncells-1)
         return -1;
     
     // copia del contenuto della cellula k-esima in tutte le celle da kstart a kstop (estremi inclusi)
@@ -1009,12 +1009,12 @@ int CellsSystem::ReplicateCell( const unsigned long int k )
 	
 	// controllo di consistenza dell'indice k
 	//if( k < 0 || k > ncells-1 )
-	if( k > ncells-1 )
+	if( k > params.ncells-1 )
 		return -1;
 	
 	// AddCells inserisce una cellula non inizializzata ed incrementa di 1 il contatore del numero di cellule ncells
 	AddCells( 1 );								// in questa istruzione ncells -> ncells+1
-	int ic = CopyCell( k, ncells-1, ncells-1);	// si copia la cellula k-esima in posizione ncells-1
+	int ic = CopyCell( k, params.ncells-1, params.ncells-1);	// si copia la cellula k-esima in posizione ncells-1
 	
 	if(ic < 1) 
 		return ic;
@@ -1029,12 +1029,12 @@ int CellsSystem::ReplicateCell( const unsigned long int k, CellType* newtype )
     
     // controllo di consistenza dell'indice k
     //if( k < 0 || k > ncells-1 )
-    if( k > ncells-1 )
+    if( k > params.ncells-1 )
         return -1;
     
     // AddCells inserisce una cellula non inizializzata ed incrementa di 1 il contatore del numero di cellule ncells
     AddCells( 1 );								// in questa istruzione ncells -> ncells+1
-    int ic = CopyCell( k, ncells-1, ncells-1, newtype);	// si copia la cellula k-esima in posizione ncells-1, con un diverso tipo cellulare
+    int ic = CopyCell( k, params.ncells-1, params.ncells-1, newtype);	// si copia la cellula k-esima in posizione ncells-1, con un diverso tipo cellulare
     
     if(ic < 1)
         return ic;
@@ -1049,14 +1049,14 @@ int CellsSystem::ReplicateCell( const unsigned long int k, const unsigned long i
 {
 
 	//if( k < 0 || k > ncells-1 )
-	if( k > ncells-1 )
+	if( k > params.ncells-1 )
 		return -1;
 		
 	if( n < 1 )
 		return 0;
 	 
-	int kstart = ncells;
-	int kstop = ncells + n - 1;
+	int kstart = params.ncells;
+	int kstop = params.ncells + n - 1;
 	
 	AddCells( n );
 	CopyCell( k, kstart, kstop);
@@ -1575,7 +1575,7 @@ void CellsSystem::RemoveCell( const unsigned long int n )
 	ConcSNew.erase(ConcSNew.begin()+n);
 	DNANew.erase(DNANew.begin()+n);
 	
-	ncells--;							// aggiornamento del numero di cellule
+	params.ncells--;							// aggiornamento del numero di cellule
 	
 }
 
@@ -1617,7 +1617,170 @@ double CellsSystem::Timing( bool reset )
 	return timing;
 
 }
+// double Get_dt() { return dt; };
+// double Get_dt_sm() { return dt_sm; };
+// bool Get_slow_motion() { return slow_motion; };
+// double Get_t() { return t; };
+// double Get_treal() { return treal; };
+// double Get_tmax() { return tmax; };
+bool CellsSystem::Get_slow_motion() 
+{ 
+  return params.slow_motion; 
+};
+double CellsSystem::Get_dt()
+{
+  return params.dt;
+}
+void CellsSystem::Set_dt( double newdt ) 
+{ 
+  params.dt = newdt;
+};
+double CellsSystem::Get_time_from_CGAL()
+{ 
+  return time_from_CGAL; 
+};
+unsigned long CellsSystem::Get_nstep() 
+{ 
+  return params.nstep;
+};
+unsigned long CellsSystem::Get_nstep_start() 
+{ 
+  return params.nstep_start; 
+};
+unsigned long CellsSystem::Get_nmax() 
+{ 
+  return params.nmax; 
+};
+void CellsSystem::Set_idum ( int newidum ) 
+{ 
+  params.idum = newidum; 
+};
 
+int CellsSystem::Get_idum() 
+{ 
+  return params.idum; 
+};
+unsigned long CellsSystem::Get_nprint() 
+{ 
+  return params.nprint; 
+};
+unsigned long CellsSystem::Get_nscreen() 
+{ 
+  return params.nscreen; 
+};
+unsigned long CellsSystem::Get_nconfiguration() 
+{ 
+  return params.nconfiguration; 
+};
+void CellsSystem::Set_nconfiguration( unsigned long newnconfiguration ) 
+{ 
+  params.nconfiguration = newnconfiguration; 
+};
+void CellsSystem::Step_nconfiguration() 
+{ 
+  params.nconfiguration++; 
+};
+double CellsSystem::Get_eps() 
+{ 
+  return params.eps;
+};
+double CellsSystem::Get_delta_vmax()
+{ 
+  return params.delta_vmax; 
+};
+void CellsSystem::Set_eps( double neweps ) 
+{ 
+  params.eps = neweps; 
+};
+void CellsSystem::Set_delta_vmax( double newdelta_vmax ) 
+{ 
+  params.delta_vmax = newdelta_vmax; 
+};
+unsigned long CellsSystem::Get_ncells() 
+{ 
+  return params.ncells; 
+};
+unsigned long CellsSystem::Get_alive() 
+{ 
+  return params.alive; 
+};
+unsigned long CellsSystem::Get_ntypes() 
+{ 
+  return params.ntypes; 
+};
+bool CellsSystem::Get_flowON() 
+{ 
+  return params.flowON; 
+};
+bool CellsSystem::Get_doseON() 
+{ 
+  return params.doseON;
+};
+
+boost::property_tree::ptree vbl::ReadInParameters::as_ptree() const
+{
+  boost::property_tree::ptree pt;
+#define DOPT(name_buffer) pt.put(#name_buffer, name_buffer);
+  DOPT(sim_type)
+  DOPT(run)
+  DOPT(dt)
+  DOPT(dt_sm)
+  DOPT(t)
+  DOPT(t_ini)
+  DOPT(treal)
+  DOPT(tmax)
+  DOPT(tsm_start)
+  DOPT(tsm_stop)
+  DOPT(slow_motion)
+  DOPT(t_CPU_max)
+  DOPT(nstep)
+  DOPT(nstep_start)
+  DOPT(nmax)
+  DOPT(idum)
+  DOPT(nprint)
+  DOPT(nscreen)
+  DOPT(nconfiguration)
+  DOPT(eps)
+  DOPT(delta_vmax)
+  DOPT(ncells)
+  DOPT(alive)
+  DOPT(ntypes)
+  DOPT(flowON)
+  DOPT(doseON)
+#undef DOPT
+  return pt;
+}
+void vbl::ReadInParameters::assign(const boost::property_tree::ptree &pt)
+{
+  #define DOPT(name) boost::property_tree::get_from_ptree(name, #name, pt);
+  DOPT(sim_type)
+  DOPT(run)
+  DOPT(dt)
+  DOPT(dt_sm)
+  DOPT(t)
+  DOPT(t_ini)
+  DOPT(treal)
+  DOPT(tmax)
+  DOPT(tsm_start)
+  DOPT(tsm_stop)
+  DOPT(slow_motion)
+  DOPT(t_CPU_max)
+  DOPT(nstep)
+  DOPT(nstep_start)
+  DOPT(nmax)
+  DOPT(idum)
+  DOPT(nprint)
+  DOPT(nscreen)
+  DOPT(nconfiguration)
+  DOPT(eps)
+  DOPT(delta_vmax)
+  DOPT(ncells)
+  DOPT(alive)
+  DOPT(ntypes)
+  DOPT(flowON)
+  DOPT(doseON)
+  #undef DOPT
+}
 #include "CellsSystem-A.cpp"
 #include "CellsSystem-B.cpp"
 #include "CellsSystem-C.cpp"

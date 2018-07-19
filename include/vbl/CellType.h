@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+
 namespace vbl{
 // class CellsSystem; //forward declaration
 class CellType 
@@ -29,7 +30,8 @@ class CellType
 		CellType(const std::string filename);
 		// copia
 		CellType(const CellType& cCellType);
-    
+    void assign( const boost::property_tree::ptree &pt);
+    boost::property_tree::ptree as_ptree() const;
 		// nessun distruttore, utilizzo il default del compilatore
 		
 		CellType& operator=(const CellType& ct);
