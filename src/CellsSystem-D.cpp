@@ -250,7 +250,7 @@ void CellsSystem::Geometry()
 					// *********** check for debugging
 					if(dd != dd || dd <= 0)
 						{
-						cout << k << "-th cell, neighbor " << neighbor << ", undefined distance " << dd << endl;
+						std::cout << k << "-th cell, neighbor " << neighbor << ", undefined distance " << dd << std::endl;
 						}
 					// *********** end check for debugging
 					

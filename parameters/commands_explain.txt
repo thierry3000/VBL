@@ -1,5 +1,7 @@
 1       #simulation type 1 is full 3d
 1       #initial number of cells
+1       # set customized position for the first cell
+100 100 -200  # (x,y,z) position
 10      #time steps
 -1      #// precisione relativa
 -1      #delta_vmax
