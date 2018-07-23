@@ -14,3 +14,11 @@
 360     #nprint Numero di passi da " << dt << " secondi tra due record su file
 360     #nscreen
 1       #eventON special events?
+
+
+#### nice starting position for file 
+
+vessels-default-typeI-11x15L130-sample00.h5 (in common coordinates!!!)
+vein:   360 180 -310
+artery: 240 400 -310
+
