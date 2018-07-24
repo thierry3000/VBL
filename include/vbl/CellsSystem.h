@@ -301,6 +301,8 @@ EnvironmentalSignal dose_rateSignal;
 
 // definizione del vettore dei fenotipi cellulari
 std::vector<CellType> CellTypeVector;
+std::vector<unsigned long> CellTypeIndexVector;
+
 
 // parameters related to geometry and dynamics of the cluster
 double maxdr;				// max displacement in the cellular system at a dynamic pace
@@ -635,6 +637,7 @@ void NewPositionsAndVelocities( );
 
 
 // getters
+std::vector<unsigned long int> get_CellTypeIndexVector();
 std::string Get_Commands( ) { return commandFile; };
 std::string Get_CellTypeFile( ) { return CellTypeFile; };
 std::string Get_CellTypeFileAlt( ) { return CellTypeFileAlt; };
@@ -1139,6 +1142,7 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 	double Get_Temperature( const unsigned long int k ) { return Temperature[k]; };
 	
 	std::vector<CellPhase> Get_phase() { return phase; };	
+  std::vector<int> Get_phase_int();
 	CellPhase Get_phase( const unsigned long int k ) { return phase[k]; };	
 
 	std::vector<int> Get_death_condition() { return death_condition; };
@@ -1573,6 +1577,7 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 
 // *** fine dei metodi per la gestione della parte biofisica *** 
 
+  boost::property_tree::ptree as_ptree() const;
 };
 
 

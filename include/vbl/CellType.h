@@ -8,6 +8,9 @@
 #define CELLTYPE_H  // header guard
 #include <iostream>
 #include <string>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/format.hpp>
+#include <vector>
 
 
 namespace vbl{
@@ -23,7 +26,11 @@ class CellType
 // 	std::ostream& operator<<(std::ostream& s, CellType& cCellType);
 		
 	private: 
-	
+    std::vector<std::string> vector_of_cell_type_parameters = { 
+    "name","n_instances","VMAX_1","VMAX_2","VMAX_22","VMAX_A","VMAX_P","VMAX_P_A","VMAX_P_ATP","VMAX_DNA","VMAX_DNA_A","VMAX_DNA_ATP","VMAX_M","VMAX_M_A","VMAX_M_ATP","Km1","Km2","Km22","KmA","Ka","Kmc","Kmd","KmO2","Kmp","KmDNA","KmM","coeffg1","coeffg2","coeffg3","coeffr1","ATPSt","Vmin","DVap","fATPmin","pHimin","VmaxAL0","KmAL","M_T_MEAN","DNA_MAX_SPREAD","v_WORK","PHASE_SPREAD","k_pRb","N_pRb","pRb_ONOFFratio","pRb_fraction","cyclinD_fraction","cyclinE_fraction","cyclinX_fraction","ConcS_0","Thresh_S_start","Thresh_S_stop","k3MM","KmMM","NUCLEAR_OBJ","ClusteringFactor","CycXThr","Vrif","HPumpEff","DiffH","C1","C2","a_R","YoungMod","PoissonRatio","density","viscosity","Mphase_correction","adhesion_range","adhesion_decay","packing_factor","extension_coeff","extvolume_thickness","extvolume_compression","extvolume_fraction","tph_slope","tph_thr","tp11_slope","tp11_thr","a2c_slope","a2c_thr","c2a_slope","c2a_thr","a2cA_slope","a2cA_thr","c2aA_slope","c2aA_thr","a2cAcL_slope","a2cAcL_thr","c2aAcL_slope","c2aAcL_thr", "alpha_R", "beta_R"};
+		//double alpha_R[Nphase];		// coefficiente alpha della legge lineare-quadratica
+		//double beta_R[Nphase];			// coefficiente beta della legge lineare-quadratica
+		
 	public:
 		// costruttori
 		CellType();

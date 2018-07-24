@@ -1100,22 +1100,22 @@ void CellsSystem::WriteCellsSystem( )
   
 // vettore dei tipi cellulari
 	for(unsigned long int k=0; k<params.ntypes; k++)
-		{
-		CellTypeVector[k].WriteCellType( stream );
-		}
+  {
+    CellTypeVector[k].WriteCellType( stream );
+  }
 	
 	// maxdr e i dati sul flusso globale di O2 e AcL vengono ricalcolati 
 	
 	stream.write( (char*)(&name[0]) , params.ncells*sizeof( unsigned long ) );
 	stream.write( (char*)(&mark[0]) , params.ncells*sizeof( int ) );
+  
+  //we iterate over all cells and check out there type
 	for(unsigned long int n = 0; n<params.ncells; n++)
-		{
+  {
 		unsigned long int k = (unsigned long int)(type[n]-&CellTypeVector[0]);
 		stream.write( (char*)(&k) , sizeof( unsigned long int ) );
 		// cout << k << endl;
-		}
-	
-	stream.write( (char*)(&Temperature[0]) , params.ncells*sizeof( double ) );
+  }
 	
 	stream.write( (char*)(&phase[0]) , params.ncells*sizeof( CellPhase ) );
 	stream.write( (char*)(&death_condition[0]) , params.ncells*sizeof( int ) );
@@ -1124,6 +1124,7 @@ void CellsSystem::WriteCellsSystem( )
 	stream.write( (char*)(&age_mother[0]) , params.ncells*sizeof( float ) );
 	stream.write( (char*)(&n_mitosis[0]) , params.ncells*sizeof( int ) );
 	
+  stream.write( (char*)(&Temperature[0]) , params.ncells*sizeof( double ) );
 	stream.write( (char*)(&x[0]) , params.ncells*sizeof( double ) );
 	stream.write( (char*)(&y[0]) , params.ncells*sizeof( double ) );
 	stream.write( (char*)(&z[0]) , params.ncells*sizeof( double ) );

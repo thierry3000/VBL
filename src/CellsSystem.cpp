@@ -1781,6 +1781,42 @@ void vbl::ReadInParameters::assign(const boost::property_tree::ptree &pt)
   DOPT(doseON)
   #undef DOPT
 }
+boost::property_tree::ptree CellsSystem::as_ptree() const
+{
+  boost::property_tree::ptree big_pt;
+  boost::format my_string_template("type_%i");
+  for(int k = 0; k<params.ntypes; k++)
+  {
+    string current_type_name = boost::str(my_string_template %  k);
+    big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
+  }
+  big_pt.put_child("Environment", Env.as_ptree());
+  big_pt.put_child("Environment_0", Env_0.as_ptree());
+  return big_pt;
+}
+std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
+{
+  CellTypeIndexVector.resize(params.ncells);
+  for(unsigned long n = 0; n<params.ncells; n++)
+  {
+		unsigned long k = (unsigned long)(type[n]-&CellTypeVector[0]);
+    CellTypeIndexVector[n] = k;
+		//stream.write( (char*)(&k) , sizeof( unsigned long int ) );
+		// cout << k << endl;
+  }
+  return CellTypeIndexVector;
+}
+std::vector<int> CellsSystem::Get_phase_int()
+{
+  std::vector<int> buffer;
+  buffer.resize(phase.size());
+  for(int i = 0; i< phase.size(); i++)
+  {
+    buffer[i] = (int) phase[i];
+  }
+  return buffer;
+}
+
 #include "CellsSystem-A.cpp"
 #include "CellsSystem-B.cpp"
 #include "CellsSystem-C.cpp"

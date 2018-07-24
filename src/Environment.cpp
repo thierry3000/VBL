@@ -469,10 +469,30 @@ boost::property_tree::ptree vbl::Environment::as_ptree() const
 {
   boost::property_tree::ptree pt;
 #define DOPT(name_buffer) pt.put(#name_buffer, name_buffer)
-  for(auto entry:vector_of_env_parameters)
-  {
-    DOPT(entry);
-  }
+  
+  //for development 
+//   for(auto entry:vector_of_env_parameters)
+//   {
+//     std::cout << "DOPT(" << entry << ");"<< std::endl;
+//     //DOPT(entry);
+//   }
+  
+  DOPT(T);
+  DOPT(G);
+  DOPT(O2);
+  DOPT(CO2);
+  DOPT(A);
+  DOPT(AcL);
+  DOPT(pH);
+  DOPT(xmin);
+  DOPT(xmax);
+  DOPT(ymin);
+  DOPT(ymax);
+  DOPT(zmin);
+  DOPT(zmax);
+  DOPT(volume0);
+  DOPT(volume);
+  DOPT(DoseRate);
 #undef DOPT
   return pt;
 }

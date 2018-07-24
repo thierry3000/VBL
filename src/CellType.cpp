@@ -123,6 +123,219 @@ CellType::CellType()
     c2aAcL_thr = 6.8;  				// 
 }
 
+boost::property_tree::ptree CellType::as_ptree() const
+{
+  boost::property_tree::ptree pt;
+#define DOPT(name_buffer) pt.put(#name_buffer, name_buffer)
+  for(std::string entry:vector_of_cell_type_parameters)
+  {
+    if( entry == std::string("alpha_R") )
+    {
+      boost::format my_string_template("alpha_R_%i");
+      for(int i = 0;i< Nphase; i++)
+      {
+        std::string current_type_name = boost::str(my_string_template %  i);
+        pt.put(current_type_name, alpha_R[i]);
+      }
+    }
+    else if( entry == std::string("beta_R") )
+    {
+      boost::format my_string_template("beta_R_%i");
+      for(int i = 0;i< Nphase; i++)
+      {
+        std::string current_type_name = boost::str(my_string_template %  i);
+        pt.put(current_type_name, beta_R[i]);
+      }
+    }
+//     else
+//     {
+//       std::cout << "DOPT(" << entry << ");"<< std::endl;
+//       //DOPT(entry.c_str());
+//     }
+  }
+  DOPT(name);
+  DOPT(n_instances);
+  DOPT(VMAX_1);
+  DOPT(VMAX_2);
+  DOPT(VMAX_22);
+  DOPT(VMAX_A);
+  DOPT(VMAX_P);
+  DOPT(VMAX_P_A);
+  DOPT(VMAX_P_ATP);
+  DOPT(VMAX_DNA);
+  DOPT(VMAX_DNA_A);
+  DOPT(VMAX_DNA_ATP);
+  DOPT(VMAX_M);
+  DOPT(VMAX_M_A);
+  DOPT(VMAX_M_ATP);
+  DOPT(Km1);
+  DOPT(Km2);
+  DOPT(Km22);
+  DOPT(KmA);
+  DOPT(Ka);
+  DOPT(Kmc);
+  DOPT(Kmd);
+  DOPT(KmO2);
+  DOPT(Kmp);
+  DOPT(KmDNA);
+  DOPT(KmM);
+  DOPT(coeffg1);
+  DOPT(coeffg2);
+  DOPT(coeffg3);
+  DOPT(coeffr1);
+  DOPT(ATPSt);
+  DOPT(Vmin);
+  DOPT(DVap);
+  DOPT(fATPmin);
+  DOPT(pHimin);
+  DOPT(VmaxAL0);
+  DOPT(KmAL);
+  DOPT(M_T_MEAN);
+  DOPT(DNA_MAX_SPREAD);
+  DOPT(v_WORK);
+  DOPT(PHASE_SPREAD);
+  DOPT(k_pRb);
+  DOPT(N_pRb);
+  DOPT(pRb_ONOFFratio);
+  DOPT(pRb_fraction);
+  DOPT(cyclinD_fraction);
+  DOPT(cyclinE_fraction);
+  DOPT(cyclinX_fraction);
+  DOPT(ConcS_0);
+  DOPT(Thresh_S_start);
+  DOPT(Thresh_S_stop);
+  DOPT(k3MM);
+  DOPT(KmMM);
+  DOPT(NUCLEAR_OBJ);
+  DOPT(ClusteringFactor);
+  DOPT(CycXThr);
+  DOPT(Vrif);
+  DOPT(HPumpEff);
+  DOPT(DiffH);
+  DOPT(C1);
+  DOPT(C2);
+  DOPT(a_R);
+  DOPT(YoungMod);
+  DOPT(PoissonRatio);
+  DOPT(density);
+  DOPT(viscosity);
+  DOPT(Mphase_correction);
+  DOPT(adhesion_range);
+  DOPT(adhesion_decay);
+  DOPT(packing_factor);
+  DOPT(extension_coeff);
+  DOPT(extvolume_thickness);
+  DOPT(extvolume_compression);
+  DOPT(extvolume_fraction);
+  DOPT(tph_slope);
+  DOPT(tph_thr);
+  DOPT(tp11_slope);
+  DOPT(tp11_thr);
+  DOPT(a2c_slope);
+  DOPT(a2c_thr);
+  DOPT(c2a_slope);
+  DOPT(c2a_thr);
+  DOPT(a2cA_slope);
+  DOPT(a2cA_thr);
+  DOPT(c2aA_slope);
+  DOPT(c2aA_thr);
+  DOPT(a2cAcL_slope);
+  DOPT(a2cAcL_thr);
+  DOPT(c2aAcL_slope);
+  DOPT(c2aAcL_thr);
+  DOPT(name);
+  DOPT(n_instances);
+  DOPT(VMAX_1);
+  DOPT(VMAX_2);
+  DOPT(VMAX_22);
+  DOPT(VMAX_A);
+  DOPT(VMAX_P);
+  DOPT(VMAX_P_A);
+  DOPT(VMAX_P_ATP);
+  DOPT(VMAX_DNA);
+  DOPT(VMAX_DNA_A);
+  DOPT(VMAX_DNA_ATP);
+  DOPT(VMAX_M);
+  DOPT(VMAX_M_A);
+  DOPT(VMAX_M_ATP);
+  DOPT(Km1);
+  DOPT(Km2);
+  DOPT(Km22);
+  DOPT(KmA);
+  DOPT(Ka);
+  DOPT(Kmc);
+  DOPT(Kmd);
+  DOPT(KmO2);
+  DOPT(Kmp);
+  DOPT(KmDNA);
+  DOPT(KmM);
+  DOPT(coeffg1);
+  DOPT(coeffg2);
+  DOPT(coeffg3);
+  DOPT(coeffr1);
+  DOPT(ATPSt);
+  DOPT(Vmin);
+  DOPT(DVap);
+  DOPT(fATPmin);
+  DOPT(pHimin);
+  DOPT(VmaxAL0);
+  DOPT(KmAL);
+  DOPT(M_T_MEAN);
+  DOPT(DNA_MAX_SPREAD);
+  DOPT(v_WORK);
+  DOPT(PHASE_SPREAD);
+  DOPT(k_pRb);
+  DOPT(N_pRb);
+  DOPT(pRb_ONOFFratio);
+  DOPT(pRb_fraction);
+  DOPT(cyclinD_fraction);
+  DOPT(cyclinE_fraction);
+  DOPT(cyclinX_fraction);
+  DOPT(ConcS_0);
+  DOPT(Thresh_S_start);
+  DOPT(Thresh_S_stop);
+  DOPT(k3MM);
+  DOPT(KmMM);
+  DOPT(NUCLEAR_OBJ);
+  DOPT(ClusteringFactor);
+  DOPT(CycXThr);
+  DOPT(Vrif);
+  DOPT(HPumpEff);
+  DOPT(DiffH);
+  DOPT(C1);
+  DOPT(C2);
+  DOPT(a_R);
+  DOPT(YoungMod);
+  DOPT(PoissonRatio);
+  DOPT(density);
+  DOPT(viscosity);
+  DOPT(Mphase_correction);
+  DOPT(adhesion_range);
+  DOPT(adhesion_decay);
+  DOPT(packing_factor);
+  DOPT(extension_coeff);
+  DOPT(extvolume_thickness);
+  DOPT(extvolume_compression);
+  DOPT(extvolume_fraction);
+  DOPT(tph_slope);
+  DOPT(tph_thr);
+  DOPT(tp11_slope);
+  DOPT(tp11_thr);
+  DOPT(a2c_slope);
+  DOPT(a2c_thr);
+  DOPT(c2a_slope);
+  DOPT(c2a_thr);
+  DOPT(a2cA_slope);
+  DOPT(a2cA_thr);
+  DOPT(c2aA_slope);
+  DOPT(c2aA_thr);
+  DOPT(a2cAcL_slope);
+  DOPT(a2cAcL_thr);
+  DOPT(c2aAcL_slope);
+  DOPT(c2aAcL_thr);
+#undef DOPT
+  return pt;
+}
 void CellType::assign(const boost::property_tree::ptree& pt)
 {
   /** maybe for later, 
@@ -697,10 +910,8 @@ std::ostream& operator<<(std::ostream& stream, CellType const & cCellType)
 // write binario su file del cell type
 void CellType::WriteCellType( std::ofstream& stream )
 {
-
 	stream.write( (char*)(&name), sizeof(int) );
 	stream.write( (char*)(&n_instances), sizeof(unsigned long) );	
-
 	stream.write( (char*)(&VMAX_1), sizeof(double) );
 	stream.write( (char*)(&VMAX_2), sizeof(double) );
 	stream.write( (char*)(&VMAX_22), sizeof(double) );
@@ -794,8 +1005,6 @@ void CellType::WriteCellType( std::ofstream& stream )
 	stream.write( (char*)(&a2cAcL_thr), sizeof(double) );
 	stream.write( (char*)(&c2aAcL_slope), sizeof(double) );
 	stream.write( (char*)(&c2aAcL_thr), sizeof(double) );
-
-	
 }
 
 // read binario da file del cell type
@@ -900,3 +1109,4 @@ void CellType::ReadCellType( std::ifstream& stream )
 
 	
 }
+
