@@ -1,0 +1,10 @@
+#ifndef VBL_BUILD_INFO_H
+#define VBL_BUILD_INFO_H  // header guard
+
+// the configured options and settings from cmake
+#define VBL_VERSION_MAJOR @VBL_VERSION_MAJOR@
+#define VBL_VERSION_MINOR @VBL_VERSION_MINOR@
+
+#define VBL_USE_TUMORCODE @VBL_USE_TUMORCODE@
+
+#endif // header guard

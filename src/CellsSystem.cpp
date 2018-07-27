@@ -8,7 +8,7 @@
  */
 
 
-#include "vbl.h"
+#include "../include/vbl.h"
 
 
 using namespace vbl;
@@ -1787,12 +1787,31 @@ boost::property_tree::ptree CellsSystem::as_ptree() const
   boost::format my_string_template("type_%i");
   for(int k = 0; k<params.ntypes; k++)
   {
-    string current_type_name = boost::str(my_string_template %  k);
+    std::string current_type_name = boost::str(my_string_template %  k);
     big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
   }
   big_pt.put_child("Environment", Env.as_ptree());
   big_pt.put_child("Environment_0", Env_0.as_ptree());
+  
+  big_pt.put_child("flowSignal" , flowSignal.as_ptree());
+  big_pt.put_child("dose_rateSignal", dose_rateSignal.as_ptree());
   return big_pt;
+}
+
+void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
+{
+  Env.assign(big_pt.get_child("Environment"));
+  Env_0.assign(big_pt.get_child("Environment_0"));
+  flowSignal.assign(big_pt.get_child("flowSignal"));
+  dose_rateSignal.assign(big_pt.get_child("dose_rateSignal"));
+  
+  boost::format my_string_template("type_%i");
+  for(int k = 0; k<big_pt.get<int>("ntypes"); k++)
+  {
+    std::string current_type_name = boost::str(my_string_template %  k);
+    
+    //big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
+  }
 }
 std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 {

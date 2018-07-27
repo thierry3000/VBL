@@ -1578,6 +1578,7 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 // *** fine dei metodi per la gestione della parte biofisica *** 
 
   boost::property_tree::ptree as_ptree() const;
+  void assign(const boost::property_tree::ptree &pt);
 };
 
 
