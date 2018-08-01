@@ -1815,6 +1815,7 @@ void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
 }
 std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 {
+  std::cout<< " resized CellTypeIndexVector to: " << params.ncells << std::endl;
   CellTypeIndexVector.resize(params.ncells);
   for(unsigned long n = 0; n<params.ncells; n++)
   {
@@ -1824,6 +1825,14 @@ std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 		// cout << k << endl;
   }
   return CellTypeIndexVector;
+}
+void CellsSystem::set_CellTypeFromIndexVector(std::vector<unsigned long> &cellIndexVector)
+{
+  type.resize(cellIndexVector.size());
+  for(int i=0;i<cellIndexVector.size();i++)
+  {
+    type[i]=&(CellTypeVector[i]);
+  }
 }
 std::vector<int> CellsSystem::Get_phase_int()
 {
