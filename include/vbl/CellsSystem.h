@@ -744,14 +744,18 @@ void DummyDynamics( ); // dinamica dummy
 void Printout();
 
 // close files
-void CloseOutputFiles() { std::cout << "\nFine del run " << params.run << " al passo " << params.nstep << std::endl; 
-						output_file.close(); 
-						log_file.close(); 
-						screen_dump_file.close();
-						errorlog_file.close();
-						cell_file.close();
-						env_file.close();
-						convlog_file.close(); };
+void CloseOutputFiles() 
+{ 
+  std::cout << "\nFine del run " << params.run << " al passo " << params.nstep << std::endl; 
+  output_file.close(); 
+  log_file.close(); 
+  screen_dump_file.close();
+  errorlog_file.close();
+  cell_file.close();
+  env_file.close();
+  convlog_file.close();
+  std::cout << "\nclosed all vbl files "<< std::endl; 
+};
 
 // summary printout on file
 void Print2file();
