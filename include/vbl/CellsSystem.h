@@ -639,6 +639,8 @@ void NewPositionsAndVelocities( );
 // getters
 std::vector<unsigned long int> get_CellTypeIndexVector();
 void set_CellTypeFromIndexVector(std::vector<unsigned long> &cellIndexVector);
+void set_CellPhaseFromIntVector(std::vector<int> &int_buffer);
+
 std::string Get_Commands( ) { return commandFile; };
 std::string Get_CellTypeFile( ) { return CellTypeFile; };
 std::string Get_CellTypeFileAlt( ) { return CellTypeFileAlt; };

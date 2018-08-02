@@ -1834,6 +1834,13 @@ void CellsSystem::set_CellTypeFromIndexVector(std::vector<unsigned long> &cellIn
     type[i]=&(CellTypeVector[i]);
   }
 }
+void CellsSystem::set_CellPhaseFromIntVector(std::vector<int> &int_buffer)
+{
+  for(int i=0;i<int_buffer.size(); i++)
+  {
+    Set_phase(i, CellPhase(i));
+  }
+}
 std::vector<int> CellsSystem::Get_phase_int()
 {
   std::vector<int> buffer;
