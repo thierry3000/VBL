@@ -925,6 +925,9 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 
 	void Set_vz( const std::vector<double>& newvz ) { vz = newvz; };
 	void Set_vz( const int k, const double newvz ) { vz[k] = newvz; };
+  
+  void Set_surface( const std::vector<double>& newsurface ) { surface = newsurface; };
+  void Set_mass( const std::vector<double>& newmass ) { mass = newmass; };
 	
 			
 	void Init_fx( ) { fx.clear(); };
@@ -993,6 +996,11 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 
 	void Set_O2( const std::vector<double>& newO2 ) { O2 = newO2; };
 	void Set_O2( const int k, const double newO2 ) { O2[k] = newO2; };
+  
+  void Set_SensO2( const std::vector<double>& newSensO2 ) { SensO2 = newSensO2; };
+	void Set_SensO2( const int k, const double newSensO2 ) { SensO2[k] = newSensO2; };
+  void Set_ConsO( const std::vector<double>& newConsO ) { ConsO = newConsO; };
+	void Set_ConsO( const int k, const double newConsO ) { ConsO[k] = newConsO; };
 
 	void Set_store( const std::vector<double>& newstore ) { store = newstore; };
 	void Set_store( const int k, const double newstore ) { store[k] = newstore; };
@@ -1003,8 +1011,13 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 	void Set_AcL( const std::vector<double>& newAcL ) { AcL = newAcL; };
 	void Set_AcL( const int k, const double newAcL ) { AcL[k] = newAcL; };
 	
-	void Set_pHi( const std::vector<double>& newpHi ) { pHi = newpHi; };
-	void Set_pHi( const int k, const double newpHi ) { pHi[k] = newpHi; };
+	void Set_pHi( const std::vector<double>& newpHi ) 
+  { pHi = newpHi; };
+	void Set_pHi( const int k, const double newpHi ) 
+  { pHi[k] = newpHi; };
+  
+  void Set_h( const std::vector<double>& newph ) 
+  { h = newph; };
 
 	// void Set_H( const double newH ) { H = newH; };
 	// void Set_CO2( const double newCO2 ) { CO2 = newCO2; };
@@ -1045,8 +1058,10 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 	void Set_cyclinX( const std::vector<double>& newcyclinX ) { cyclinX = newcyclinX; };
 	void Set_cyclinX( const int k, const double newcyclinX ) { cyclinX[k] = newcyclinX; };
 
-	void Set_concS( const std::vector<double>& newconcS ) { ConcS = newconcS; };
-	void Set_concS( const int k, const double newconcS ) { ConcS[k] = newconcS; };
+	void Set_ConcS( const std::vector<double>& newconcS ) { ConcS = newconcS; };
+	void Set_ConcS( const int k, const double newconcS ) { ConcS[k] = newconcS; };
+  void Set_NpRbk( const std::vector<double>& newNpRbk ) { NpRbk = newNpRbk; };
+	void Set_NpRbk( const int k, const double newNpRbk ) { NpRbk[k] = newNpRbk; };
 
 	
 	void Set_DNA( const std::vector<double>& newDNA ) { DNA = newDNA; };
@@ -1118,12 +1133,17 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 
 	void Set_ATPtot( const std::vector<double>& newATPtot ) { ATPtot = newATPtot; };
 	void Set_ATPtot( const int k, const double newATPtot ) { ATPtot[k] = newATPtot; };
+  void Set_ATP_St( const std::vector<double>& newATP_St ) { ATP_St = newATP_St; };
+	void Set_ATP_St( const int k, const double newATP_St ) { ATP_St[k] = newATP_St; };
+  void Set_ATPmin( const std::vector<double>& newATPmin ) { ATPmin = newATPmin; };
+	void Set_ATPmin( const int k, const double newATPmin ) { ATPmin[k] = newATPmin; };
 
 
 
 	// setters che inizializzano i contatori di produzione dell'ATP (normalmente vanno chiamati solo al momento della mitosi)
 	void Set_ATPstart(  ) { for(unsigned long int k=0; k<params.ncells; k++) ATPstart[k] = (double)ATPp[k]; };	
-	void Set_ATPstart( const unsigned long int k ) { ATPstart[k] = (double)ATPp[k]; };	
+	void Set_ATPstart( const unsigned long int k ) { ATPstart[k] = (double)ATPp[k]; };
+  void Set_ATPstart( const std::vector<double>& newATPstart ) { ATPstart = newATPstart; };
 
 	void Set_ATPprod( const std::vector<double>& newATPprod ) { ATPprod = newATPprod; };
 	void Set_ATPprod( const unsigned long int k, const double newATPprod ) { ATPprod[k] = newATPprod; };
