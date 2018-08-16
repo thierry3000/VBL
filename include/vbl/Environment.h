@@ -44,6 +44,7 @@ class Environment
 	
 private:
   //this needs c++ 11 
+  // and does not works, //see cpp file
   std::vector<std::string> vector_of_env_parameters = { 
     "T",
     "G",

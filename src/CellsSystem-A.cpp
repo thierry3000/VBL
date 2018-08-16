@@ -26,39 +26,39 @@ extern double pAlt;
 void CellsSystem::InitializeCellsSystem( bool terminal )
 {
 
-	unsigned long n;
-	int ft;
-	
-	std::ifstream commands;
+  unsigned long n;
+  int ft;
+
+  std::ifstream commands;
 
 // se la lettura viene fatta da file si apre il file di comandi
-	if( !terminal )
-		commands.open( commandFile.c_str() );
-		
+  if( !terminal )
+    commands.open( commandFile.c_str() );
+  
 // inizializzazione del seme del generatore di numeri casuali 
 
-	std::cout << "The seed of the generator and' " << params.idum << std::endl;
+  std::cout << "The seed of the generator and' " << params.idum << std::endl;
 
 	
 // queste dichiarazioni servono alla definizione di flusso e dose di radiazione: si tratta di una struttura un po' ridondante che 
 // tengo solo per chiarezza	
-	EnvironmentalSignalType flow_type;
-	double flow_min;
-	double flow_max;
-	double flow_period;
-	double flow_start;
-	double flow_stop;
-	double flow_tON;
-	double flow_tOFF;
+  EnvironmentalSignalType flow_type;
+  double flow_min;
+  double flow_max;
+  double flow_period;
+  double flow_start;
+  double flow_stop;
+  double flow_tON;
+  double flow_tOFF;
 
-	EnvironmentalSignalType dose_rate_type;
-	double dose_rate_min;
-	double dose_rate_max;
-	double dose_rate_period;
-	double dose_rate_start;
-	double dose_rate_stop;
-	double dose_rate_tON;
-	double dose_rate_tOFF;
+  EnvironmentalSignalType dose_rate_type;
+  double dose_rate_min;
+  double dose_rate_max;
+  double dose_rate_period;
+  double dose_rate_start;
+  double dose_rate_stop;
+  double dose_rate_tON;
+  double dose_rate_tOFF;
 // fine delle dichiarazioni per flusso e dose
 
 
@@ -67,66 +67,65 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	// first_print2file = true;
 	
 // setup della simulazione
-	if( terminal )
-		{
-		std::cout << std::endl;
+  if( terminal )
+  {
+    std::cout << std::endl;
 
-		// cout << "Simulazione con cellule disperse (0), full 3D (1), oppure con configurazione fissa (2) ? ";
-		std::cout << "Simulation with dispersed cells (0) or full 3D (1) ? ";
-		std::cin >> params.sim_type;
-		
-		}
-	else 
-		{
-		commands >> params.sim_type;
-		}
+    // cout << "Simulazione con cellule disperse (0), full 3D (1), oppure con configurazione fissa (2) ? ";
+    std::cout << "Simulation with dispersed cells (0) or full 3D (1) ? ";
+    std::cin >> params.sim_type;
+  }
+  else 
+  {
+    commands >> params.sim_type;
+  }
 
-	switch(params.sim_type)
-		{
-		case Disperse:
-		std::cout << "E' stata selezionata la simulazione con cellule disperse\n" << std::endl;
-		break;
-		
-		case Full3D:
-		std::cout << "E' stata selezionata la simulazione full 3D\n" << std::endl;
-		maxdr = 0.;
-		break;
-		
-		case FixedConfig:
-		//cout << "E' stata selezionata la simulazione con configurazione fissa\n" << endl;
-		break;
-						
-		default:
-		break; 		 
-		}
+  switch(params.sim_type)
+  {
+    case Disperse:
+    std::cout << "E' stata selezionata la simulazione con cellule disperse\n" << std::endl;
+    break;
+    
+    case Full3D:
+    std::cout << "E' stata selezionata la simulazione full 3D\n" << std::endl;
+    maxdr = 0.;
+    break;
+    
+    case FixedConfig:
+    //cout << "E' stata selezionata la simulazione con configurazione fissa\n" << endl;
+    break;
+				    
+    default:
+    break; 		 
+  }
 
-	if( params.sim_type == Disperse || params.sim_type == Full3D )
-		{
-		if( terminal )
-			{
-			std::cout << "Numero di cellule iniziali: ";
-			std::cin >> nstart;
-			}
-		else 
-			{
-			commands >> nstart;
-			std::cout << "Numero di cellule iniziali: " << nstart << std::endl;
-			}
-		}
+  if( params.sim_type == Disperse || params.sim_type == Full3D )
+  {
+    if( terminal )
+    {
+      std::cout << "Numero di cellule iniziali: ";
+      std::cin >> nstart;
+    }
+    else 
+    {
+      commands >> nstart;
+      std::cout << "Numero di cellule iniziali: " << nstart << std::endl;
+    }
+  }
 
 // scelta del tipo di distribuzione spaziale
-	double New_x_0 = 0;
-	double New_y_0 = 0;
-	double New_z_0 = 0;
+  double New_x_0 = 0;
+  double New_y_0 = 0;
+  double New_z_0 = 0;
 
 // se le cellule sono disperse, vengono sparse nell'intero volume	
-	if( params.sim_type == Disperse )
+  if( params.sim_type == Disperse )
   {
     initial_cell_dist = Dist3D;
   }
 
 // se la simulazione e' di tipo 3D allora si distinguono diversi tipi di simulazione
-	if( params.sim_type == Full3D )
+  if( params.sim_type == Full3D )
   {
     // if there is only one cell, than choose its starting position.
     if( nstart == 1 )
@@ -185,23 +184,23 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
   }
 
 
-	if( terminal )
-		{
-		std::cout << "Stepsize (s): ";
-		std::cin >> params.dt;
-		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo (-1 = default = 1e-5): ";
-		std::cin >> params.eps;
-		if (params.eps < 0) params.eps = 1e-5; // precisione relativa
-		std::cout << "Precisione nella determinazione della velocita' (micron/s) (-1 = default = 1e-5 micron/s): ";
-		std::cin >> params.delta_vmax;
-		if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-5; // micron/s
-		std::cout << "Durata dell'inizializzazione (s) (-1 = default = 1e6 s): ";
-		std::cin >> params.t_ini;
-		if(params.t_ini < 0) params.t_ini = 1000000.; // s
-		std::cout << "Durata della simulazione (s): ";
-		std::cin >> params.tmax;
-		std::cout << "Maximum CPU time for a fraction of run (s) (Select if you break the run in multiple parts, if <= 0 = idle): ";
-		std::cin >> params.t_CPU_max;
+  if( terminal )
+  {
+    std::cout << "Stepsize (s): ";
+    std::cin >> params.dt;
+    std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo (-1 = default = 1e-5): ";
+    std::cin >> params.eps;
+    if (params.eps < 0) params.eps = 1e-5; // precisione relativa
+    std::cout << "Precisione nella determinazione della velocita' (micron/s) (-1 = default = 1e-5 micron/s): ";
+    std::cin >> params.delta_vmax;
+    if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-5; // micron/s
+    std::cout << "Durata dell'inizializzazione (s) (-1 = default = 1e6 s): ";
+    std::cin >> params.t_ini;
+    if(params.t_ini < 0) params.t_ini = 1000000.; // s
+    std::cout << "Durata della simulazione (s): ";
+    std::cin >> params.tmax;
+    std::cout << "Maximum CPU time for a fraction of run (s) (Select if you break the run in multiple parts, if <= 0 = idle): ";
+    std::cin >> params.t_CPU_max;
     std::cout << "Stepsize per slow motion (s): (0 = no slow motion) ";
     std::cin >> params.dt_sm;
     if(params.dt_sm > 0)
@@ -216,25 +215,25 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
       params.tsm_start = 0;
       params.tsm_stop = 0;
     }
-		}
-	else 
-		{
-		commands >> params.dt;
-		std::cout << "Stepsize (s): " << params.dt << std::endl;
-		commands >> params.eps;
-		if (params.eps < 0) params.eps = 1e-2; // precisione relativa
-		std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << params.eps << std::endl;
-		commands >> params.delta_vmax;
-		if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-4; // micron/s
-		std::cout << "Precisione nella determinazione della velocita' (micron/s): " << params.delta_vmax << std::endl;
-		commands >> params.t_ini;
-		if(params.t_ini < 0) 
+  }
+  else 
+  {
+    commands >> params.dt;
+    std::cout << "Stepsize (s): " << params.dt << std::endl;
+    commands >> params.eps;
+    if (params.eps < 0) params.eps = 1e-2; // precisione relativa
+    std::cout << "Precisione per il metodo di diffusione trasporto e metabolismo: " << params.eps << std::endl;
+    commands >> params.delta_vmax;
+    if( params.delta_vmax < 0 ) params.delta_vmax = 1.e-4; // micron/s
+    std::cout << "Precisione nella determinazione della velocita' (micron/s): " << params.delta_vmax << std::endl;
+    commands >> params.t_ini;
+    if(params.t_ini < 0) 
       params.t_ini = 1000000.; // s
-		std::cout << "Durata dell'inizializzazione (s): " << params.t_ini << std::endl;
-		commands >> params.tmax;
-		std::cout << "Durata della simulazione (s): " << params.tmax << std::endl;
-		commands >> params.t_CPU_max;
-		std::cout << "Massimo CPU time per una frazione di run (s): " << params.t_CPU_max << std::endl;
+    std::cout << "Durata dell'inizializzazione (s): " << params.t_ini << std::endl;
+    commands >> params.tmax;
+    std::cout << "Durata della simulazione (s): " << params.tmax << std::endl;
+    commands >> params.t_CPU_max;
+    std::cout << "Massimo CPU time per una frazione di run (s): " << params.t_CPU_max << std::endl;
     commands >> params.dt_sm;
     std::cout << "Stepsize per slow motion (s): " << params.dt_sm << std::endl;
     if(params.dt_sm > 0)
@@ -249,9 +248,9 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
       params.tsm_start = 0;
       params.tsm_stop = 0;
     }
-		}
+  }
 
-	params.nmax = (unsigned long)floor((params.tmax+params.t_ini)/params.dt);
+  params.nmax = (unsigned long)floor((params.tmax+params.t_ini)/params.dt);
 
 /*		
 	cout << "Selezione dell'ambiente (0 = Standard, 1 = Modificato): ";
@@ -261,15 +260,15 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 	
 	Environment input_env((EnvironmentTypeSelector)EnvType);		// qui si definisce l'ambiente
 */
-	// if( terminal )
-		{
-		std::cout << "Ambiente letto dal file " << Get_EnvironmentFile() << "\n" << std::endl;
-		}
+  // if( terminal )
+  {
+    std::cout << "Ambiente letto dal file " << Get_EnvironmentFile() << "\n" << std::endl;
+  }
 		
-	Environment input_env( EnvironmentFile );		// qui si definisce l'ambiente
+  Environment input_env( EnvironmentFile );		// qui si definisce l'ambiente
 	
-	Env_0 = input_env;						// l'ambiente definito localmente viene copiato nella variabile di CellsSystem
-	Env = Env_0;							// l'ambiente attuale e' uguale all'ambiente iniziale
+  Env_0 = input_env;						// l'ambiente definito localmente viene copiato nella variabile di CellsSystem
+  Env = Env_0;							// l'ambiente attuale e' uguale all'ambiente iniziale
 
 
 // il codice seguente serve a defire le caratteristiche del flusso nell'ambiente
@@ -2702,89 +2701,85 @@ void CellsSystem::PrintEnv(bool isBinary)
 // 
 void CellsSystem::StepStat( bool reset_stat )
 {
-	
-	if(reset_stat)
-		{
-		ncalls = 0.;
-		nrepeats_average = 0.;
-		nrepeats_max = 0;
-		nrepeats_min = MAXREPEATS;
-		
-		for(int k=0; k<NCONV_TEST; k++)
-			convergence_fail[k] = 0;
-		
-		loop_count_average = 0;
-		loop_count_max = 0;
-		loop_count_min = 0;
-		
-		n_mitoses_average = 0.;
-		n_mitoses_max = 0;
-		n_mitoses_min = params.ncells;
+  if(reset_stat)
+  {
+    ncalls = 0.;
+    nrepeats_average = 0.;
+    nrepeats_max = 0;
+    nrepeats_min = MAXREPEATS;
 
-		min_Gin = 1.;
-		max_Gin = -1;
-		min_Gext = 1.;
-		max_Gext = -1;
-		min_O2 = 1.;
-		max_O2 = -1;
-		min_Ain = 1.;
-		max_Ain = -1;
-		min_Aext = 1.;
-		max_Aext = -1;
-		min_AcLin = 1.;
-		max_AcLin = -1;
-		min_AcLext = 1.;
-		max_AcLext = -1;
-		min_extvolume = 1.;
-		max_extvolume = -1;
+    for(int k=0; k<NCONV_TEST; k++)
+      convergence_fail[k] = 0;
 
-		}
-	else 
-		{
-		nrepeats_average = ( (ncalls-1)*nrepeats_average + nrepeats )/ncalls;
-		if( nrepeats > nrepeats_max ) nrepeats_max = nrepeats;
-		if( nrepeats < nrepeats_min ) nrepeats_min = nrepeats;
-		
-		loop_count_average = ( (ncalls-1)*loop_count_average + loop_count )/ncalls;
-		if( loop_count > loop_count_max ) loop_count_max = loop_count;
-		if( loop_count > 0 && loop_count < loop_count_min ) 
-			loop_count_min = loop_count;	
-		else if( loop_count == 0 )
-			loop_count_min = loop_count;
-			
-		n_mitoses_average = ( (ncalls-1)*n_mitoses_average + n_mitoses )/ncalls;
-		if( n_mitoses > n_mitoses_max ) n_mitoses_max = n_mitoses;
-		if( n_mitoses < n_mitoses_min ) n_mitoses_min = n_mitoses;
-			
-		for(unsigned long n=0; n<params.ncells; n++)
-			{
-			if( G[n] < min_Gin ) min_Gin = G[n];
-			if( G[n] > max_Gin ) max_Gin = G[n];
+    loop_count_average = 0;
+    loop_count_max = 0;
+    loop_count_min = 0;
+    
+    n_mitoses_average = 0.;
+    n_mitoses_max = 0;
+    n_mitoses_min = params.ncells;
 
-			if( G_extra[n] < min_Gext ) min_Gext = G_extra[n];
-			if( G_extra[n] > max_Gext ) max_Gext = G_extra[n];
+    min_Gin = 1.;
+    max_Gin = -1;
+    min_Gext = 1.;
+    max_Gext = -1;
+    min_O2 = 1.;
+    max_O2 = -1;
+    min_Ain = 1.;
+    max_Ain = -1;
+    min_Aext = 1.;
+    max_Aext = -1;
+    min_AcLin = 1.;
+    max_AcLin = -1;
+    min_AcLext = 1.;
+    max_AcLext = -1;
+    min_extvolume = 1.;
+    max_extvolume = -1;
+  }
+  else 
+  {
+    nrepeats_average = ( (ncalls-1)*nrepeats_average + nrepeats )/ncalls;
+    if( nrepeats > nrepeats_max ) nrepeats_max = nrepeats;
+    if( nrepeats < nrepeats_min ) nrepeats_min = nrepeats;
+    
+    loop_count_average = ( (ncalls-1)*loop_count_average + loop_count )/ncalls;
+    if( loop_count > loop_count_max ) loop_count_max = loop_count;
+    if( loop_count > 0 && loop_count < loop_count_min ) 
+	    loop_count_min = loop_count;	
+    else if( loop_count == 0 )
+	    loop_count_min = loop_count;
+	    
+    n_mitoses_average = ( (ncalls-1)*n_mitoses_average + n_mitoses )/ncalls;
+    if( n_mitoses > n_mitoses_max ) n_mitoses_max = n_mitoses;
+    if( n_mitoses < n_mitoses_min ) n_mitoses_min = n_mitoses;
 
-			if( O2[n] < min_O2 ) min_O2 = O2[n];
-			if( O2[n] > max_O2 ) max_O2 = O2[n];
+    for(unsigned long n=0; n<params.ncells; n++)
+    {
+      if( G[n] < min_Gin ) min_Gin = G[n];
+      if( G[n] > max_Gin ) max_Gin = G[n];
 
-			if( A[n] < min_Ain ) min_Ain = A[n];
-			if( A[n] > max_Ain ) max_Ain = A[n];
+      if( G_extra[n] < min_Gext ) min_Gext = G_extra[n];
+      if( G_extra[n] > max_Gext ) max_Gext = G_extra[n];
 
-			if( A_extra[n] < min_Aext ) min_Aext = A_extra[n];
-			if( A_extra[n] > max_Aext ) max_Aext = A_extra[n];
+      if( O2[n] < min_O2 ) min_O2 = O2[n];
+      if( O2[n] > max_O2 ) max_O2 = O2[n];
 
-			if( AcL[n] < min_AcLin ) min_AcLin = AcL[n];
-			if( AcL[n] > max_AcLin ) max_AcLin = AcL[n];
+      if( A[n] < min_Ain ) min_Ain = A[n];
+      if( A[n] > max_Ain ) max_Ain = A[n];
 
-			if( AcL_extra[n] < min_AcLext ) min_AcLext = AcL_extra[n];
-			if( AcL_extra[n] > max_AcLext ) max_AcLext = AcL_extra[n];
+      if( A_extra[n] < min_Aext ) min_Aext = A_extra[n];
+      if( A_extra[n] > max_Aext ) max_Aext = A_extra[n];
 
-			if( volume_extra[n] < min_extvolume ) min_extvolume = volume_extra[n];
-			if( volume_extra[n] > max_extvolume ) max_extvolume = volume_extra[n];
-			}
-		
-		}
+      if( AcL[n] < min_AcLin ) min_AcLin = AcL[n];
+      if( AcL[n] > max_AcLin ) max_AcLin = AcL[n];
 
+      if( AcL_extra[n] < min_AcLext ) min_AcLext = AcL_extra[n];
+      if( AcL_extra[n] > max_AcLext ) max_AcLext = AcL_extra[n];
+
+      if( volume_extra[n] < min_extvolume ) min_extvolume = volume_extra[n];
+      if( volume_extra[n] > max_extvolume ) max_extvolume = volume_extra[n];
+    }
+  }
 }
 
 

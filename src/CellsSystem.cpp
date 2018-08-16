@@ -1781,6 +1781,16 @@ void vbl::ReadInParameters::assign(const boost::property_tree::ptree &pt)
   DOPT(doseON)
   #undef DOPT
 }
+void printPtree(boost::property_tree::ptree const &pt)
+{
+    
+    boost::property_tree::ptree::const_iterator end = pt.end();
+    for (boost::property_tree::ptree::const_iterator it = pt.begin(); it != end; ++it) {
+        std::cout << it->first << ": " << it->second.get_value<std::string>() << std::endl;
+        printPtree(it->second);
+    }
+}
+
 boost::property_tree::ptree CellsSystem::as_ptree() const
 {
   boost::property_tree::ptree big_pt;
@@ -1800,16 +1810,27 @@ boost::property_tree::ptree CellsSystem::as_ptree() const
 
 void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
 {
+#ifndef NDEBUG
+  std::cout << "**************** VBL Settings in VBL ****************************************************************"<< std::endl;
+  printPtree(big_pt);
+#endif
+  params.assign(big_pt);
   Env.assign(big_pt.get_child("Environment"));
   Env_0.assign(big_pt.get_child("Environment_0"));
   flowSignal.assign(big_pt.get_child("flowSignal"));
   dose_rateSignal.assign(big_pt.get_child("dose_rateSignal"));
   
+  CellTypeVector.resize(big_pt.get<int>("ntypes"));
+  
   boost::format my_string_template("type_%i");
   for(int k = 0; k<big_pt.get<int>("ntypes"); k++)
   {
     std::string current_type_name = boost::str(my_string_template %  k);
-    
+#ifndef NDEBUG
+    std::cout << "reading: " << current_type_name << std::endl;
+#endif
+    CellTypeVector[k] = CellType();
+    CellTypeVector[k].assign(big_pt.get_child(current_type_name));
     //big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
   }
 }
@@ -1828,10 +1849,12 @@ std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 }
 void CellsSystem::set_CellTypeFromIndexVector(std::vector<unsigned long> &cellIndexVector)
 {
-  type.resize(cellIndexVector.size());
-  for(int i=0;i<cellIndexVector.size();i++)
+  //type.resize(cellIndexVector.size());
+  type.resize(params.ncells);
+  for(int i=0;i<params.ncells;i++)
   {
-    type[i]=&(CellTypeVector[i]);
+    type[i]=&(CellTypeVector[cellIndexVector[i]]);
+    //CellTypeVector[i] = CellType(*type[cellIndexVector[i]]);
   }
 }
 void CellsSystem::set_CellPhaseFromIntVector(std::vector<int> &int_buffer)

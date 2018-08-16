@@ -580,9 +580,9 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 
 public:
 friend class ApplyGeometricCalculation;
-ReadInParameters get_params()
+ReadInParameters* get_params_pointer()
 {
-  return params;
+  return &params;
 };
 //****************************************************************************************************
 
