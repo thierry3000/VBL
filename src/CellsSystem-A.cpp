@@ -1290,9 +1290,9 @@ void CellsSystem::ReadCellsSystem( )
 	CellTypeVector.resize( params.ntypes );
 	
 	for(unsigned long int k=0; k<params.ntypes; k++)
-		{
-		CellTypeVector[k].ReadCellType( stream );
-		}
+	{
+	  CellTypeVector[k].ReadCellType( stream );
+	}
 	
 	std::cout << "lettura dei tipi cellulari completata " << std::endl;
 	

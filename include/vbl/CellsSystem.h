@@ -929,6 +929,10 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
   void Set_surface( const std::vector<double>& newsurface ) { surface = newsurface; };
   void Set_mass( const std::vector<double>& newmass ) { mass = newmass; };
 	
+	void Set_r( const std::vector<double>& newr ) { r = newr; };
+	void Set_volume( const std::vector<double>& newvolume ) { volume = newvolume; };
+	void Set_M( const std::vector<double>& newM ) { M = newM; };
+	void Set_ATPp( const std::vector<double>& newATPp ) { ATPp = newATPp; };
 			
 	void Init_fx( ) { fx.clear(); };
 	void Init_fy( ) { fy.clear(); };
@@ -1552,10 +1556,11 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
             return_code = -1;
             }
         if(volume[k] < type[k]->Vmin)
-            {
-            std::cout << "Inconsistent volume value in the cell " << name[k] << ": Vmin=" << type[k]->Vmin << std::endl;
-            return_code = -2;
-            }
+	{
+	  std::cout << "Inconsistent volume value in the cell " << name[k] 
+	  << ": Vmin=" << type[k]->Vmin << "volume: " << volume[k] << std::endl;
+	  return_code = -2;
+	}
         if(ATPp[k] < -(std::numeric_limits<double>::epsilon( )))
             {
             std::cout << "Inconsistent value of ATPp in the cell " << name[k] << ": ATPp=" << ATPp[k] << std::endl;

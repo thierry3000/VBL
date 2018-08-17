@@ -36,17 +36,16 @@ void CellsSystem::Diff()
  * Therefore I comment it out.
  */
 #pragma omp parallel for
-	for(unsigned long n=0; n<params.ncells; n++)						
+  for(unsigned long n=0; n<params.ncells; n++)						
   {
-		
-		// controllo preliminare di consistenza
-		if( phase[n] != dead ) 
-		{
-			int code = CheckMVA(n);
-			if(code < 0) 
-        errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
-		}
-	}
+    // controllo preliminare di consistenza
+    if( phase[n] != dead ) 
+    {
+      int code = CheckMVA(n);
+	if(code < 0) 
+	  errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+    }
+  }
 
 	// volume
 	volumeOld = volumeNew = volume;

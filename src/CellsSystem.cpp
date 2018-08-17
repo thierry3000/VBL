@@ -1833,6 +1833,7 @@ void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
     CellTypeVector[k].assign(big_pt.get_child(current_type_name));
     //big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
   }
+  AddCells(params.ncells);
 }
 std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 {
@@ -1861,7 +1862,7 @@ void CellsSystem::set_CellPhaseFromIntVector(std::vector<int> &int_buffer)
 {
   for(int i=0;i<int_buffer.size(); i++)
   {
-    Set_phase(i, CellPhase(i));
+    Set_phase(i, CellPhase(int_buffer[i]));
   }
 }
 std::vector<int> CellsSystem::Get_phase_int()
