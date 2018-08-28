@@ -42,8 +42,8 @@ void CellsSystem::Diff()
     if( phase[n] != dead ) 
     {
       int code = CheckMVA(n);
-	if(code < 0) 
-	  errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
+      if(code < 0) 
+        errorlog_file << "Errore " << code << " all'inizio di CellsSystem::Diff nel controllo di consistenza per la cellula " << n << "\n" << std::endl;
     }
   }
 

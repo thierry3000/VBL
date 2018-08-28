@@ -1833,18 +1833,30 @@ void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
     CellTypeVector[k].assign(big_pt.get_child(current_type_name));
     //big_pt.put_child(current_type_name, CellTypeVector[k].as_ptree());
   }
-  AddCells(params.ncells);
+  AddCells(0); //initializes everything with the read in number of cells
 }
 std::vector<unsigned long> CellsSystem::get_CellTypeIndexVector()
 {
-  std::cout<< " resized CellTypeIndexVector to: " << params.ncells << std::endl;
-  CellTypeIndexVector.resize(params.ncells);
-  for(unsigned long n = 0; n<params.ncells; n++)
+  //std::cout<< " resized CellTypeIndexVector to: " << type.size() << std::endl;
+  CellTypeIndexVector.resize(type.size());
+  for(unsigned long n = 0; n<type.size(); n++)
   {
-		unsigned long k = (unsigned long)(type[n]-&CellTypeVector[0]);
-    CellTypeIndexVector[n] = k;
-		//stream.write( (char*)(&k) , sizeof( unsigned long int ) );
-		// cout << k << endl;
+    /** 
+     * type[n] is pointer to entry in CellTypeVector
+     * memory address of this pointer is subtracted by the memory length of first entry
+     * example:   if type[n] points the the 0th type than &CellTypeVector[0] is the same
+     *            address and substraction leads to 0
+     *            if type[n] points to the first type than type[n]-&CellTypeVector[0] leads to 1
+     */
+    for(int i =0; i<CellTypeVector.size(); i++)
+    {
+      if(type[n] == &CellTypeVector[i])
+      {
+        CellTypeIndexVector[n] = i;
+      }
+    }
+		//unsigned long k = (unsigned long)(type[n]-&CellTypeVector[0]);
+    //CellTypeIndexVector[n] = k;
   }
   return CellTypeIndexVector;
 }

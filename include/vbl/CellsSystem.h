@@ -1549,18 +1549,18 @@ void Set_Tumorcode_O2_uptake_model(CellBasedO2Uptake  &p_o2_uptake_model)
 	static int count = 0;
     
     if(phase[k] != dead)
-        {
-        if(M[k] < -(std::numeric_limits<double>::epsilon( )))
-            {
-            std::cout << "Inconsistent value of M in the cell " << name[k] << ": M=" << M[k] << std::endl;
-            return_code = -1;
-            }
-        if(volume[k] < type[k]->Vmin)
-	{
-	  std::cout << "Inconsistent volume value in the cell " << name[k] 
-	  << ": Vmin=" << type[k]->Vmin << "volume: " << volume[k] << std::endl;
-	  return_code = -2;
-	}
+    {
+      if(M[k] < -(std::numeric_limits<double>::epsilon( )))
+      {
+        std::cout << "Inconsistent value of M in the cell " << name[k] << ": M=" << M[k] << std::endl;
+        return_code = -1;
+      }
+      if(volume[k] < type[k]->Vmin)
+      {
+        std::cout << "Inconsistent volume value in the cell " << " k: " << k << name[k] 
+        << ": Vmin=" << type[k]->Vmin << "volume: " << volume[k] << std::endl;
+        return_code = -2;
+      }
         if(ATPp[k] < -(std::numeric_limits<double>::epsilon( )))
             {
             std::cout << "Inconsistent value of ATPp in the cell " << name[k] << ": ATPp=" << ATPp[k] << std::endl;

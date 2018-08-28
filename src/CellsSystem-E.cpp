@@ -48,17 +48,17 @@ void CellsSystem::GetForces()
 	// the cell-cell force is calculated only if there are at least two cells
 	if(params.ncells>1)
   {
-#pragma omp parallel for
+  #pragma omp parallel for
 		for(unsigned long n=0; n<params.ncells; n++)
     {
-			
+			// std::cout << "pf: " << type[n]->Get_packing_factor() << "r[n]: " << r[n] << "n: " << n << std::endl;
 			// parameters related to the n-th cell
-			double rn = (type[n]->Get_packing_factor())*r[n];			// beam of the weighed cell with the packing factor
-			double yn = (type[n]->Get_YoungMod());								// modulo di Young della cellula, NOTE fixed value -> no divide by zero here
-			double pn = (type[n]->Get_PoissonRatio());						// PoissonRatio della cellula
+			double rn = type[n]->Get_packing_factor()*r[n];			// beam of the weighed cell with the packing factor
+			double yn = type[n]->Get_YoungMod();								// modulo di Young della cellula, NOTE fixed value -> no divide by zero here
+			double pn = type[n]->Get_PoissonRatio();						// PoissonRatio della cellula
 			
-			double arn = (type[n]->Get_adhesion_range());	        // adhesion range of the n-th cell type
-			double adn = (type[n]->Get_adhesion_decay());	        // decay rate of k-th cell adhesion
+			double arn = type[n]->Get_adhesion_range();	        // adhesion range of the n-th cell type
+			double adn = type[n]->Get_adhesion_decay();	        // decay rate of k-th cell adhesion
 
 			int nneigh = neigh[n];				                        // number of cells adjacent to the n-th cell
 			
@@ -295,7 +295,8 @@ void CellsSystem::NewPositionsAndVelocities( )
 			
 			//if(loop_count > 100) exit(0);
 			// if( dvmax < (1.e-11) ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.01 nm/s
-			if( dvmax < params.delta_vmax ) break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.1 nm/s
+			if( dvmax < params.delta_vmax ) 
+        break;	// la condizione di interruzione del loop e' che l'imprecisione nella determinazione della velocità sia minore di 0.1 nm/s
 #pragma omp parallel for
 			for(unsigned long n=0; n<params.ncells; n++)	// qui si copiano in v i nuovi valori vnew
       {
