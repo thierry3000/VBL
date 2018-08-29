@@ -229,7 +229,7 @@ const long int RESERVE_BV = 2000000;        // dynamic reserve for the BloodVess
 
 const double G_BV = 0.9e-3;           // pg*micron^-3 concentrazione glucosio
 
-const double O2_BV = 7e-6*1000;            // pg*micron^-3 concentrazione ossigeno (atmosfera standard) (ATTENZIONE, QUESTO E' ANCHE UGUALE A O2St, controllare in caso di cambiamenti)
+const double O2_BV = 7e-6;            // pg*micron^-3 concentrazione ossigeno (atmosfera standard) (ATTENZIONE, QUESTO E' ANCHE UGUALE A O2St, controllare in caso di cambiamenti)
 
 const double CO2_BV = 3.4e-4;         // kg*m^-3 concentrazione anidride carbonica (atmosfera standard)
 
