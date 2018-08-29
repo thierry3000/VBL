@@ -372,8 +372,8 @@ void CellsSystem::Diff()
         vM = dvM_A = dvM_ATPp = 0.;
 
 
-      // qui si definisce il valore dell' O2-dependent glucose-transport efficiency h
-      // ma solo se la cellula e' viva ... 
+      // Here we define the value of O2-dependent glucose-transport efficiency h
+      // but only if the cell is alive ...
       if( phase[n] != dead )
       {
         double buffer_quick = 1.-mO2Old[n]/(volumeOld[n]*O2st);
@@ -407,7 +407,7 @@ void CellsSystem::Diff()
         rhoA_bv = BV.GetBloodVesselA();			// other nutrients concentration in BV
         rhoAcL_bv = BV.GetBloodVesselAcL();		// lactate concentration in BV 
         
-        // cout << rhoG_bv << "\t" << rhoO2_bv << "\t" << rhoA_bv << "\t" << rhoAcL_bv << endl;
+        //std::cout << "is on Bloodvessel " << rhoG_bv << "\t" << rhoO2_bv << "\t" << rhoA_bv << "\t" << rhoAcL_bv << std::endl;
       }
 
   // ***** contribution of blood vessels, end init

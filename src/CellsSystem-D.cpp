@@ -374,7 +374,7 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
       double dbv = BloodVesselVector[nvessel].DistanceFromVessel( cellpos, x0 ); // distance between cell and blood vessel
       if( dbv < BloodVesselVector[nvessel].GetBloodVesselR() + r[k_mt] ) // if the cell's center and the blood vessel axis are closer than the sum of the radii, then there is contact
       {
-        isonBV[k] = nvessel+1;		// note the shift, which is done to use the value 0 as false and otherwise use the true value to store the blood vessel position in the blood vessel vector
+        isonBV[k_mt] = nvessel+1;		// note the shift, which is done to use the value 0 as false and otherwise use the true value to store the blood vessel position in the blood vessel vector
         bv_surf[k_mt] = surface[k_mt];
         g_bv[k_mt] = bv_surf[k_mt]/r[k_mt]; // this are bold statements; here we assume that the cell behaves like a disk (not a sphere), and that half of the surface area faces the blood vessel
         // the last approximation should probably be mitigated with the inclusion of a surface-modulating parameter or even better by an improved geometrical modelling
