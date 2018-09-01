@@ -675,6 +675,12 @@ double Get_nrepeats_average() { return nrepeats_average; };
 double Get_nrepeats_max() { return nrepeats_max; };
 double Get_nrepeats_min() { return nrepeats_min; };
 
+double Get_max_x();
+double Get_max_y();
+double Get_max_z();
+double Get_min_x();
+double Get_min_y();
+double Get_min_z();
 
 unsigned long Get_nstart() { return nstart; };
 unsigned long Get_ncells();

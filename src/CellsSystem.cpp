@@ -1888,6 +1888,79 @@ std::vector<int> CellsSystem::Get_phase_int()
   return buffer;
 }
 
+double CellsSystem::Get_max_x()
+{
+  double buffer = std::numeric_limits<double>::min();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(x[i] > buffer)
+    {
+      buffer = x[i];
+    }
+  }
+  return buffer;
+}
+double CellsSystem::Get_max_y()
+{
+  double buffer = std::numeric_limits<double>::min();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(y[i] > buffer)
+    {
+      buffer = y[i];
+    }
+  }
+  return buffer;
+}
+double CellsSystem::Get_max_z()
+{
+  double buffer = std::numeric_limits<double>::min();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(z[i] > buffer)
+    {
+      buffer = z[i];
+    }
+  }
+  return buffer;
+}
+double CellsSystem::Get_min_x()
+{
+  double buffer = std::numeric_limits<double>::max();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(x[i] < buffer)
+    {
+      buffer = x[i];
+    }
+  }
+  return buffer;
+}
+double CellsSystem::Get_min_y()
+{
+  double buffer = std::numeric_limits<double>::max();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(y[i] < buffer)
+    {
+      buffer = y[i];
+    }
+  }
+  return buffer;
+}
+double CellsSystem::Get_min_z()
+{
+  double buffer = std::numeric_limits<double>::max();
+  for(int i=0; i<Get_ncells(); i++)
+  {
+    if(z[i] < buffer)
+    {
+      buffer = z[i];
+    }
+  }
+  return buffer;
+}
+
 #include "CellsSystem-A.cpp"
 #include "CellsSystem-B.cpp"
 #include "CellsSystem-C.cpp"
