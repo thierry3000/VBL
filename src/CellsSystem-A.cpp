@@ -113,10 +113,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
     }
   }
 
-// scelta del tipo di distribuzione spaziale
-  double New_x_0 = 0;
-  double New_y_0 = 0;
-  double New_z_0 = 0;
+
 
 // se le cellule sono disperse, vengono sparse nell'intero volume	
   if( params.sim_type == Disperse )

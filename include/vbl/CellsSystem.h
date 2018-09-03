@@ -340,6 +340,11 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<int> n_mitosis;				// numero di mitosi dall'inizio della simulazione
 	
 	// Geometric and topological variables
+	
+	// seeding spheroid postion
+  double New_x_0 = 0;
+  double New_y_0 = 0;
+  double New_z_0 = 0;
 
 	std::vector<double> x;					// posizione nello spazio del centro della cellula
 	std::vector<double> y;
@@ -584,6 +589,8 @@ ReadInParameters* get_params_pointer()
 {
   return &params;
 };
+
+std::array<float,3> get_seeding_position();
 //****************************************************************************************************
 
 // *** Methods for managing the system ***

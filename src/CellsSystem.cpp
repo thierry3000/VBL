@@ -1960,7 +1960,11 @@ double CellsSystem::Get_min_z()
   }
   return buffer;
 }
-
+std::array<float,3> CellsSystem::get_seeding_position()
+{
+  std::array<float,3>seeding_pos={New_x_0, New_y_0, New_z_0};
+  return seeding_pos;
+}
 #include "CellsSystem-A.cpp"
 #include "CellsSystem-B.cpp"
 #include "CellsSystem-C.cpp"
