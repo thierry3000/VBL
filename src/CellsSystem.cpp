@@ -704,6 +704,7 @@ void CellsSystem::AddInitializedCell(int& idum, CellType* cType, Environment* cE
 	AcL_extra[k] = (cEnv->GetEnvironmentAcL()/cEnv->GetEnvironmentvolume0()) * volume_extra[k];
 	// CO2_extra = (cEnv->CO2/cEnv->volume0) * volume_extra;
 	
+  //pH calculation
 	pH[k] =  7.5443-(AcL_extra[k]/volume_extra[k])/BufCapEnv;
 	// H_extra = pow((double)10.,-pH)*(volume_extra);
 

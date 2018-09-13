@@ -322,20 +322,18 @@ void CellsSystem::Geometry()
 	// compute fixed alpha shape with ALPHAVALUE defined in sim.h
 
 	if( params.ncells < 5 )	// if there are less than 5 cells they are all on alphashape
-		{
+  {
+    std::cout << "less than 5 cells" << std::endl;
 		for(k=0; k<params.ncells; k++)
 			isonAS[k] = true;
-		}
+  }
 	else 
-		{
-      auto o2Rates = Get_O2Rate();
+  {
+    //auto o2Rates = Get_O2Rate();
 		Fixed_alpha_shape_3 as(v.begin(),v.end(),ALPHAVALUE);
-		
 		std::vector<Vertex_handle> vertices_on_alpha_shape;
-		
-as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
-
-as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
+    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::REGULAR);
+    as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_alpha_shape_3::SINGULAR);
 	
 		// cout << "there are " << vertices_on_alpha_shape.size() << " vertices on alpha shape " << endl;
 
@@ -345,13 +343,17 @@ as.get_alpha_shape_vertices(std::back_inserter(vertices_on_alpha_shape),Fixed_al
 		
 		// set boolean true for vertices on alpha shape
 		for(k=0; k<vertices_on_alpha_shape.size(); k++)
+    {
 			isonAS[vertices_on_alpha_shape[k]->info()] = true;
+      //std::cout << vertices_on_alpha_shape[k]->info() << " -> true " << std::endl;
+    }
 		
-		}
+  }
 	
-	// questo loop azzera i g_env di tutte le cellule che non stanno sull'alpha shape
+	// this loop resets the g_env of all cells that are not on the alpha shape
 	for(k=0; k<params.ncells; k++)
-		if( !isonAS[k] ) g_env[k]=0.;
+		if( !isonAS[k] ) 
+      g_env[k]=0.;
 		
 	// the following loop identifies those cells that are in contact with blood vessels
 #pragma omp parallel

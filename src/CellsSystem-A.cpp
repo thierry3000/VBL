@@ -1132,11 +1132,11 @@ void CellsSystem::WriteCellsSystem( )
 	stream.write( (char*)(&volume[0]) , params.ncells*sizeof( double ) );
 	stream.write( (char*)(&mass[0]) , params.ncells*sizeof( double ) );
 	
-	// le variabili dinamiche vxnew, fx, etc non vengono scritte ma ricalcolate dal metodo per la dinamica
+	// the dynamic variables vxnew, fx, etc are not written but recalculated by the dynamics method
 	
 	stream.write( (char*)(&volume_extra[0]) , params.ncells*sizeof( double ) );
 	
-	// le variabili geometriche che si calcolano con CGAL non vengono scritte ma ricalcolate al volo dopo la lettura
+	// the geometric variables that are calculated with CGAL are not written but recalculated on the fly after reading
 
 	stream.write( (char*)(&M[0]) , params.ncells*sizeof( double ) );
 	

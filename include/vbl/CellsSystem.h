@@ -353,11 +353,11 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> vy;
 	std::vector<double> vz;
 	std::vector<double> r;					// raggio cellulare	
-	std::vector<double> surface;             // superficie cellulare
+	std::vector<double> surface;             // cell surface
 	std::vector<double> volume;				// volume cellulare
 	std::vector<double> mass;				// massa cellulare
 	
-	// copie per utilizzo nel metodo di calcolo della geometria
+	// copies for use in the geometry calculation method
 	std::vector<double> vxnew;				// velocità della cellula
 	std::vector<double> vynew;
 	std::vector<double> vznew;
@@ -366,19 +366,19 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fy;
 	std::vector<double> fz;
 
-	std::vector<double> volume_extra;		// volume della regione extracellulare che circonda la cellula
+	std::vector<double> volume_extra;		// volume of the extracellular region surrounding the cell
 
 	//in random experiment max was 82
 	static const int MAX_N_NEIGH = 122;
-	std::vector<unsigned long> neigh;					// numero di vicini
-	std::vector< std::array<unsigned long, MAX_N_NEIGH> > vneigh;		// vettore dei vicini
-	std::vector< std::array<double, MAX_N_NEIGH> > vdist;     // vettore delle distanze dai vicini
-	std::vector< std::array<double, MAX_N_NEIGH> > vcsurf;	// vettore delle superfici di contatto con i vicini (calcolo approx)
-	std::vector< std::array<double, MAX_N_NEIGH> > gnk;		// vettore dei fattori geometrici
-	std::vector<double> contact_surf;		// area totale della superficie di contatto con le cellule adiacenti
+	std::vector<unsigned long> neigh;					// number of neighbors
+	std::vector< std::array<unsigned long, MAX_N_NEIGH> > vneigh;		// vector of neighbors
+	std::vector< std::array<double, MAX_N_NEIGH> > vdist;     // vector of distances from neighbors
+	std::vector< std::array<double, MAX_N_NEIGH> > vcsurf;	// vector of contact surfaces with neighbors (approx calculation)
+	std::vector< std::array<double, MAX_N_NEIGH> > gnk;		// vector of geometric factors
+	std::vector<double> contact_surf;		// The total area of ​​the contact surface with adjacent cells
 	
-	std::vector<bool> isonCH;				// label che indica se la cellula si trova sul convex hull
-	std::vector<bool> isonAS;				// label che indica se la cellula si trova sull'alpha shape
+	std::vector<bool> isonCH;				// label indicating if the cell is on convex hull
+	std::vector<bool> isonAS;				// label indicating if the cell is on the alpha shape
 	std::vector<int> isonBV;					// this label is true if the cell is in contact
 										// with a blood vessel
 										// if a cell is not in contact with blood vessel, 
@@ -387,11 +387,11 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 										// this shift is done so that isonBV can also be 
 										// used as a boolean variable 
 										
-	std::vector<double> env_surf;			// superficie di contatto con l'ambiente
-	std::vector<double> g_env;				// fattore geometrico relativo al contatto con l'ambiente
+	std::vector<double> env_surf;			// contact surface with the environment
+	std::vector<double> g_env;				// The geometric factor relating to contact with the environment
 
-	std::vector<double> bv_surf;				// superficie di contatto con vasi sanguigni
-	std::vector<double> g_bv;				// fattore geometrico relativo al contatto con vasi sanguigni
+	std::vector<double> bv_surf;				// contact surface with blood vessels
+	std::vector<double> g_bv;				// The geometric factor relating to contact with blood vessels
 
 	std::vector<double> M;					// numero di mitocondri 
 
@@ -475,7 +475,7 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
                                         // variabile di sintesi dovuta ai 
                                         // danni al DNA (da modificare in futuro)
 	
-	std::vector<double> M_T;                 // durata media fase M (in s)
+	std::vector<double> M_T;                 // duration of the media M (in s)
 	std::vector<double> pRb;                 // quantita' (massa) della pRb
 
 	std::vector<double> ConcS;				// concentrazione MOLARE della sostanza S che fa da substrato alla reazione di MM per la soglia
