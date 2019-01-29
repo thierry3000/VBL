@@ -26,6 +26,7 @@ message("linking to: ${myLibs}")
 #target_link_libraries(vbl "${myLibs}")
 
 target_link_libraries(vbl "${myLibs}")
+target_link_libraries(vbl gmp)
 #set_target_properties(vbl PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_executable(vbl_cells main.cpp )
