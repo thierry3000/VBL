@@ -792,7 +792,13 @@ void ReadCellsSystem( );
 // avanzamento dei timers
 //bool TimersAdvance( );
 // if no endtime is present, the behaviour of old TimersAdvance is restored
-bool TimersAdvanceUntil( boost::optional<double> endtime );
+
+/* T.F. 06.02.2019 
+ * obviously there are problems with different compilers and boost::optional,
+ * therefore I changed the behaviour: endtime == 0.0 means unlimited,
+ * otherwise run until endtime
+ */
+bool TimersAdvanceUntil( double &endtime );
 
 // CPU timing
 void CPU_timer( timer_button button );
@@ -858,7 +864,7 @@ void StepStat( bool reset_stat );
 
 //****************************************************************************************************
 
-unsigned int runMainLoop( boost::optional<double> endtime);
+unsigned int runMainLoop( double &endtime);
 //unsigned int runMainLoop( );
 #if VBL_USE_TUMORCODE
   //void Set_Tumorcode_Continuous_lattice(LatticeDataQuad3d &field_ld);

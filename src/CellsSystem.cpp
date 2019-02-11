@@ -31,8 +31,11 @@ using namespace vbl;
  * while:	the loop runs as long as there are cells (Get_alive()>0)
  * 		and other ... criterias are met
  */
-unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
+unsigned int CellsSystem::runMainLoop(double &endtime)
 {
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
+  std::cout << "found endtime in runMainLoop: " << endtime << std::endl;
+#endif
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;
 #ifdef W_timing
@@ -53,6 +56,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
        */
 #ifdef ENABLE_RELEASE_DEBUG_OUTPUT
       checkNeighbourhood_consistency(std::string("before dynamics"));
+      //std::cout << "before dynamics" << std::endl;
 #endif
       Dynamics( );
     // CellsSystem.Print2logfile("Cellule dopo una chiamata a Dynamics");				
@@ -98,6 +102,10 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 #ifdef W_timing
     begin = std::chrono::steady_clock::now();
 #endif
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
+    //std::cout<< "Get_ready2start: " << Get_ready2start() << std::endl;
+    //std::cout<< "Get_sim_type(): " << Get_sim_type() << std::endl;
+#endif
     if(Get_ready2start() && Get_sim_type() == Full3D )	
     {
       /**
@@ -125,23 +133,23 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 	  checkNeighbourhood_consistency(std::string("in Geometry"));
 #endif
           CleanCellsSystem();
-	  try
-	  {
-	    Geometry();
-	  }
-	  catch(int e)
-	  {
-	    std::cout << " error: " << e << std::endl;
-	    std::cout << " in geometry " << std::endl;
-	  }
-	  catch (const std::exception& e) 
-	  { // caught by reference to base
-	    std::cout << " a standard exception was caught, with message: \n" << e.what() << "\n";
-	    exit(EXIT_FAILURE);
-	  }
-          
-          Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
+        try
+        {
+          Geometry();
         }
+        catch(int e)
+        {
+          std::cout << " error: " << e << std::endl;
+          std::cout << " in geometry " << std::endl;
+        }
+        catch (const std::exception& e) 
+        { // caught by reference to base
+          std::cout << " a standard exception was caught, with message: \n" << e.what() << "\n";
+          exit(EXIT_FAILURE);
+        }
+          
+        Set_time_from_CGAL(0.);		// Timer reset from last call to CGAL
+        }//if(Get_ncells() > 10)
         else 
         {
           NoGeometry( );
@@ -154,7 +162,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
     }
     // if the cells are not yet ready or the case of disrupted cells is being considered
     // only a limited number of geometric properties are calculated
-    else 
+    else //if(Get_ready2start() && Get_sim_type() == Full3D )
     {
       NoGeometry( );
     }
@@ -227,7 +235,7 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 //       }// end CellsSystem.Get_ready2start()
 //     }// end CellsSystem.Get_nstep()
 		      
-	      
+
     active_run = TimersAdvanceUntil( endtime );		// advancing timers (including the last call timer to CGAL)
 
     if(Get_alive() == 0) 
@@ -240,6 +248,10 @@ unsigned int CellsSystem::runMainLoop(boost::optional<double> endtime)
 #endif
 
   }// end while
+  
+#ifdef ENABLE_RELEASE_DEBUG_OUTPUT
+    std::cout << "advance timer until: " << endtime << std::endl;
+#endif
 // #ifdef W_timing
 //   timing_file.close();
 // #endif

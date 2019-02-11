@@ -208,8 +208,9 @@ int main( int argc, char* argv[] )
   cout << "\nStartup completed" << endl;
       
   // ********************** main simulation loop **************************
-
-  unsigned int returnValue = p_to_current_CellsSystem->runMainLoop(boost::none);
+  double aTime = 0.0;
+  unsigned int returnValue = p_to_current_CellsSystem->runMainLoop(aTime);
+  //unsigned int returnValue = p_to_current_CellsSystem->runMainLoop(boost::none);
 
   // **************************** fine loop principale ******************************
 
