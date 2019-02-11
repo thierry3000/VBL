@@ -22,7 +22,7 @@
 #include <CGAL/natural_neighbor_coordinates_3.h>
 #include <chrono>
 
-Triangulation_3 *DelTri;
+//Triangulation_3 *DelTri;
 
 #if VBL_USE_TUMORCODE
 
