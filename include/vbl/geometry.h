@@ -3,7 +3,8 @@
 // header for the geometry part
 #include <CGAL/Default.h>
 
-#ifdef CGAL_LINKED_WITH_TBB
+//#ifdef CGAL_LINKED_WITH_TBB
+
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_triangulation_3.h>
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
@@ -40,8 +41,6 @@ typedef Fixed_alpha_shape_3::Vertex_handle					Vertex_handle;
 typedef Triangulation_3::Finite_vertices_iterator			Finite_vertices_iterator;
 typedef Triangulation_3::All_vertices_iterator			All_vertices_iterator;
 
-std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
-
 
 #ifndef useSerialApproach
 class ApplyGeometricCalculation{
@@ -57,6 +56,6 @@ void ParallelApply();
 #endif
 
 
-#endif
+//#endif
 
 #endif //#ifndef GEOM2_H

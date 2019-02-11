@@ -25,7 +25,7 @@
 #include "BloodVessel.h"
 #include "Utilities.h"
 #include "MutEventCreator.h"
-//#include "geometry.h"
+#include "geometry.h"
 
 #ifdef _parallel
   #include <tbb/tbb.h>
@@ -369,6 +369,8 @@ double AcLFlow;			// flusso di AcL nell'ambiente (in kg/s)
 	std::vector<double> fx;					// forze
 	std::vector<double> fy;
 	std::vector<double> fz;
+  
+  std::vector< std::pair<Point,unsigned> > v;	// vector of points with info passed to CGAL
 
 	std::vector<double> volume_extra;		// volume of the extracellular region surrounding the cell
 
