@@ -3,7 +3,7 @@
 #add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp CellsSystem-A.cpp CellsSystem-B.cpp CellsSystem-C.cpp CellsSystem-D.cpp CellsSystem-E.cpp CePROJECT_SOURCE_DIRllsSystem-F.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
 message("PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/include")
-add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp)
+add_library(vbl SHARED Environment.cpp EnvironmentalSignals.cpp CellType.cpp Utilities.cpp BloodVessel.cpp CellsSystem.cpp MutEventCreator.cpp)
 #set_target_properties(vbl PROPERTIES VERSION ${PROJECT_VERSION})
 #set_target_properties(vbl PROPERTIES SOVERSION 1)
 

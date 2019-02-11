@@ -185,9 +185,12 @@ int CellsSystem::CellEvents( )
 			// reset di ConcS			
 			ConcS[n] = type[n]->Get_ConcS_0();			
 
-
-		// *** copy the structure of the mother cell into the new cell (which goes to the bottom of the list)
-		// P.S. this instruction automatically increases the number of type instances
+    /** REPLACED BY MUTATION
+     * T.F. 11.02.2019
+		 * copy the structure of the mother cell into the new cell (which goes to the bottom of the list)
+		 * P.S. this instruction automatically increases the number of type instances
+     */
+    /*
 			if(params.treal < EventTime || (ran2() > pAlt || pAlt < 2 ))
       {
         ReplicateCell( n );
@@ -198,6 +201,40 @@ int CellsSystem::CellEvents( )
         if(pAlt == 2) 
           pAlt = 0;
       }
+      */
+    
+// *** if necessary, mutation events are performed.
+			switch(MutationEv.Get_MutModality())
+			{
+        case NoMutation:  //no mutation
+          ReplicateCell( n );
+          break;
+
+        case SingleMutEvent: // single mutation events
+        {	
+          if(!MutationEv.Generate_SingleMutEvent(params.treal))
+				   ReplicateCell( n ); // if false NOT MUTATE!
+          else 
+          {
+            cout<< "treal : " << params.treal<< " pAlt: " << MutationEv.Get_pAlt() << endl;
+            ReplicateCell( n, &CellTypeVector[1] );
+          }
+        } 
+        break;
+
+        case MutPHThreshold:
+        {
+          if(!MutationEv.Generate_SingleMutPHThreshold(pH[n]))
+            ReplicateCell( n ); // if false NOT MUTATE!
+          else {
+            ReplicateCell( n, &CellTypeVector[1] );
+          }
+
+        } 
+        break;
+			}
+
+			// a questo punto ncells e' stato incrementato di 1, e la cellula appena inserita si trova in posizione ncells-1
 		
 
       // at this point ncells has been increased by 1, and the newly inserted cell is in the ncells-1 position

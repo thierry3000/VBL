@@ -24,6 +24,7 @@
 #include "EnvironmentalSignals.h"
 #include "BloodVessel.h"
 #include "Utilities.h"
+#include "MutEventCreator.h"
 //#include "geometry.h"
 
 #ifdef _parallel
@@ -287,6 +288,9 @@ Environment Env_0;
 
 // ambiente attuale
 Environment Env;
+
+// SabryNew, gestione eventi di mutazione
+MutEventCreator MutationEv;
 
 // variazione dello stato dell'ambiente 
 //Environment delta_Env;

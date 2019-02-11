@@ -35,6 +35,7 @@ unsigned int CellsSystem::runMainLoop(double &endtime)
 {
 #ifdef ENABLE_RELEASE_DEBUG_OUTPUT
   std::cout << "found endtime in runMainLoop: " << endtime << std::endl;
+  std::cout << "run until params.tmax" << std::endl;
 #endif
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;

@@ -1,16 +1,20 @@
 1       #simulation type 1 is full 3d
-1       #initial number of cells
-1       # set customized position for the first cell
+1       #initial number of cells (nstart)
+1       #bool select, if nstart==1 and true,customized position for the first cell
 100 100 -200  # (x,y,z) position
-10      #time steps
--1      #// precisione relativa
--1      #delta_vmax
-1e5     #initialization time 
-500000  # simulation duration tmax 5e6 = 1400h
-0       # Massimo CPU time per una frazione di run (s
-0       #step size per slow motion
-0       # flow on off
-0       # radioactive dose
+10      #time steps (params.dt)
+-1      #precisione relativa (params.eps default 1.e-2)
+-1      #delta_vmax (params.delta_vmax default 1.e-4)
+1e5     #initialization time (params.t_ini)
+500000  # simulation duration (params.tmax) 5e6 = 1400h
+0       # (params.t_CPU_max) Massimo CPU time per una frazione di run (s
+0       # (params.dt_sm) step size per slow motion
+0       # (params.flowON)
+0       # (params.doseON)
+1	# eventON in MutEventCreator
+1 	# type of mutation event
+1.4e6	# mutation event time m_eventTime
+2	# mutation event probabiltiy m_pAlt
 360     #nprint Numero di passi da " << dt << " secondi tra due record su file
 360     #nscreen
 1       #eventON special events?

@@ -271,31 +271,33 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 // il codice seguente serve a defire le caratteristiche del flusso nell'ambiente
 
 	if( terminal )
-		{
+  {
 		std::cout << "\nFlusso nullo (0) o non nullo (1)? ";
 		std::cin >> params.flowON;
-		}
+	}
 	else 
-		{
+	{
 		commands >> params.flowON;
-		}
-	if(!params.flowON) std::cout << "In questo run il flusso e' nullo" << std::endl;
+	}
+  
+	if(!params.flowON) 
+    std::cout << "no flow set" << std::endl;
 
 	if(!params.flowON)
-		{
+  {
 		flow_type = NullSignal;
 		flowSignal = EnvironmentalSignal( );
     oxygenflowON = 0;
-		}
+  }
 	else
-		{
+  {
 		if( terminal )
-			{
+    {
 			std::cout << "Tipo di segnale (0 = costante, 1 = sinusoidale, 2 = onda quadra, 3 = impulso singolo): ";
 			std::cin >> ft;
       std::cout << "Si modula anche l'ossigeno? (0 = NO, 1 = SI) ";
       std::cin >> oxygenflowON;
-			}
+    }
 		else 
 			{
 			commands >> ft;
@@ -317,7 +319,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 					break;
 				}
             commands >> oxygenflowON;
-			}
+    }
 
 		flow_type = (EnvironmentalSignalType)ft;
 		
@@ -449,13 +451,14 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 		{
 		commands >> params.doseON;
 		}
-	if(!params.doseON) std::cout << "In questo run la dose e' nulla" << std::endl;
+	if(!params.doseON) 
+    std::cout << "zero dose set" << std::endl;
 
 	if(!params.doseON)
-		{
+  {
 		dose_rate_type = NullSignal;
 		dose_rateSignal = EnvironmentalSignal( );
-		}
+  }
 	else
 		{
 		if( terminal )
@@ -596,8 +599,11 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 			break; 
 			 
 			}
-		}
-
+    }
+    
+  //******** gestione eventi di mutazione
+	MutationEv.InitMutEvent(terminal, commands);
+	//*************************
 	
 	
 	//CellType type;							// Here is defined the standard phenotype
@@ -739,8 +745,8 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
         }
     
     if( eventON )
-        {
-        std::cout << "In questo run c'e' un evento speciale" << std::endl;
+    {
+        std::cout << "Spezial event set" << std::endl;
             
         if( terminal )
             {
@@ -763,12 +769,13 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
             commands >> pAlt;
             std::cout << "\nprobabilita' dell'evento speciale (2 = si verifica un sono evento): " << pAlt << std::endl;
             }
-        }
+    }
     else
-        {
-        EventTime = 0.;
-        pAlt = 0;
-        }
+    {
+      std::cout << "NO spezial events set" << std::endl;
+      EventTime = 0.;
+      pAlt = 0;
+    }
 
 		
 	params.ncells = nstart;						// numero di cellule alla partenza
@@ -896,15 +903,15 @@ void CellsSystem::RunDefinition(  )
 		run_data << "Dose di radiazione -- nulla --" << std::endl;
 
 // printout dell'evento speciale 
-       if( eventON )
-      		{
-        	run_data<< "In questo run c'e' un evento speciale" << std::endl;
-                run_data<< "Epoca dell'evento speciale: " << EventTime << std::endl;
-		run_data<< "\nprobabilita' dell'evento speciale: " << pAlt << std::endl;
-                }
-      else
-                run_data<< "In questo run non c'e' alcun evento speciale" << std::endl;
-          
+//        if( eventON )
+//       		{
+//         	run_data<< "In questo run c'e' un evento speciale" << std::endl;
+//                 run_data<< "Epoca dell'evento speciale: " << EventTime << std::endl;
+// 		run_data<< "\nprobabilita' dell'evento speciale: " << pAlt << std::endl;
+//                 }
+//       else
+//                 run_data<< "In questo run non c'e' alcun evento speciale" << std::endl;
+  MutationEv.PrintMutEvent(run_data);
 	
 // printout del tipo cellulare	
 	run_data << "\nFenotipo cellulare iniziale (cellula 0): \n" << std::endl;
@@ -1091,6 +1098,8 @@ void CellsSystem::WriteCellsSystem( )
 	// segnali
 	flowSignal.WriteEnvironmentalSignal( stream );
 	dose_rateSignal.WriteEnvironmentalSignal( stream );
+  // Mutation options
+	MutationEv.WriteMutEvent(stream);
 	
 	/** DATA WRITE **/
   
@@ -1280,6 +1289,12 @@ void CellsSystem::ReadCellsSystem( )
 	dose_rateSignal.ReadEnvironmentalSignal( stream );
 	
 	std::cout << "flussi e segnali letti ... " << std::endl;
+  
+  // Mutation options
+	MutationEv.ReadMutEvent(stream);
+
+	cout << "reading mutation options completed ... " << endl;
+
 	
 	
 // vettore dei tipi cellulari
