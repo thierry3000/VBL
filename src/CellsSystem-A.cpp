@@ -793,7 +793,7 @@ void CellsSystem::InitializeCellsSystem( bool terminal )
 
 //  ******************** RunDefinition ********************
 
-// questo metodo definisce i nomi dei files 
+// this method defines the names of the files
 // 
 void CellsSystem::RunDefinition(  ) 
 {
@@ -911,7 +911,10 @@ void CellsSystem::RunDefinition(  )
 //                 }
 //       else
 //                 run_data<< "In questo run non c'e' alcun evento speciale" << std::endl;
-  MutationEv.PrintMutEvent(run_data);
+  if( params.eventON)
+  {
+    MutationEv.PrintMutEvent(run_data);
+  }
 	
 // printout del tipo cellulare	
 	run_data << "\nFenotipo cellulare iniziale (cellula 0): \n" << std::endl;

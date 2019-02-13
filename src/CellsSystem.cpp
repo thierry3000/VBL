@@ -36,6 +36,7 @@ unsigned int CellsSystem::runMainLoop(double &endtime)
 #ifdef ENABLE_RELEASE_DEBUG_OUTPUT
   std::cout << "found endtime in runMainLoop: " << endtime << std::endl;
   std::cout << "run until params.tmax" << std::endl;
+  std::cout << "MutationEv.Get_eventTime() " << MutationEv.Get_eventTime() << std::endl;
 #endif
   bool active_run = true;	// Boolean variable that becomes false when a condition stops running
   int nthreads, tid;
@@ -1819,13 +1820,14 @@ boost::property_tree::ptree CellsSystem::as_ptree() const
   
   big_pt.put_child("flowSignal" , flowSignal.as_ptree());
   big_pt.put_child("dose_rateSignal", dose_rateSignal.as_ptree());
+  big_pt.put_child("mutation", MutationEv.as_ptree());
   return big_pt;
 }
 
 void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
 {
 #ifndef NDEBUG
-  std::cout << "**************** VBL Settings in VBL ****************************************************************"<< std::endl;
+  std::cout << "******VBL Settings in VBL*************"<< std::endl;
   printPtree(big_pt);
 #endif
   params.assign(big_pt);
@@ -1833,7 +1835,7 @@ void CellsSystem::assign(const boost::property_tree::ptree &big_pt)
   Env_0.assign(big_pt.get_child("Environment_0"));
   flowSignal.assign(big_pt.get_child("flowSignal"));
   dose_rateSignal.assign(big_pt.get_child("dose_rateSignal"));
-  
+  MutationEv.assign(big_pt.get_child("mutation"));
   CellTypeVector.resize(big_pt.get<int>("ntypes"));
   
   boost::format my_string_template("type_%i");

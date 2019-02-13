@@ -8,7 +8,12 @@
 
 #include "MutEventCreator.h"
 
-MutEventCreator::MutEventCreator() {
+namespace vbl 
+{
+#define mutation_debug
+
+vbl::MutEventCreator::MutEventCreator() 
+{
 	m_eventTime = 0;
 	m_pAlt = 0;
 	m_pHThreshold = 0;
@@ -16,18 +21,50 @@ MutEventCreator::MutEventCreator() {
 	m_MutModality = NoMutation;
 }
 
-MutEventCreator::~MutEventCreator() {
-	// TODO Auto-generated destructor stub
+// vbl::MutEventCreator::MutEventCreator(const vbl::MutEventCreator& mutev)
+// {
+//   m_eventTime = mutev.m_eventTime;
+//   m_pAlt = mutev.m_pAlt;
+//   m_pHThreshold = mutev.m_pHThreshold;
+//   m_NEvent = mutev.m_NEvent;
+//   m_MutModality = mutev.m_MutModality;
+// }
+vbl::MutEventCreator::~MutEventCreator()
+{
+  cout << "MutEventCreator destructor called" << endl;
 }
+// // overloaded =
+// MutEventCreator& MutEventCreator::operator=(const MutEventCreator& mutev)
+// {
+// 	m_eventTime = mutev.m_eventTime;
+//   m_pAlt = mutev.m_pAlt;
+//   m_pHThreshold = mutev.m_pHThreshold;
+//   m_NEvent = mutev.m_NEvent;
+//   m_MutModality = mutev.m_MutModality;
+// 	
+// 	return *this;
+// }
+// from sabry
+// MutEventCreator::~MutEventCreator() 
+// {
+// 	// TODO Auto-generated destructor stub
+//   cout << "MutEventCreator destructor called" << endl;
+// }
 
 
 
 bool MutEventCreator::Generate_SingleMutEvent(double treal)
 {
 	bool temp;
-  auto myRandomNumber = ran2();
-  cout << "debug random: " << myRandomNumber << endl;
-	if(treal < m_eventTime || (ran2() > m_pAlt || m_pAlt < 2 ) ){
+  double myRandomNumber = ran2();
+#ifdef mutation_debug
+  cout << "myRandomNumber: " << myRandomNumber << endl;
+  cout << "treal: " << treal << endl;
+  cout << "m_eventTime: " << m_eventTime << endl;
+  cout << "m_pAlt: " << m_pAlt << endl;
+#endif
+	if(treal < m_eventTime || (myRandomNumber > m_pAlt || m_pAlt < 2 ) )
+  {
 		temp = false;
 	}
 
@@ -35,11 +72,14 @@ bool MutEventCreator::Generate_SingleMutEvent(double treal)
   {
 		temp = true;
 		cout<< endl << "****************mutation occurred!" << endl;
+#ifdef mutation_debug
 		cout <<  "m_eventTime: " << m_eventTime << "  treal: " << treal << endl;
-		if(m_pAlt == 2) m_pAlt = 0;
+#endif
+		if(m_pAlt == 2)
+      m_pAlt = 0;
 	}
-	 return temp;
-
+	
+  return temp;
 }
 
 
@@ -50,7 +90,8 @@ bool MutEventCreator::Generate_SingleMutPHThreshold(double pHExtra){
 	if(pHExtra > m_pHThreshold || m_NEvent == SINGLE_MUTATION) {  //no mutation condition
 		temp = false;
 	}
-	else {
+	else 
+  {
 		temp = true;
 		cout<< endl << "****************mutation occurred!" << endl;
 		cout<< "pH extracellular:" << pHExtra << endl;
@@ -204,6 +245,58 @@ void MutEventCreator::ReadMutEvent(ifstream& stream)
 
 }
 
+void MutEventCreator::assign(const boost::property_tree::ptree& pt)
+{
+  /** T.F. why the hell temp parameters?
+   */
+  //double m_eventTime; //tempo associato ad un singolo evento speciale
+	//double m_pAlt;       // probabilità dell'evento speciale "transizione al tipo alternativo"
+	//double m_pHThreshold;
+
+	//int m_NEvent;  //number of induced mutation
+
+	//Flags to set the result of I/O routine
+  //MutModality m_MutModality;
+#define DOPT(name_buffer)name_buffer = pt.get<double>(#name_buffer)
+  DOPT(m_eventTime);
+  DOPT(m_pAlt);
+  DOPT(m_pHThreshold);
+#undef DOPT
+  
+#define DOPT(name_buffer)name_buffer = pt.get<int>(#name_buffer)
+  DOPT(m_NEvent);
+  int buffer = pt.get<int>("m_MutModality");
+  switch(buffer)
+  {
+    case NoMutation:
+      m_MutModality = NoMutation;
+      break;
+    case SingleMutEvent:
+      m_MutModality =SingleMutEvent;
+      break;
+    case MutPHThreshold:
+      m_MutModality = MutPHThreshold;
+      break;
+    default:
+      cout << "unknown mutoation option " << buffer << endl;
+  }
+#undef DOPT
+}
+
+boost::property_tree::ptree MutEventCreator::as_ptree() const
+{
+  boost::property_tree::ptree pt;
+  
+#define DOPT(name_buffer) pt.put(#name_buffer, name_buffer)
+  DOPT(m_eventTime);
+  DOPT(m_pAlt);
+  DOPT(m_pHThreshold);
+  DOPT(m_NEvent);
+  DOPT(m_MutModality);
+#undef DOPT
+  
+  return pt;
+}
 
 
-
+}///end namespace vbl

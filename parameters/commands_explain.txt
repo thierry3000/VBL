@@ -12,7 +12,7 @@
 0       # (params.flowON)
 0       # (params.doseON)
 1	# eventON in MutEventCreator
-1 	# type of mutation event
+1 	# type of mutation event for 1 we need 2 artuments, for 2 only 1
 1.4e6	# mutation event time m_eventTime
 2	# mutation event probabiltiy m_pAlt
 360     #nprint Numero di passi da " << dt << " secondi tra due record su file

@@ -96,6 +96,11 @@ struct ReadInParameters
   bool flowON;
   // dose rate (flag che indica se la dose e' non nulla, e classe che rappresenta il segnale non nullo)
   bool doseON;
+  // mutation stuff
+  bool eventON;
+  int typeOfMutationEvent;
+  double m_eventTime;
+  int m_pAlt;
   
   
   void assign(const boost::property_tree::ptree &pt);

@@ -11,6 +11,7 @@
 #include <iostream>			// inclusione della libreria standard di I/O
 #include <iomanip>			// inclusione dei manipolatori per l'I/O
 #include <fstream>			// dichiarazione headers che servono per l'I/O su file
+#include <boost/property_tree/ptree.hpp>
 
 #include "Utilities.h"
 
@@ -18,6 +19,8 @@
 
 using namespace std;
 
+namespace vbl
+{
 //list of the possible mutation modalily
 enum MutModality{NoMutation = 0, SingleMutEvent = 1 , MutPHThreshold = 2} ;
 
@@ -35,14 +38,19 @@ private:
 	int m_NEvent;  //number of induced mutation
 
 	//Flags to set the result of I/O routine
-    MutModality m_MutModality;
+  MutModality m_MutModality;
 
 
 public:
-	MutEventCreator();
-
-
-	virtual ~MutEventCreator();
+  MutEventCreator();
+  
+//   MutEventCreator(const MutEventCreator &mutev);
+// // overloaded =
+// 	MutEventCreator& operator=(const MutEventCreator& mutev);
+  ~MutEventCreator();
+  
+  //sabry
+//  virtual ~MutEventCreator();
 
 	//Getter
 	double Get_eventTime() {return m_eventTime;}
@@ -60,11 +68,15 @@ public:
   bool Generate_SingleMutPHThreshold(double pHExtra);
 
 
-    //I/O routine (to be modified if a new function Generator is included)
-    void InitMutEvent(bool terminal, std::ifstream& commands);
-    void PrintMutEvent(std::ofstream& run_data);  // write mutation option on run_data.txt
-    void WriteMutEvent(ofstream& stream);
-    void ReadMutEvent (ifstream& stream);
+  //I/O routine (to be modified if a new function Generator is included)
+  void InitMutEvent(bool terminal, std::ifstream& commands);
+  void PrintMutEvent(std::ofstream& run_data);  // write mutation option on run_data.txt
+  void WriteMutEvent(ofstream& stream);
+  void ReadMutEvent (ifstream& stream);
+  
+  void assign(const boost::property_tree::ptree& pt);
+  boost::property_tree::ptree as_ptree() const;
 };
+}
 
 #endif /* MUTEVENTCREATOR_H_ */

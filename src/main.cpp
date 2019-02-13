@@ -133,11 +133,11 @@ int main( int argc, char* argv[] )
     if(argc < 6)
       // If there are less than 5 arguments then the alternate type is the same as the initial type
       if(argc <4 ) 
-	p_to_current_CellsSystem->Set_CellTypeFileAlt( "CellType.txt" );
+        p_to_current_CellsSystem->Set_CellTypeFileAlt( "CellType.txt" );
       else
-	p_to_current_CellsSystem->Set_CellTypeFileAlt( argv[3] );
+        p_to_current_CellsSystem->Set_CellTypeFileAlt( argv[3] );
     else// If there are at least 5 arguments then the fifth is the name of the file CellTypeAlt (which is in the same dir of the executable)
-	p_to_current_CellsSystem->Set_CellTypeFileAlt( argv[5] );
+      p_to_current_CellsSystem->Set_CellTypeFileAlt( argv[5] );
 	  
 	  
     cout << "\n*** VBL - Virtual Biophysics Lab simulation program ***";
