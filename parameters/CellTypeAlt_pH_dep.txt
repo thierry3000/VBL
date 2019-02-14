@@ -1,0 +1,100 @@
+VMAX_1					2e-6 // pg/(s·µm^2)  ***mutated *** eMail 14.02
+VMAX_2					2.4e-4 // pg/s
+VMAX_22					2.4e-3 // pg/s
+VMAX_A					1.e-6 // pg/(s·µm^2) 
+VMAX_P					3.e-4 // pg/s  
+VMAX_P_A				1.018e-5 // pg/s
+VMAX_P_ATP				1.81e-3 // pg/s 
+VMAX_DNA				5.e-5 // molecole/s 
+VMAX_DNA_A				5.847e-5 // pg/s 
+VMAX_DNA_ATP			9.01e-5 // pg/s
+VMAX_M					2e-3 // mitocondri/s 
+VMAX_M_A				7.3e-8 // pg/s 
+VMAX_M_ATP				1.125e-7 // pg/s 
+Km1						0.27024e-3 // pg/µm^3
+Km2						1.80e-3 // pg/µm^3
+Km22					1.80e-5 // pg/µm^3
+KmA						0.023798e-3 // pg/µm^3
+Ka						0.054e-3 // pg/µm^3
+Kmc						0.096e-3 // pg/µm^3
+Kmd						1.8e-5 // pg/µm^3
+KmO2					7.e-7 // pg/µm^3
+Kmp						0.0067e-6 // (pg/µm^3)^2  
+KmDNA					0.00045e-6 // (pg/µm^3)^2  
+KmM						1.46e-8 // (pg/µm^3)^2  
+coeffg1					0.0075 // s^-1   
+coeffg2					0.00108 // s^-1   
+coeffg3					0.00067 // s^-1  
+coeffr1					3.e-5 // pg/s
+ATPSt					2.3e-3 // pg/s
+Vmin					90 // µm^3
+DVap					3e-6 // s^-1
+fATPmin					1.2 // 
+pHimin					6.8 // 
+VmaxAL0					9.583585e-5 // pg/(s·µm^2) 
+KmAL					0.40536e-3 // pg/µm^3
+M_T_MEAN				1800. // s
+DNA_MAX_SPREAD			0.1 // 
+v_WORK					1.5e-5 // pg/(s·µm^3) 
+PHASE_SPREAD			0.5 // 
+k_pRb					10 // 
+N_pRb					16 // 
+pRb_ONOFFratio			1.e-6 // 
+pRb_fraction			1.5e-2 // 
+cyclinD_fraction		10.e-3 // 
+cyclinE_fraction		3.e-3 // 
+cyclinX_fraction		14.e-3 // 
+ConcS_0					0.001 // 
+Thresh_S_start			0.8 // 
+Thresh_S_stop			0.05 // 
+k3MM					1.e4 // 
+KmMM					1.e-3 // 
+NUCLEAR_OBJ				46 // 
+ClusteringFactor		15 // 
+CycXThr					0.08 // pg
+Vrif					-0.021 // V
+HPumpEff				0.1 // 
+DiffH					1.40e2 // µm^2/s
+C1						100 // µm^3/pg
+C2						0.2 // µm^3
+a_R						5.e-2 // µm^3/(pg s)
+alpha_R[G0_phase]		0. // 
+alpha_R[G1m_phase]		0.43 // 
+alpha_R[G1p_phase]		0.43 // 
+alpha_R[S_phase]		0.17 // 
+alpha_R[G2_phase]		0.77 // 
+alpha_R[M_phase]		0.77 // 
+beta_R[G0_phase]		0. // 
+beta_R[G1m_phase]		0.017 // 
+beta_R[G1p_phase]		0.017 // 
+beta_R[S_phase]			0.02 // 
+beta_R[G2_phase]		0. // 
+beta_R[M_phase]			0. // 
+YoungMod				1e12 // pg/(µm·s^2)
+PoissonRatio			0.5 // 
+density					1.070 // pg/µm^3
+viscosity				2e11 // pg/(µm·s)
+Mphase_correction		1.1 // 
+adhesion_range			-0.5 // 
+adhesion_decay			2. // 
+packing_factor			0.9047 // 
+extension_coeff			1.1 // 
+extvolume_thickness		0.1 // µm
+extvolume_compression	0.25 // µm-1
+extvolume_fraction		0.3 // 
+tph_slope				2.727273 // 
+tph_thr					6.55 // 
+tp11_slope				10.90909 // 
+tp11_thr				6.9625 // 
+a2c_slope				2.419355 // *** 1.2 eMail 14.02.19
+a2c_thr					6.7 //    ***mutated eMail 14.02.19
+c2a_slope				2.419355 // *** 1.2 eMail 14.02.19
+c2a_thr					6.7 //    ***mutated eMail 14.02.19
+a2cA_slope				2.419355 // 
+a2cA_thr				6.92 // 
+c2aA_slope				2.419355 // 
+c2aA_thr				6.92 // 
+a2cAcL_slope			1.5 // 
+a2cAcL_thr				6.8 // 
+c2aAcL_slope			1.5 // 
+c2aAcL_thr				6.8 // 
