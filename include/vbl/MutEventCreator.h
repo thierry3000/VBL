@@ -22,17 +22,17 @@ using namespace std;
 namespace vbl
 {
 //list of the possible mutation modalily
-enum MutModality{NoMutation = 0, SingleMutEvent = 1 , MutPHThreshold = 2} ;
+enum MutModality{NoMutation = 0, SingleMutEvent = 1 , MutPHThreshold = 2, MutPHRate = 3,} ;
 
-const int SINGLE_MUTATION = 1; //numero massimo di mutazioni eseguibili
+const int SINGLE_MUTATION = 1; //maximum number of mutations that can be performed
 
 class MutEventCreator {
 
 
 	//friend class CellsSystem;
 private:
-	double m_eventTime; //tempo associato ad un singolo evento speciale
-	double m_pAlt;       // probabilità dell'evento speciale "transizione al tipo alternativo"
+	double m_eventTime; //time associated with a single special event
+	double m_pAlt;       // probability of the special event "transition to the alternative type"
 	double m_pHThreshold;
 
 	int m_NEvent;  //number of induced mutation
@@ -66,6 +66,7 @@ public:
 
 	bool Generate_SingleMutEvent(double treal);
   bool Generate_SingleMutPHThreshold(double pHExtra);
+  bool Generate_RateMutPHThreshold(double pHExtra);
 
 
   //I/O routine (to be modified if a new function Generator is included)

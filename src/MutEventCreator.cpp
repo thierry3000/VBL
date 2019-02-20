@@ -10,7 +10,6 @@
 
 namespace vbl 
 {
-#define mutation_debug
 
 vbl::MutEventCreator::MutEventCreator() 
 {
@@ -31,7 +30,9 @@ vbl::MutEventCreator::MutEventCreator()
 // }
 vbl::MutEventCreator::~MutEventCreator()
 {
+#ifdef ENABLE_MUTATION_DEBUG_OUTPUT
   cout << "MutEventCreator destructor called" << endl;
+#endif
 }
 // // overloaded =
 // MutEventCreator& MutEventCreator::operator=(const MutEventCreator& mutev)
@@ -57,7 +58,7 @@ bool MutEventCreator::Generate_SingleMutEvent(double treal)
 {
 	bool temp;
   double myRandomNumber = ran2();
-#ifdef mutation_debug
+#ifdef ENABLE_MUTATION_DEBUG_OUTPUT
   cout << "myRandomNumber: " << myRandomNumber << endl;
   cout << "treal: " << treal << endl;
   cout << "m_eventTime: " << m_eventTime << endl;
@@ -72,7 +73,7 @@ bool MutEventCreator::Generate_SingleMutEvent(double treal)
   {
 		temp = true;
 		cout<< endl << "****************mutation occurred!" << endl;
-#ifdef mutation_debug
+#ifdef ENABLE_MUTATION_DEBUG_OUTPUT
 		cout <<  "m_eventTime: " << m_eventTime << "  treal: " << treal << endl;
 #endif
 		if(m_pAlt == 2)
@@ -82,12 +83,32 @@ bool MutEventCreator::Generate_SingleMutEvent(double treal)
   return temp;
 }
 
+bool MutEventCreator::Generate_RateMutPHThreshold(double pHExtra)
+{
+  bool temp;
+  double myRandomNumber = ran2();
+  if( pHExtra < m_pHThreshold && myRandomNumber < m_pAlt)
+  {
+    temp = true;
+    m_NEvent ++;
+#ifdef ENABLE_MUTATION_DEBUG_OUTPUT
+    cout << "pH_ex: " << pHExtra << "<" << m_pHThreshold << " and rand2(): " << myRandomNumber << "<" << m_pAlt << endl;
+    cout << "m_NEvent: " << m_NEvent << std::endl;
+#endif
+  }
+  else 
+  {
+    temp = false;
+  }
+  return temp;
+}
 
-bool MutEventCreator::Generate_SingleMutPHThreshold(double pHExtra){
-
+bool MutEventCreator::Generate_SingleMutPHThreshold(double pHExtra)
+{
 	bool temp;
 
-	if(pHExtra > m_pHThreshold || m_NEvent == SINGLE_MUTATION) {  //no mutation condition
+	if(pHExtra > m_pHThreshold || m_NEvent == SINGLE_MUTATION) 
+  {  //no mutation condition
 		temp = false;
 	}
 	else 
@@ -98,8 +119,6 @@ bool MutEventCreator::Generate_SingleMutPHThreshold(double pHExtra){
 		m_NEvent ++;
 	}
 
-
-
 	return temp;
 }
 
@@ -108,80 +127,91 @@ bool MutEventCreator::Generate_SingleMutPHThreshold(double pHExtra){
 void MutEventCreator::InitMutEvent(bool terminal, std::ifstream& commands){
 
 	bool eventON;
-	int temp;
+	int eventType;
 
 	if( terminal )
-	        {
-	        cout << "\nIs there a mutation event for this run? (NO = 0, YES = 1) ";
-	        cin >> eventON;
-	        }
-	    else
-	        {
-	        commands >> eventON;
-	        }
+  {
+	  cout << "\nIs there a mutation event for this run? (NO = 0, YES = 1) ";
+	  cin >> eventON;
+  }
+  else
+  {
+    commands >> eventON;
+  }
 
-	    if( eventON )
-	        {
-	        cout << "There is a mutation event for this run:" << endl;
-	        if( terminal )
-	            {
-	            cout<<"Select:"<< endl <<"1: Single mutation event at fixed time" << endl <<"2: Single mutation driven by PH "<<endl;
-	            cin >> temp;
+  if( eventON )
+  {
+    cout << "There is a mutation event for this run:" << endl;
+    if( terminal )
+    {
+      cout<<"Select:"<< endl <<"1: Single mutation event at fixed time" << endl 
+      <<"2: Single mutation driven by PH "<<endl
+      <<"3: Multiple mutation driven by PH with rate m_pAlt "<<endl;
+      cin >> eventType;
 
-	            switch(temp){
+      switch(eventType)
+      {
+        case(1):
+          m_MutModality = SingleMutEvent;
+          cout << "Mutation event time (s) (real time): ";
+          cin >> m_eventTime;
+          cout << "Mutation event probability ( select 2 = for a single mutation event): ";
+          cin >> m_pAlt;
+        break;
 
-	            	case(1):
-	            		m_MutModality = SingleMutEvent;
-	                 	cout << "Mutation event time (s) (real time): ";
-			        	cin >> m_eventTime;
-			            cout << "Mutation event probability ( select 2 = for a single mutation event): ";
-			            cin >> m_pAlt;
+        case(2):
+          m_MutModality = MutPHThreshold;
+          cout << "Set the PH extracellular value:";
+          cin >> m_pHThreshold;
+        break;
+        
+        case(3):
+          m_MutModality = MutPHRate;
+          cout << "Rate of mutation from ph Value:";
+          cin >> m_pHThreshold;
+          cout << "Rate probability (between 0.0 and 1.0)";
+          cin >> m_pAlt;
+        break;
+      }
+    }
+    else
+    {
+      //command file case
+      commands >> eventType;
+      switch(eventType)
+      {
+        case(1):
+          m_MutModality = SingleMutEvent;
+          cout<< "Event selected:" << m_MutModality;
+          commands >> m_eventTime;
+          cout << "\nMutation event time: " << m_eventTime << endl;
+          commands >> m_pAlt;
+          cout << "\nMutation event probability (2 = single mutation event): " << m_pAlt << endl;
+        break;
 
-			        break;
-
-	            	case(2):
-						m_MutModality = MutPHThreshold;
-						cout << "Set the PH extracellular value:";
-		                cin >> m_pHThreshold;
-					break;
-
-	            }
-
-	            }
-	        else
-	            {
-	            commands >> temp;
-
-	            switch(temp){
-
-	            case(1):
-					  m_MutModality = SingleMutEvent;
-	                  cout<< "Event selected:" << m_MutModality;
-		              commands >> m_eventTime;
-	            	  cout << "\nMutation event time: " << m_eventTime << endl;
-
-	            	  commands >> m_pAlt;
-	            	  cout << "\nMutation event probability (2 = single mutation event): " << m_pAlt << endl;
-
-	            break;
-
-	            case(2):
-						m_MutModality = MutPHThreshold;
-			            cout<< "Event selected:" << m_MutModality;
-	                    commands >> m_pHThreshold;
-	                    cout << "\n The PH extracellular value for the mutation event is" << m_pHThreshold;
-	            break;
-
-
-	            }
-	            }
-	        } //close if(eventON)
-
-	    else
-	        {
-	        m_MutModality = NoMutation; //no mutation event
-	        }
-
+        case(2):
+          m_MutModality = MutPHThreshold;
+          cout<< "Event selected:" << m_MutModality;
+          commands >> m_pHThreshold;
+          cout << "\n The PH extracellular value for the mutation event is" << m_pHThreshold;
+        break;
+        
+        case(3):
+          m_MutModality = MutPHRate;
+          cout << "Rate of mutation from ph Value: ";
+          commands >> m_pHThreshold;
+          cout << m_pHThreshold << endl;
+          cout << "Rate probability (between 0.0 and 1.0): ";
+          commands >> m_pAlt;
+          cout << m_pAlt << endl;
+        break;
+      }
+    }//close else (terminal)
+  } //close if (eventON)
+  else
+	{
+	  m_MutModality = NoMutation; //no mutation event
+  }
 
   return;
 }

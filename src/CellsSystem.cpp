@@ -93,7 +93,15 @@ unsigned int CellsSystem::runMainLoop(double &endtime)
 #endif
     //bool mitosis = CellEvents( );		// Cellular events
     checkNeighbourhood_consistency(std::string("before CellEvents"));
-    int no_mitosis = CellEvents( );		// Cellular events
+    int no_mitosis=0;
+    try
+    {
+      no_mitosis = CellEvents( );		// Cellular events
+    }
+    catch(const std::exception &e)
+    {
+      e.what();
+    }
 #ifdef W_timing
     end= std::chrono::steady_clock::now();
     myTiming.time_diff = end-begin;

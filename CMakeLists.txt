@@ -97,6 +97,11 @@ option(ENABLE_RELEASE_DEBUG_OUTPUT "Enables additional output in release mode" O
 if(ENABLE_RELEASE_DEBUG_OUTPUT)
 add_definitions(-DENABLE_RELEASE_DEBUG_OUTPUT)
 endif()
+
+option(ENABLE_MUTATION_DEBUG_OUTPUT "Enables additional output for mutation" ON)
+if(ENABLE_MUTATION_DEBUG_OUTPUT)
+add_definitions(-DENABLE_MUTATION_DEBUG_OUTPUT)
+endif()
        
 # c++ 11 for newer cmake
 set(CMAKE_CXX_STANDARD 11)

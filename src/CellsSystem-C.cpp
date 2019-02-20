@@ -213,7 +213,10 @@ int CellsSystem::CellEvents( )
         case SingleMutEvent: // single mutation events
         {	
           if(!MutationEv.Generate_SingleMutEvent(params.treal))
-				   ReplicateCell( n ); // if false NOT MUTATE!
+          {
+            //no mutation
+				    ReplicateCell( n );
+          }
           else 
           {
             cout<< "treal : " << params.treal<< " pAlt: " << MutationEv.Get_pAlt() << endl;
@@ -225,13 +228,35 @@ int CellsSystem::CellEvents( )
         case MutPHThreshold:
         {
           if(!MutationEv.Generate_SingleMutPHThreshold(pH[n]))
-            ReplicateCell( n ); // if false NOT MUTATE!
-          else {
+          {
+            //no mutation
+            ReplicateCell( n );
+          }
+          else 
+          {
             ReplicateCell( n, &CellTypeVector[1] );
           }
-
         } 
         break;
+        
+        case MutPHRate:
+        {
+          if(!MutationEv.Generate_RateMutPHThreshold(pH[n]))
+          {
+            //no mutation
+            ReplicateCell( n );
+          }
+          else 
+          {
+            ReplicateCell( n, &CellTypeVector[1] );
+          }
+        }
+        break;
+        
+        default:
+          std::cout << "unknown mutation type: " << MutationEv.Get_MutModality() << std::endl;
+          return EXIT_FAILURE;
+          break;
 			}
 
 			// a questo punto ncells e' stato incrementato di 1, e la cellula appena inserita si trova in posizione ncells-1
