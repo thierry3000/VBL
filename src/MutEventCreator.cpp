@@ -307,6 +307,9 @@ void MutEventCreator::assign(const boost::property_tree::ptree& pt)
     case MutPHThreshold:
       m_MutModality = MutPHThreshold;
       break;
+    case MutPHRate:
+      m_MutModality = MutPHRate;
+      break;
     default:
       cout << "unknown mutoation option " << buffer << endl;
   }
