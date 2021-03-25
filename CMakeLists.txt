@@ -5,6 +5,7 @@ project(VBL LANGUAGES CXX)
 #this is needed for proper hdf5 recognizion
 ENABLE_LANGUAGE(C)
 
+message("CGAL info: ${CGAL_DIR}")
 # I try to follow the tutorial at:
 # https://cmake.org/cmake-tutorial/
 set(VBL_VERSION_MAJOR 4)
